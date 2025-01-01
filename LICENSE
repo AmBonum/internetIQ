@@ -1,0 +1,43 @@
+Copyright (c) 2026 Lubomir Volcko. All Rights Reserved.
+
+This source code, including all files, assets, documentation, database
+schemas, and content contained in this repository (the "Software"), is the
+exclusive property of Lubomir Volcko (the "Author").
+
+NO LICENSE IS GRANTED. Without prior written permission from the Author,
+you may NOT, in whole or in part:
+
+  1. Copy, reproduce, or duplicate the Software.
+  2. Modify, adapt, translate, or create derivative works based on the
+     Software.
+  3. Distribute, publish, sublicense, sell, rent, lease, or otherwise
+     transfer the Software or any rights in it.
+  4. Host, deploy, or run the Software for any public, commercial, or
+     production purpose, whether or not for profit.
+  5. Use the Software, its name "Internet IQ Test", its branding, or any
+     part of its content (including questions, scoring formulas, and
+     copywriting) in any other product or service.
+  6. Reverse-engineer, decompile, or disassemble compiled artifacts of
+     the Software, except to the extent such activity is expressly
+     permitted by applicable law notwithstanding this restriction.
+
+Viewing the source code on platforms that grant access (e.g. a GitHub
+collaborator invitation) does NOT constitute a license to use it for any
+of the purposes restricted above.
+
+The Software is provided "AS IS", without warranty of any kind, express
+or implied, including but not limited to the warranties of
+merchantability, fitness for a particular purpose, and non-infringement.
+In no event shall the Author be liable for any claim, damages, or other
+liability arising from, out of, or in connection with the Software or
+the use or other dealings in the Software.
+
+For licensing inquiries, partnership requests, or permission to use any
+part of this Software, contact the Author.
+
+----
+
+UPOZORNENIE (SK): Toto je vlastnícky chránený projekt. Bez výslovného
+písomného súhlasu autora je zakázané kód kopírovať, upravovať, šíriť ani
+spúšťať na vlastnej infraštruktúre. Autorské právo vzniká automaticky
+zo zákona — žiadna registrácia ani poplatok nie sú potrebné.

@@ -1,0 +1,290 @@
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import {
+  CATEGORY_LABELS,
+  PERSONALITIES,
+  pickPersonalityVariant,
+  type ScoreResult,
+} from "@/lib/quiz/scoring";
+import { parseAnswers, type AnswerRecordPersisted } from "@/lib/quiz/schema";
+import { buildShareCaption } from "@/lib/share/intents";
+import { SocialShareGrid } from "@/components/quiz/SocialShareGrid";
+import { ManualShareCard } from "@/components/quiz/ManualShareCard";
+import { drawIgStoryToCanvas } from "@/lib/quiz/share-image";
+
+const AnswerReviewSection = lazy(() => import("@/components/quiz/AnswerReviewSection"));
+
+export const Route = createFileRoute("/r/$shareId")({
+  head: ({ params }) => ({
+    meta: [
+      { title: `Výsledok ${params.shareId} · Internet IQ Test` },
+      {
+        name: "description",
+        content: "Pozri sa, ako dopadol — a otestuj sa aj ty.",
+      },
+      { property: "og:title", content: "Internet IQ Test — výsledok" },
+      {
+        property: "og:description",
+        content: "Pozri si výsledok a otestuj sa aj ty. 15 otázok, čas beží.",
+      },
+    ],
+  }),
+  component: SharePageRoute,
+});
+
+function SharePageRoute() {
+  const { shareId } = Route.useParams();
+  return <SharePage shareId={shareId} />;
+}
+
+interface AttemptRow {
+  share_id: string;
+  final_score: number;
+  percentile: number;
+  personality: string;
+  breakdown: Record<"phishing" | "url" | "fake_vs_real" | "scenario", number>;
+  insights: string[];
+  stats: ScoreResult["stats"];
+  answers: unknown;
+  created_at: string;
+}
+
+export function SharePage({ shareId }: { shareId: string }) {
+  const [attempt, setAttempt] = useState<AttemptRow | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
+  const [reviewOpen, setReviewOpen] = useState(false);
+  const [downloadingImg, setDownloadingImg] = useState(false);
+  const reviewRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from("attempts")
+        .select(
+          "share_id, final_score, percentile, personality, breakdown, insights, stats, answers, created_at",
+        )
+        .eq("share_id", shareId)
+        .maybeSingle();
+      if (cancelled) return;
+      if (error || !data) {
+        setNotFound(true);
+      } else {
+        setAttempt(data as unknown as AttemptRow);
+      }
+      setLoading(false);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [shareId]);
+
+  const answers: AnswerRecordPersisted[] = useMemo(
+    () => (attempt ? parseAnswers(attempt.answers) : []),
+    [attempt],
+  );
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-hero flex items-center justify-center text-muted-foreground">
+        Načítavam výsledok…
+      </div>
+    );
+  }
+
+  if (notFound || !attempt) {
+    return (
+      <div className="min-h-screen bg-hero flex flex-col items-center justify-center px-4 text-center">
+        <div className="text-6xl">🕵️</div>
+        <h1 className="mt-4 text-2xl font-bold">Výsledok neexistuje</h1>
+        <p className="mt-2 text-muted-foreground">Link je neplatný alebo bol zmazaný.</p>
+        <Link
+          to="/"
+          className="mt-6 rounded-xl bg-accent-gradient px-6 py-3 font-bold text-primary-foreground shadow-glow"
+        >
+          Otestuj sa
+        </Link>
+      </div>
+    );
+  }
+
+  const personalityKey = (
+    attempt.personality in PERSONALITIES ? attempt.personality : "cautious_but_vulnerable"
+  ) as keyof typeof PERSONALITIES;
+  const personality = PERSONALITIES[personalityKey];
+  const variant = pickPersonalityVariant(
+    personality,
+    attempt.final_score + (attempt.stats?.criticalMistakes ?? 0),
+  );
+
+  const reviewCount = answers.length;
+  const reviewSectionId = "review-section";
+
+  function toggleReview() {
+    setReviewOpen((prev) => {
+      const next = !prev;
+      if (next) {
+        // Smooth-scroll the section into view after the next paint.
+        window.setTimeout(() => {
+          reviewRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+        }, 0);
+      }
+      return next;
+    });
+  }
+
+  const shareUrl =
+    typeof window !== "undefined" ? window.location.origin + window.location.pathname : "";
+  const shareCaption = buildShareCaption({
+    score: attempt.final_score,
+    personalityName: variant.name,
+  });
+
+  async function handleDownloadStory() {
+    setDownloadingImg(true);
+    try {
+      const blob = await drawIgStoryToCanvas({
+        score: attempt.final_score,
+        percentile: attempt.percentile,
+        personalityEmoji: variant.emoji,
+        personalityName: variant.name,
+        tagline: variant.tagline,
+        breakdown: attempt.breakdown,
+        url: shareUrl,
+      });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = `internet-iq-${attempt.final_score}.png`;
+      link.click();
+      window.setTimeout(() => URL.revokeObjectURL(link.href), 5000);
+    } finally {
+      setDownloadingImg(false);
+    }
+  }
+
+  return (
+    <div className="min-h-screen bg-hero">
+      <div className="mx-auto max-w-2xl px-4 py-10">
+        <div className="text-center">
+          <div className="text-xs uppercase tracking-wider text-muted-foreground">
+            Cudzí výsledok
+          </div>
+          <div className="mt-2 inline-flex items-baseline gap-2 font-display">
+            <span className="text-7xl font-black sm:text-8xl tabular-nums">
+              {attempt.final_score}
+            </span>
+            <span className="text-2xl text-muted-foreground">/ 100</span>
+          </div>
+          <div className="mt-2 text-base text-muted-foreground">
+            Lepší než <span className="font-bold text-primary">{attempt.percentile} %</span> ľudí.
+          </div>
+        </div>
+
+        <div className="mt-8 rounded-2xl border border-border bg-card p-6 shadow-card">
+          <div className="text-5xl">{variant.emoji}</div>
+          <h2 className="mt-3 text-2xl font-bold">{variant.name}</h2>
+          <p className="mt-1 text-sm font-medium text-primary">„{variant.tagline}"</p>
+          <p className="mt-4 text-sm leading-relaxed text-foreground/80">{variant.description}</p>
+        </div>
+
+        <div className="mt-6 rounded-2xl border border-border bg-card p-6 shadow-card">
+          <h3 className="text-base font-bold">Rozloženie</h3>
+          <div className="mt-4 space-y-3">
+            {(Object.keys(attempt.breakdown) as Array<keyof typeof attempt.breakdown>).map((k) => (
+              <div key={k}>
+                <div className="mb-1 flex items-center justify-between text-sm">
+                  <span className="text-foreground/85">{CATEGORY_LABELS[k]}</span>
+                  <span className="font-mono font-semibold tabular-nums">
+                    {attempt.breakdown[k]} %
+                  </span>
+                </div>
+                <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
+                  <div
+                    className={`h-full ${
+                      attempt.breakdown[k] >= 70
+                        ? "bg-success"
+                        : attempt.breakdown[k] >= 40
+                          ? "bg-warning"
+                          : "bg-destructive"
+                    }`}
+                    style={{ width: `${attempt.breakdown[k]}%` }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="mt-6">
+          <button
+            type="button"
+            onClick={toggleReview}
+            aria-expanded={reviewOpen}
+            aria-controls={reviewSectionId}
+            className="flex w-full items-center justify-between rounded-2xl border-2 border-border bg-card px-5 py-4 text-left text-base font-semibold transition-colors hover:border-primary/60"
+          >
+            <span>
+              {reviewCount > 0
+                ? `Pozri si moje odpovede (${reviewCount})`
+                : "Pozri si moje odpovede"}
+            </span>
+            <span aria-hidden className="ml-3 text-xl">
+              {reviewOpen ? "▴" : "▾"}
+            </span>
+          </button>
+
+          <div
+            id={reviewSectionId}
+            ref={reviewRef}
+            role="region"
+            aria-label={`Detail odpovedí — ${reviewCount} odpovedí dostupných`}
+            hidden={!reviewOpen}
+            className={reviewOpen ? "mt-4" : undefined}
+          >
+            {reviewOpen && (
+              <Suspense
+                fallback={
+                  <div className="rounded-2xl border border-border bg-card p-6 text-sm text-muted-foreground shadow-card">
+                    Načítavam odpovede…
+                  </div>
+                }
+              >
+                <AnswerReviewSection answers={answers} />
+              </Suspense>
+            )}
+          </div>
+        </div>
+
+        <div className="mt-6 rounded-2xl border border-border bg-card p-6 shadow-card">
+          <h3 className="text-base font-bold">Zdieľaj ďalej</h3>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Pošli to kamošovi, nech vie kde stojí.
+          </p>
+          <SocialShareGrid url={shareUrl} text={shareCaption} />
+        </div>
+
+        <ManualShareCard
+          url={shareUrl}
+          text={shareCaption}
+          onDownloadStory={handleDownloadStory}
+          downloading={downloadingImg}
+        />
+
+        <div className="mt-8 flex flex-col gap-3">
+          <Link
+            to="/test"
+            className="rounded-xl bg-accent-gradient px-6 py-4 text-center text-lg font-bold text-primary-foreground shadow-glow transition-transform hover:scale-[1.02]"
+          >
+            Otestuj sa aj ty
+          </Link>
+          <Link to="/" className="text-center text-sm text-muted-foreground hover:text-foreground">
+            Späť na úvod
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}

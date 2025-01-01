@@ -1,0 +1,479 @@
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { Link } from "@tanstack/react-router";
+import {
+  CATEGORY_LABELS,
+  PERSONALITIES,
+  pickPersonalityVariant,
+  type AnswerRecord,
+  type ScoreResult,
+} from "@/lib/quiz/scoring";
+import { supabase } from "@/integrations/supabase/client";
+import { drawIgStoryToCanvas } from "@/lib/quiz/share-image";
+import { buildShareCaption } from "@/lib/share/intents";
+import { TRAP_SEEN_STORAGE_KEY } from "@/lib/data-trap/copy";
+import { useConsent } from "@/hooks/useConsent";
+import { track } from "@/lib/tracking";
+import { SurveyCard } from "./SurveyCard";
+import { SocialShareGrid } from "./SocialShareGrid";
+import { ManualShareCard } from "./ManualShareCard";
+import { TrapDialog } from "./TrapDialog";
+
+const AnswerReviewSection = lazy(() => import("./AnswerReviewSection"));
+
+interface Props {
+  result: ScoreResult;
+  answers: AnswerRecord[];
+  onRestart: () => void;
+}
+
+function genShareId(): string {
+  const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  let s = "";
+  for (let i = 0; i < 8; i++) {
+    s += alphabet[Math.floor(Math.random() * alphabet.length)];
+  }
+  return s;
+}
+
+export function ResultsView({ result, answers, onRestart }: Props) {
+  const { record } = useConsent();
+  const personality = PERSONALITIES[result.personality];
+  // Deterministic variant per result (so refresh shows same copy)
+  const variant = useMemo(
+    () => pickPersonalityVariant(personality, result.finalScore + result.stats.criticalMistakes),
+    [personality, result.finalScore, result.stats.criticalMistakes],
+  );
+
+  const [animatedScore, setAnimatedScore] = useState(0);
+  const [showRest, setShowRest] = useState(false);
+  const [shareId, setShareId] = useState<string | null>(null);
+  const [shareUrl, setShareUrl] = useState<string | null>(null);
+  const [savingShare, setSavingShare] = useState(false);
+  const [downloadingImg, setDownloadingImg] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const [reviewOpen, setReviewOpen] = useState(false);
+  const [trapOpen, setTrapOpen] = useState(false);
+  const [trapSeen, setTrapSeen] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return window.localStorage.getItem(TRAP_SEEN_STORAGE_KEY) === "1";
+  });
+  const persistAttempted = useRef(false);
+  const reviewRef = useRef<HTMLDivElement | null>(null);
+  const trapTimerRef = useRef<number | null>(null);
+  const trapSourceRef = useRef<"auto_timer" | "manual_button">("auto_timer");
+
+  const reviewCount = answers.length;
+  const reviewSectionId = "results-review-section";
+
+  function toggleReview() {
+    setReviewOpen((prev) => {
+      const next = !prev;
+      if (next) {
+        window.setTimeout(() => {
+          reviewRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+        }, 0);
+      }
+      return next;
+    });
+  }
+
+  // Score count-up
+  useEffect(() => {
+    const target = result.finalScore;
+    const duration = 1100;
+    const start = performance.now();
+    let raf = 0;
+    const tick = (now: number) => {
+      const t = Math.min(1, (now - start) / duration);
+      const eased = 1 - Math.pow(1 - t, 3);
+      setAnimatedScore(Math.round(target * eased));
+      if (t < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    const reveal = window.setTimeout(() => setShowRest(true), duration + 100);
+    return () => {
+      cancelAnimationFrame(raf);
+      clearTimeout(reveal);
+    };
+  }, [result.finalScore]);
+
+  // Persist result to Cloud once for share link
+  useEffect(() => {
+    if (persistAttempted.current) return;
+    persistAttempted.current = true;
+    void persistResult();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // TrapDialog auto-open timer (5s after results shown, if not previously seen)
+  useEffect(() => {
+    if (trapSeen || !showRest) return;
+
+    trapTimerRef.current = window.setTimeout(() => {
+      setTrapOpen(true);
+      trapSourceRef.current = "auto_timer";
+      track(record, {
+        name: "data_trap.shown",
+        category: "analytics",
+        properties: { source: "auto_timer" },
+      });
+    }, 5000);
+
+    return () => {
+      if (trapTimerRef.current !== null) {
+        clearTimeout(trapTimerRef.current);
+      }
+    };
+  }, [trapSeen, showRest, record]);
+
+  async function persistResult() {
+    setSavingShare(true);
+    const id = genShareId();
+    try {
+      const { error } = await supabase.from("attempts").insert({
+        share_id: id,
+        nickname: null,
+        final_score: result.finalScore,
+        base_score: result.baseScore,
+        total_penalty: result.totalPenalty,
+        percentile: result.percentile,
+        personality: result.personality,
+        breakdown: result.breakdown,
+        insights: result.insights,
+        stats: result.stats,
+        flags: result.flags,
+        answers,
+        total_time_ms: result.stats.totalTimeMs,
+      });
+      if (error) {
+        // Avoid leaking constraint names / SQL hints to the browser console.
+        if (import.meta.env.DEV) console.error("Failed to save attempt:", error);
+        return;
+      }
+      setShareId(id);
+      setShareUrl(`${window.location.origin}/r/${id}`);
+    } finally {
+      setSavingShare(false);
+    }
+  }
+
+  async function handleCopyLink() {
+    if (!shareUrl) return;
+    await navigator.clipboard.writeText(shareUrl);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1800);
+  }
+
+  const shareCaption = buildShareCaption({
+    score: result.finalScore,
+    personalityName: variant.name,
+  });
+
+  async function handleNativeShare() {
+    const text = shareCaption;
+    const url = shareUrl ?? window.location.origin;
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: "Internet IQ Test", text, url });
+      } catch {
+        /* user cancelled */
+      }
+    } else {
+      await navigator.clipboard.writeText(`${text} ${url}`);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1800);
+    }
+  }
+
+  async function handleDownloadStory() {
+    setDownloadingImg(true);
+    try {
+      const blob = await drawIgStoryToCanvas({
+        score: result.finalScore,
+        percentile: result.percentile,
+        personalityEmoji: variant.emoji,
+        personalityName: variant.name,
+        tagline: variant.tagline,
+        breakdown: result.breakdown,
+        url: shareUrl ?? window.location.origin,
+      });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = `internet-iq-${result.finalScore}.png`;
+      link.click();
+      setTimeout(() => URL.revokeObjectURL(link.href), 5000);
+    } finally {
+      setDownloadingImg(false);
+    }
+  }
+
+  function handleOpenTrapDialog() {
+    setTrapOpen(true);
+    trapSourceRef.current = "manual_button";
+    track(record, {
+      name: "data_trap.shown",
+      category: "analytics",
+      properties: { source: "manual_button" },
+    });
+  }
+
+  function handleTrapAcknowledged() {
+    try {
+      if (typeof window !== "undefined") {
+        window.localStorage.setItem(TRAP_SEEN_STORAGE_KEY, "1");
+        setTrapSeen(true);
+      }
+    } catch {
+      // Storage unavailable (private mode, quota) — non-essential, swallow.
+    }
+  }
+
+  return (
+    <div className="mx-auto max-w-2xl px-4 py-10">
+      {/* Score reveal */}
+      <div className="text-center">
+        <div className="text-xs uppercase tracking-wider text-muted-foreground">
+          Tvoj Internet IQ
+        </div>
+        <div className="mt-2 inline-flex items-baseline gap-2 font-display">
+          <span className="text-7xl font-black sm:text-8xl tabular-nums">{animatedScore}</span>
+          <span className="text-2xl text-muted-foreground">/ 100</span>
+        </div>
+        {showRest && (
+          <div className="mt-2 animate-fade-in-up text-base text-muted-foreground">
+            Si lepší než <span className="font-bold text-primary">{result.percentile} %</span> ľudí.
+          </div>
+        )}
+      </div>
+
+      {showRest && (
+        <>
+          {/* Personality card */}
+          <div className="mt-8 animate-fade-in-up rounded-2xl border border-border bg-card p-6 shadow-card">
+            <div className="text-5xl">{variant.emoji}</div>
+            <h2 className="mt-3 text-2xl font-bold">{variant.name}</h2>
+            <p className="mt-1 text-sm font-medium text-primary">„{variant.tagline}"</p>
+            <p className="mt-4 text-sm leading-relaxed text-foreground/80">{variant.description}</p>
+            <ul className="mt-5 space-y-2 text-sm">
+              {variant.advice.map((a, i) => (
+                <li key={i} className="flex gap-2">
+                  <span className="text-primary">→</span>
+                  <span className="text-foreground/85">{a}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Breakdown */}
+          <div className="mt-6 animate-fade-in-up rounded-2xl border border-border bg-card p-6 shadow-card">
+            <h3 className="text-base font-bold">Kde si silný, kde slabý</h3>
+            <div className="mt-4 space-y-3">
+              {(Object.keys(result.breakdown) as (keyof typeof result.breakdown)[]).map((k) => (
+                <div key={k}>
+                  <div className="mb-1 flex items-center justify-between text-sm">
+                    <span className="text-foreground/85">{CATEGORY_LABELS[k]}</span>
+                    <span className="font-mono font-semibold tabular-nums">
+                      {result.breakdown[k]} %
+                    </span>
+                  </div>
+                  <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
+                    <div
+                      className={`h-full transition-all duration-1000 ${
+                        result.breakdown[k] >= 70
+                          ? "bg-success"
+                          : result.breakdown[k] >= 40
+                            ? "bg-warning"
+                            : "bg-destructive"
+                      }`}
+                      style={{ width: `${result.breakdown[k]}%` }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Insights */}
+          {result.insights.length > 0 && (
+            <div className="mt-6 animate-fade-in-up rounded-2xl border border-border bg-card p-6 shadow-card">
+              <h3 className="text-base font-bold">Čo konkrétne si zle spravil</h3>
+              <ul className="mt-3 space-y-2 text-sm">
+                {result.insights.map((ins, i) => (
+                  <li key={i} className="flex gap-2 text-foreground/85">
+                    <span className="text-destructive">•</span>
+                    <span>{ins}</span>
+                  </li>
+                ))}
+              </ul>
+
+              {/* Stats moved here for context */}
+              <div className="mt-5 grid grid-cols-2 gap-3 border-t border-border/60 pt-4 sm:grid-cols-4">
+                <Stat label="Kritické chyby" value={result.stats.criticalMistakes} tone="danger" />
+                <Stat label="Stredné" value={result.stats.mediumMistakes} tone="warn" />
+                <Stat label="Malé" value={result.stats.minorMistakes} tone="muted" />
+                <Stat
+                  label="Priemerný čas"
+                  value={`${(result.stats.avgResponseMs / 1000).toFixed(1)}s`}
+                  tone="muted"
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Optional survey */}
+          {shareId && <SurveyCard shareId={shareId} />}
+
+          {/* Share section */}
+          <div className="mt-8 animate-fade-in-up rounded-2xl border border-border bg-card p-6 shadow-card">
+            <h3 className="text-base font-bold">Zdieľaj výsledok</h3>
+            <p className="mt-1 text-sm text-muted-foreground">Pošli kamošovi a porovnaj sa.</p>
+
+            {/* Share link */}
+            <div className="mt-4">
+              {savingShare && !shareUrl && (
+                <div className="text-xs text-muted-foreground">Generujem share link…</div>
+              )}
+              {shareUrl && (
+                <div className="flex gap-2">
+                  <input
+                    readOnly
+                    value={shareUrl}
+                    onClick={(e) => e.currentTarget.select()}
+                    className="flex-1 rounded-lg border border-border bg-background px-3 py-2 font-mono text-xs"
+                  />
+                  <button
+                    onClick={handleCopyLink}
+                    className="rounded-lg border-2 border-border bg-card px-3 py-2 text-xs font-semibold transition-colors hover:border-primary/60"
+                  >
+                    {copied ? "✅ Skopírované" : "📋 Kopírovať"}
+                  </button>
+                </div>
+              )}
+              {!savingShare && !shareUrl && (
+                <div className="text-xs text-destructive">
+                  Share link sa nepodarilo vytvoriť. Skús znova neskôr.
+                </div>
+              )}
+            </div>
+
+            <div className="mt-4">
+              <button
+                onClick={handleNativeShare}
+                className="w-full rounded-xl border-2 border-border bg-card px-5 py-3 text-base font-semibold transition-colors hover:border-primary/60"
+              >
+                📤 Zdieľaj link
+              </button>
+            </div>
+
+            {shareUrl && <SocialShareGrid url={shareUrl} text={shareCaption} />}
+          </div>
+
+          {shareUrl && (
+            <ManualShareCard
+              url={shareUrl}
+              text={shareCaption}
+              onDownloadStory={handleDownloadStory}
+              downloading={downloadingImg}
+            />
+          )}
+
+          {/* Trap dialog manual trigger */}
+          {shareUrl && (
+            <div className="mt-6 animate-fade-in-up">
+              <button
+                type="button"
+                onClick={handleOpenTrapDialog}
+                className="w-full rounded-xl border-2 border-border bg-card px-5 py-3 text-base font-semibold transition-colors hover:border-primary/60"
+              >
+                🪤 Vyskúšaj si pasce na osobné údaje
+              </button>
+            </div>
+          )}
+
+          {/* Review own answers (inline, decoupled from Supabase persist) */}
+          {reviewCount > 0 && (
+            <div className="mt-6 animate-fade-in-up">
+              <button
+                type="button"
+                onClick={toggleReview}
+                aria-expanded={reviewOpen}
+                aria-controls={reviewSectionId}
+                className="flex w-full items-center justify-between rounded-2xl border-2 border-border bg-card px-5 py-4 text-left text-base font-semibold transition-colors hover:border-primary/60"
+              >
+                <span>{`Pozri si svoje odpovede (${reviewCount})`}</span>
+                <span aria-hidden className="ml-3 text-xl">
+                  {reviewOpen ? "▴" : "▾"}
+                </span>
+              </button>
+
+              <div
+                id={reviewSectionId}
+                ref={reviewRef}
+                role="region"
+                aria-label={`Detail odpovedí — ${reviewCount} odpovedí dostupných`}
+                hidden={!reviewOpen}
+                className={reviewOpen ? "mt-4" : undefined}
+              >
+                {reviewOpen && (
+                  <Suspense
+                    fallback={
+                      <div className="rounded-2xl border border-border bg-card p-6 text-sm text-muted-foreground shadow-card">
+                        Načítavam odpovede…
+                      </div>
+                    }
+                  >
+                    <AnswerReviewSection answers={answers} />
+                  </Suspense>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* CTAs */}
+          <div className="mt-8 flex flex-col gap-3 animate-fade-in-up">
+            <button
+              onClick={onRestart}
+              className="rounded-xl border-2 border-border bg-card px-6 py-3 font-semibold transition-colors hover:border-primary/60"
+            >
+              Skús znova
+            </button>
+            <Link
+              to="/"
+              className="text-center text-sm text-muted-foreground hover:text-foreground"
+            >
+              Späť na úvod
+            </Link>
+          </div>
+        </>
+      )}
+
+      {/* Trap dialog */}
+      <TrapDialog
+        open={trapOpen}
+        onOpenChange={setTrapOpen}
+        onAcknowledged={handleTrapAcknowledged}
+      />
+    </div>
+  );
+}
+
+function Stat({
+  label,
+  value,
+  tone,
+}: {
+  label: string;
+  value: number | string;
+  tone: "danger" | "warn" | "muted";
+}) {
+  const toneCls =
+    tone === "danger" ? "text-destructive" : tone === "warn" ? "text-warning" : "text-foreground";
+  return (
+    <div className="text-center">
+      <div className={`font-display text-2xl font-black tabular-nums ${toneCls}`}>{value}</div>
+      <div className="mt-0.5 text-[10px] uppercase tracking-wider text-muted-foreground">
+        {label}
+      </div>
+    </div>
+  );
+}

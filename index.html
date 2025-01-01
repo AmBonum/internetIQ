@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="sk">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>Internet IQ Test</title>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "Organization",
+            "@id": "https://internetiq.lvtesting.eu/#org",
+            "name": "Internet IQ Test",
+            "url": "https://internetiq.lvtesting.eu",
+            "logo": "https://internetiq.lvtesting.eu/favicon.svg",
+            "areaServed": "SK",
+            "knowsLanguage": "sk-SK"
+          },
+          {
+            "@type": "WebSite",
+            "@id": "https://internetiq.lvtesting.eu/#website",
+            "url": "https://internetiq.lvtesting.eu",
+            "name": "Internet IQ Test",
+            "description": "90-sekundový test slovenskej digitálnej obozretnosti.",
+            "inLanguage": "sk-SK",
+            "publisher": { "@id": "https://internetiq.lvtesting.eu/#org" }
+          }
+        ]
+      }
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
