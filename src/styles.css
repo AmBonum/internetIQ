@@ -154,3 +154,31 @@
   to { opacity: 1; transform: translateY(0); }
 }
 .animate-fade-in-up { animation: fade-in-up 0.5s ease-out both; }
+
+@media print {
+  /* Print-friendly layout for course one-pagers and policy pages.
+     Hide chrome (header, banner, dialog) and switch to plain colors. */
+  header[class*="sticky"],
+  [aria-labelledby="consent-banner-title"],
+  [role="dialog"],
+  footer {
+    display: none !important;
+  }
+  html, body {
+    background: #fff !important;
+    color: #000 !important;
+  }
+  a {
+    color: #000 !important;
+    text-decoration: underline;
+  }
+  /* Show URL after every link inside printed articles. */
+  article a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-size: 0.85em;
+    color: #555;
+  }
+  .shadow-card, .shadow-glow {
+    box-shadow: none !important;
+  }
+}

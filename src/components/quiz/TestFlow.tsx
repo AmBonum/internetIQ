@@ -12,19 +12,63 @@ import { ResultsView } from "./ResultsView";
 
 type Phase = "intro" | "playing" | "done";
 
+const RESULT_STORAGE_KEY = "iiq_last_result_v1";
+
+interface PersistedResult {
+  result: ScoreResult;
+  answers: AnswerRecord[];
+}
+
+function loadPersistedResult(): PersistedResult | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = window.sessionStorage.getItem(RESULT_STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as PersistedResult;
+    if (!parsed.result || !Array.isArray(parsed.answers)) return null;
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+
+function savePersistedResult(payload: PersistedResult) {
+  if (typeof window === "undefined") return;
+  try {
+    window.sessionStorage.setItem(RESULT_STORAGE_KEY, JSON.stringify(payload));
+  } catch {
+    // sessionStorage can be disabled / quota-full; non-fatal.
+  }
+}
+
+function clearPersistedResult() {
+  if (typeof window === "undefined") return;
+  try {
+    window.sessionStorage.removeItem(RESULT_STORAGE_KEY);
+  } catch {
+    // non-fatal
+  }
+}
+
 export function TestFlow() {
-  const [phase, setPhase] = useState<Phase>("intro");
+  // Restore prior completed test from sessionStorage (per-tab) so that
+  // browser-back from a course CTA returns the user to their result
+  // instead of restarting the quiz.
+  const restored = typeof window !== "undefined" ? loadPersistedResult() : null;
+
+  const [phase, setPhase] = useState<Phase>(restored ? "done" : "intro");
   const [questions, setQuestions] = useState<Question[]>([]);
   const [index, setIndex] = useState(0);
-  const [answers, setAnswers] = useState<AnswerRecord[]>([]);
-  const [result, setResult] = useState<ScoreResult | null>(null);
+  const [answers, setAnswers] = useState<AnswerRecord[]>(restored?.answers ?? []);
+  const [result, setResult] = useState<ScoreResult | null>(restored?.result ?? null);
 
-  // Pick questions on mount
+  // Pick questions on mount — only when starting fresh.
   useEffect(() => {
+    if (restored) return;
     setQuestions(getTestQuestions());
-    // brief intro pause
     const t = setTimeout(() => setPhase("playing"), 900);
     return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   function handleAnswer(optionId: string | null, responseMs: number) {
@@ -34,20 +78,30 @@ export function TestFlow() {
     setAnswers(next);
 
     if (index + 1 >= questions.length) {
-      setResult(computeScore(next));
+      const finalResult = computeScore(next);
+      setResult(finalResult);
       setPhase("done");
+      savePersistedResult({ result: finalResult, answers: next });
     } else {
       setIndex(index + 1);
     }
   }
 
   function restart() {
+    clearPersistedResult();
     setQuestions(getTestQuestions());
     setIndex(0);
     setAnswers([]);
     setResult(null);
     setPhase("intro");
     setTimeout(() => setPhase("playing"), 700);
+  }
+
+  // Render done state FIRST — when restoring from sessionStorage we have
+  // result but questions=[] (questions are reshuffled on restart, not
+  // needed for the review screen which looks them up by id).
+  if (phase === "done" && result) {
+    return <ResultsView result={result} answers={answers} onRestart={restart} />;
   }
 
   if (phase === "intro" || questions.length === 0) {
@@ -59,10 +113,6 @@ export function TestFlow() {
         </div>
       </div>
     );
-  }
-
-  if (phase === "done" && result) {
-    return <ResultsView result={result} answers={answers} onRestart={restart} />;
   }
 
   return (

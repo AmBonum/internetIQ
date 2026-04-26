@@ -2,6 +2,7 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { getCourseBySlug } from "@/content/courses";
 import { CourseHero } from "@/components/courses/CourseHero";
 import { CourseSectionView } from "@/components/courses/sections/CourseSections";
+import { RelatedCourses } from "@/components/courses/RelatedCourses";
 import { Button } from "@/components/ui/button";
 import { Footer } from "@/components/Footer";
 import { buildCourseJsonLd } from "@/lib/seo/course-jsonld";
@@ -92,7 +93,7 @@ function CoursePage() {
           </section>
         ) : null}
 
-        <div className="mt-12 flex flex-wrap gap-3">
+        <div className="mt-12 flex flex-wrap gap-3 print:hidden">
           <Button asChild>
             <Link to="/test">Otestuj sa</Link>
           </Button>
@@ -100,6 +101,8 @@ function CoursePage() {
             <Link to="/kurzy">Späť na kurzy</Link>
           </Button>
         </div>
+
+        <RelatedCourses current={course} />
 
         <p className="mt-10 border-t border-border/60 pt-4 text-center text-xs text-muted-foreground">
           © {year} {COPYRIGHT_HOLDER}. Obsah kurzu je chránený autorským zákonom č. 185/2015 Z. z.

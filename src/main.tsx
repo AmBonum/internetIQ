@@ -5,7 +5,13 @@ import { ConsentProvider } from "@/hooks/useConsent";
 import { routeTree } from "./routeTree.gen";
 import "./styles.css";
 
-const router = createRouter({ routeTree });
+const router = createRouter({
+  routeTree,
+  // Restore scroll position when navigating back/forward via the browser
+  // — needed so users returning from a course CTA land back on the same
+  // question card they were reading in the answer review.
+  scrollRestoration: true,
+});
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
