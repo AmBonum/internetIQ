@@ -1,5 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { TestFlow } from "@/components/quiz/TestFlow";
+import { lazy, Suspense } from "react";
+
+const TestFlow = lazy(() =>
+  import("@/components/quiz/TestFlow").then((m) => ({ default: m.TestFlow })),
+);
 
 export const Route = createFileRoute("/test")({
   head: () => ({
@@ -18,7 +22,15 @@ export const Route = createFileRoute("/test")({
 function TestPage() {
   return (
     <div className="min-h-screen bg-hero">
-      <TestFlow />
+      <Suspense
+        fallback={
+          <div className="flex min-h-[60vh] items-center justify-center text-sm text-muted-foreground">
+            Načítavam test…
+          </div>
+        }
+      >
+        <TestFlow />
+      </Suspense>
     </div>
   );
 }

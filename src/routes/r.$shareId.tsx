@@ -11,7 +11,6 @@ import { parseAnswers, type AnswerRecordPersisted } from "@/lib/quiz/schema";
 import { buildShareCaption } from "@/lib/share/intents";
 import { SocialShareGrid } from "@/components/quiz/SocialShareGrid";
 import { ManualShareCard } from "@/components/quiz/ManualShareCard";
-import { drawIgStoryToCanvas } from "@/lib/quiz/share-image";
 
 const AnswerReviewSection = lazy(() => import("@/components/quiz/AnswerReviewSection"));
 
@@ -160,6 +159,7 @@ export function SharePage({ shareId }: { shareId: string }) {
   async function handleDownloadStory() {
     setDownloadingImg(true);
     try {
+      const { drawIgStoryToCanvas } = await import("@/lib/quiz/share-image");
       const blob = await drawIgStoryToCanvas({
         score: attempt.final_score,
         percentile: attempt.percentile,

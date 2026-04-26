@@ -8,7 +8,6 @@ import {
   type ScoreResult,
 } from "@/lib/quiz/scoring";
 import { supabase } from "@/integrations/supabase/client";
-import { drawIgStoryToCanvas } from "@/lib/quiz/share-image";
 import { buildShareCaption } from "@/lib/share/intents";
 import { TRAP_SEEN_STORAGE_KEY } from "@/lib/data-trap/copy";
 import { useConsent } from "@/hooks/useConsent";
@@ -188,6 +187,7 @@ export function ResultsView({ result, answers, onRestart }: Props) {
   async function handleDownloadStory() {
     setDownloadingImg(true);
     try {
+      const { drawIgStoryToCanvas } = await import("@/lib/quiz/share-image");
       const blob = await drawIgStoryToCanvas({
         score: result.finalScore,
         percentile: result.percentile,
