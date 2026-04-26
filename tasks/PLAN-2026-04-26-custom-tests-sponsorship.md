@@ -148,6 +148,19 @@ update všetkých dotknutých stories.
 20. **Bundle impact**: Stripe.js sa dynamicky načíta iba na
     `/podpora` route (lazy import + Suspense). Main chunk zostáva
     pod 30 KB gzip.
+21. **Sponsor perks tiering** — keďže perks (Discord komunita, footer mention)
+    posúvajú právnu povahu z čistej donácie na *paid service*, ale am.bonum
+    nie je platca DPH, faktúra zostáva bez DPH s povinnou poznámkou.
+    Tier pravidlá:
+    - **Discord prístup**: pri akomkoľvek úspešnom one-off ≥ 5 € alebo
+      aktívnej mesačnej subscripcii. Manuálny email invite v MVP.
+    - **Footer mention** (samostatný consent flag `show_in_footer`):
+      gated cez SQL view `footer_sponsors` filtrujúci `total_eur >= 50`
+      (one-off cumulatív) ALEBO `monthly_eur >= 25` (active sub).
+      Anonymita zostáva default OFF; user musí zaškrtnúť explicitne pri
+      checkout-e.
+    - **Ad-free** je symbolický (žiadne reklamy v projekte) — disclose
+      v copy ale žiadny code-side.
 
 ---
 
@@ -267,21 +280,46 @@ zlyhajú na nepriamych voľbách.
 
 ## Open questions for product owner
 
-Treba zatvoriť **pred štartom E10.1** (legal arch doc). E7/E8/E9 môžu ísť dovtedy paralelne.
+> Status k 2026-04-27 — väčšina zatvorená; zostáva niekoľko volieb pre E11.
 
-1. **Je tvoja s.r.o. platcom DPH?** (Hranica 49 790 EUR/12m.) Ovplyvní to celý invoicing flow.
-2. **DIČ + IČ DPH s.r.o.** — potrebné pre Stripe účet a faktúry.
-3. **Sídlo s.r.o. + IBAN Tatra Banky** — potrebné na Stripe payout setup.
-4. **Geografický scope** — len SK donors, EÚ, alebo celosvetovo? (Pri svete = US sales tax, UK VAT post-Brexit; senior odporúčanie: **EÚ + SK only**.)
-5. **Existuje už Stripe účet pre s.r.o.?** Ak nie, registrácia zaberie 1–3 dni (Stripe overuje IČO, IBAN).
-6. **Označenie transakcie**: "Podpora vývoja Internet IQ Test" je OK, alebo radšej "Členský príspevok" / "Patreon-style podpora"? (Právne rozdielne — členský príspevok môže byť VAT-exempt v určitých prípadoch.)
-7. **Perks pre sponzorov?** (Napr. ad-free, early access kurzov, mention v footeri.) Senior odporúčanie: **žiadne perks** v MVP — udržuje to "donation" povahu jasnú a nehrozí *paid service* re-classification.
-8. **Mesačné levels** — 5/10/25 EUR, alebo aj 50/100? Kde je strop?
-9. **Maximálna jednorazová suma** — odporúčanie 500 EUR (pod AML threshold). Súhlasíš?
-10. **Verejný `/sponzori` zoznam** — má byť v MVP, alebo neskôr?
-11. **Refund policy** — full refund do 14 dní (ak právo na odstúpenie nezaniklo), alebo no refunds (s explicitným consent-om pri checkoute)?
-12. **Industry pack `passingThreshold`** — 70 % alebo 80 %? (Senior odporúčanie 70 %, lebo 80 % je príliš tvrdé pri 12-otázkovom packu.)
-13. **Pack autorské copyrights** — kto je "autor packu" (zákon č. 185/2015 Z.z.)? Ty osobne, alebo s.r.o.?
+### ✅ Confirmed company facts (am.bonum s. r. o.)
+
+| Pole | Hodnota | Zdroj |
+|---|---|---|
+| Obchodné meno | **am.bonum s. r. o.** | ORSR — Mestský súd Košice, Sro 55453/V |
+| IČO | **55 055 290** | ORSR výpis |
+| DIČ | **2121850005** | FinStat profile |
+| **IČ DPH (VAT ID)** | **❌ NEREGISTROVANÉ** | VIES check `SK2121850005` → invalid |
+| Sídlo | Škultétyho 1560/3, 052 01 Spišská Nová Ves | ORSR |
+| Konateľ | Ľubomír Volčko (samostatne) | ORSR |
+| Deň zápisu | 23.11.2022 | ORSR |
+| Veľkosť | mikropodnik (~4 440 € total assets, 2024) | FinStat |
+
+**Dôsledok pre invoicing**: faktúry **bez DPH** s povinnou poznámkou *„Nie sme platcami DPH podľa § 4 zákona č. 222/2004 Z.z."* — Stripe Invoicing podporuje toto cez „Tax exempt" status zákazníka + custom footer. Žiadny reverse charge, žiadny OSS register kým obrat zostáva pod 49 790 €/12m. **Treba sledovať obrat** — pri prekročení limitu nasleduje povinná registrácia v 30 dňoch.
+
+### ✅ Decisions confirmed by PO
+
+1. ~~**Je tvoja s.r.o. platcom DPH?**~~ ✅ **NIE** (overené cez VIES)
+2. ~~**DIČ + IČ DPH**~~ ✅ DIČ 2121850005, IČ DPH neexistuje
+3. **Sídlo s.r.o. + IBAN Tatra Banky** — sídlo overené, IBAN treba pri Stripe registrácii (E10 implementation)
+4. ~~**Geografický scope**~~ ✅ **SK + EÚ** (žiadne US/UK rohy)
+5. ~~**Existuje už Stripe účet?**~~ ✅ **NIE** — registrácia v rámci E10 implementation (1–3 dni verifikácia)
+7. ~~**Perks pre sponzorov?**~~ ✅ **ÁNO — selektívne v MVP**:
+   - **Ad-free** — symbolické (nemáme reklamy), žiadna implementácia
+   - **Discord komunita** — uzavretá Discord skupina pre sponzorov (manuálny invite cez email po platbe v MVP; Stripe → Discord role automation neskôr)
+   - **Mention v footri** — top tier sponzori (mesačný odber ≥ 25 €/mes alebo jednorazovo ≥ 50 €) sa zobrazia v `<SiteFooter>` na každej stránke; consent-gated cez `display_name IS NOT NULL`
+   - **Early access** ❌ NIE — nepotrebné komplikuje workflow
+   - **Custom badge** ❌ NIE — neúmerný overhead pre MVP
+9. ~~**Maximálna jednorazová suma 500 EUR**~~ ✅ **POTVRDENÉ** (výrazne pod AML hranicou 1 000 € per zákon č. 297/2008 Z.z. ⇒ žiadny KYC overhead)
+
+### 🟡 Open — treba ešte rozhodnúť pred E10.1 / E11.1
+
+6. **Označenie transakcie**: navrhujem **„Podpora rozvoja Internet IQ Test"** (jasne donation-style, ne-členský príspevok kvôli daňovej čistote pri ne-platcovi DPH). Súhlasíš?
+8. **Mesačné levels** — odporúčanie **5 / 10 / 25 EUR/mes** (žiadne 50+ — psychologicky drahé pre charity-style projekt). Súhlasíš?
+10. **Verejný `/sponzori` zoznam v MVP?** — odporúčanie **ÁNO** (sociálny dôkaz, low-effort, view-based, anonymita default OFF). Súhlasíš?
+11. **Refund policy** — odporúčanie **„No refunds, ale cancel anytime na monthly"** s explicit checkboxom pri checkoute *„Súhlasím so začatím okamžite a beriem na vedomie stratu práva na odstúpenie"* (per § 7 ods. 6 zákona č. 102/2014 Z.z.). Pri sporných prípadoch full refund manuálne cez Stripe (E11.5 runbook).
+12. **Industry pack `passingThreshold`** — odporúčanie **70 %**. Súhlasíš?
+13. **Pack autorské copyrights** — odporúčanie **am.bonum s. r. o.** ako autor (centralizovaná IP, neskôr ľahší licensing). Súhlasíš?
 
 ---
 
