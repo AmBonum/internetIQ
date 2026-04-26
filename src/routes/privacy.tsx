@@ -38,8 +38,8 @@ function PrivacyPage() {
             <p className="text-sm leading-relaxed text-muted-foreground">
               Prevádzkovateľom v zmysle čl. 4 ods. 7 GDPR je <strong>Lubomír Volčko</strong>,
               fyzická osoba, Košice, Slovensko. Kontakt vo veciach ochrany osobných údajov:{" "}
-              <a href="mailto:privacy@lvtesting.eu" className="underline underline-offset-2">
-                privacy@lvtesting.eu
+              <a href="mailto:segnities@gmail.com" className="underline underline-offset-2">
+                segnities@gmail.com
               </a>
               .
             </p>
@@ -240,6 +240,21 @@ function PrivacyPage() {
             <p className="pt-2 text-sm leading-relaxed text-muted-foreground">
               Žiadosti vybavujeme do 30 dní od doručenia (čl. 12 ods. 3 GDPR). Bezplatne, pokiaľ
               žiadosť nie je zjavne neopodstatnená alebo neprimeraná.
+            </p>
+            <p className="pt-2 text-sm leading-relaxed text-muted-foreground">
+              <strong>Self-service vymazanie:</strong> Keďže pokus o test je čisto anonymný a
+              neviazaný na e-mail, najrýchlejšia cesta k vymazaniu vlastného výsledku je{" "}
+              <strong>otvoriť svoj share link</strong> (napríklad <code>/r/abc123</code>) a kliknúť
+              na tlačidlo „Vymazať tento výsledok" v dolnej časti stránky. Riadok je okamžite
+              fyzicky vymazaný z databázy a share link prestane existovať. Bez emailovej
+              komunikácie, bez čakania.
+            </p>
+            <p className="pt-2 text-sm leading-relaxed text-muted-foreground">
+              <strong>Automatická retencia:</strong> Naša databáza má naplánovanú dennú úlohu
+              (Postgres pg_cron, runs 03:17 UTC), ktorá fyzicky vymaže záznamy staršie než 36
+              mesiacov. Doba sa neresetuje žiadnou aktivitou — počíta sa od pôvodného vytvorenia
+              pokusu. Tieto pravidlá sú zapísané priamo v migráciách (<code>20260426110000_*</code>)
+              a nie sú odporúčaním.
             </p>
           </section>
 

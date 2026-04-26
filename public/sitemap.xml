@@ -31,6 +31,12 @@
     <priority>0.3</priority>
   </url>
   <url>
+    <loc>https://internetiq.lvtesting.eu/kurzy/bec-pracovisko-fake-ceo</loc>
+    <lastmod>2026-04-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://internetiq.lvtesting.eu/kurzy/data-hygiene</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>monthly</changefreq>
@@ -43,7 +49,19 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://internetiq.lvtesting.eu/kurzy/investicne-podvody-krypto-ai</loc>
+    <lastmod>2026-04-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://internetiq.lvtesting.eu/kurzy/marketplace-bazos-podvody</loc>
+    <lastmod>2026-04-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://internetiq.lvtesting.eu/kurzy/romance-scams-catfishing</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>

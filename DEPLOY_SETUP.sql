@@ -157,7 +157,54 @@ BEFORE UPDATE ON public.attempts
 FOR EACH ROW EXECUTE FUNCTION public.forbid_attempt_score_changes();
 
 -- ============================================================================
--- HOTOVO! 
+-- Self-service delete + 36-month retention (matches privacy policy)
+-- ============================================================================
+
+DROP POLICY IF EXISTS attempts_anon_delete ON public.attempts;
+CREATE POLICY attempts_anon_delete
+  ON public.attempts
+  FOR DELETE
+  TO anon
+  USING (share_id IS NOT NULL);
+
+CREATE OR REPLACE FUNCTION public.purge_expired_attempts()
+RETURNS integer
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  purged_count integer;
+BEGIN
+  WITH deleted AS (
+    DELETE FROM public.attempts
+    WHERE created_at < (now() - interval '36 months')
+    RETURNING 1
+  )
+  SELECT count(*) INTO purged_count FROM deleted;
+  RETURN purged_count;
+END;
+$$;
+
+REVOKE ALL ON FUNCTION public.purge_expired_attempts() FROM anon, authenticated;
+
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM pg_extension WHERE extname = 'pg_cron') THEN
+    PERFORM cron.unschedule('purge_expired_attempts_daily')
+    WHERE EXISTS (
+      SELECT 1 FROM cron.job WHERE jobname = 'purge_expired_attempts_daily'
+    );
+    PERFORM cron.schedule(
+      'purge_expired_attempts_daily',
+      '17 3 * * *',
+      'SELECT public.purge_expired_attempts();'
+    );
+  END IF;
+END $$;
+
+-- ============================================================================
+-- HOTOVO!
 -- Teraz choď do Settings -> API a skopíruj si:
 --   - Project URL  (napr. https://abcdef.supabase.co)
 --   - anon public key

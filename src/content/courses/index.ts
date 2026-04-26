@@ -7,6 +7,9 @@ import { emailPhishingCourse } from "./email-phishing";
 import { vishingCourse } from "./vishing";
 import { marketplaceCourse } from "./marketplace-podvody";
 import { dataHygieneCourse } from "./data-hygiene";
+import { investmentScamsCourse } from "./investicne-podvody";
+import { romanceScamsCourse } from "./romance-scams";
+import { becWorkplaceCourse } from "./bec-pracovisko";
 
 export type { Course, CourseCategory, CourseSection, CourseDifficulty } from "./_schema";
 export { courseSchema } from "./_schema";
@@ -17,6 +20,9 @@ export const COURSES: Course[] = [
   vishingCourse,
   marketplaceCourse,
   dataHygieneCourse,
+  investmentScamsCourse,
+  romanceScamsCourse,
+  becWorkplaceCourse,
 ];
 
 const slugs = new Set<string>();

@@ -119,9 +119,9 @@ s najmenšou závislosťou**, posledné najväčšie content-heavy práce.
 22. E3.5   Per-question course CTA        (S,  P2)  ✅ Done
 23. E5.12  Sitemap + SEO                  (S,  P2) ✅ Done
 24. E5.13  Navigation links               (XS, P2) ✅ Done
-25. E5.8   Course #5 Investment scams     (M,  P3)
-26. E5.9   Course #6 Romance scams        (M,  P3)
-27. E5.10  Course #7 BEC pracovisko       (M,  P3)
+25. E5.8   Course #5 Investment scams     (M,  P3)  ✅ Done
+26. E5.9   Course #6 Romance scams        (M,  P3)  ✅ Done
+27. E5.10  Course #7 BEC pracovisko       (M,  P3)  ✅ Done
 ```
 
 E2, E3.4, E6.1 môžu ísť **paralelne** (rôzne komponenty, rôzne
@@ -216,9 +216,9 @@ zvolíš inak).
 | [E5.5](./stories/E5.5-course-email-phishing.md) | Kurz #2: Email phishing | M | P2 | ✅ Done | E5.1, E5.3 |
 | [E5.6](./stories/E5.6-course-vishing.md) | Kurz #3: Vishing (telefonické podvody) | M | P2 | ✅ Done | E5.1, E5.3 |
 | [E5.7](./stories/E5.7-course-marketplace.md) | Kurz #4: Marketplace & Bazoš podvody | M | P2 | ✅ Done | E5.1, E5.3 |
-| [E5.8](./stories/E5.8-course-investment-scams.md) | Kurz #5: Investičné podvody (krypto, AI) | M | P3 | ⛔ Blocked | E5.1, E5.3 |
-| [E5.9](./stories/E5.9-course-romance-scams.md) | Kurz #6: Romance scams | M | P3 | ⛔ Blocked | E5.1, E5.3 |
-| [E5.10](./stories/E5.10-course-bec-workplace.md) | Kurz #7: BEC pracovisko | M | P3 | ⛔ Blocked | E5.1, E5.3 |
+| [E5.8](./stories/E5.8-course-investment-scams.md) | Kurz #5: Investičné podvody (krypto, AI) | M | P3 | ✅ Done | E5.1, E5.3 |
+| [E5.9](./stories/E5.9-course-romance-scams.md) | Kurz #6: Romance scams | M | P3 | ✅ Done | E5.1, E5.3 |
+| [E5.10](./stories/E5.10-course-bec-workplace.md) | Kurz #7: BEC pracovisko | M | P3 | ✅ Done | E5.1, E5.3 |
 | [E5.11](./stories/E5.11-course-data-hygiene.md) | Kurz #8: Data hygiene (preventívny) | M | P2 | ✅ Done | E5.1, E5.3 |
 | [E5.12](./stories/E5.12-sitemap-seo.md) | Sitemap + SEO + JSON-LD | S | P2 | ✅ Done | E5.1 |
 | [E5.13](./stories/E5.13-navigation-links.md) | Footer + index page links | XS | P2 | ✅ Done | E5.2 |
