@@ -159,6 +159,12 @@ update všetkých dotknutých stories.
       (one-off cumulatív) ALEBO `monthly_eur >= 25` (active sub).
       Anonymita zostáva default OFF; user musí zaškrtnúť explicitne pri
       checkout-e.
+    - **Verejný `/sponzori` zoznam** — granularne nastaviteľný pre sponzora:
+      - `display_name TEXT` (povinné keď opt-in)
+      - `display_link TEXT NULLABLE` (voliteľný odkaz na vlastný web/profil — sanitizované, `https://` only)
+      - `display_message TEXT NULLABLE CHECK (length(display_message) <= 80)` (voliteľná krátka správa)
+      - DB rozšírenie pre `sponsors` schému (E10.2): pridať `display_link` + `display_message` k existujúcemu `display_name`
+      - `public_sponsors` view exponuje len tieto 3 + `created_at`
     - **Ad-free** je symbolický (žiadne reklamy v projekte) — disclose
       v copy ale žiadny code-side.
 
@@ -312,14 +318,21 @@ zlyhajú na nepriamych voľbách.
    - **Custom badge** ❌ NIE — neúmerný overhead pre MVP
 9. ~~**Maximálna jednorazová suma 500 EUR**~~ ✅ **POTVRDENÉ** (výrazne pod AML hranicou 1 000 € per zákon č. 297/2008 Z.z. ⇒ žiadny KYC overhead)
 
-### 🟡 Open — treba ešte rozhodnúť pred E10.1 / E11.1
+### ✅ All decisions confirmed by PO (2026-04-27 follow-up)
 
-6. **Označenie transakcie**: navrhujem **„Podpora rozvoja Internet IQ Test"** (jasne donation-style, ne-členský príspevok kvôli daňovej čistote pri ne-platcovi DPH). Súhlasíš?
-8. **Mesačné levels** — odporúčanie **5 / 10 / 25 EUR/mes** (žiadne 50+ — psychologicky drahé pre charity-style projekt). Súhlasíš?
-10. **Verejný `/sponzori` zoznam v MVP?** — odporúčanie **ÁNO** (sociálny dôkaz, low-effort, view-based, anonymita default OFF). Súhlasíš?
-11. **Refund policy** — odporúčanie **„No refunds, ale cancel anytime na monthly"** s explicit checkboxom pri checkoute *„Súhlasím so začatím okamžite a beriem na vedomie stratu práva na odstúpenie"* (per § 7 ods. 6 zákona č. 102/2014 Z.z.). Pri sporných prípadoch full refund manuálne cez Stripe (E11.5 runbook).
-12. **Industry pack `passingThreshold`** — odporúčanie **70 %**. Súhlasíš?
-13. **Pack autorské copyrights** — odporúčanie **am.bonum s. r. o.** ako autor (centralizovaná IP, neskôr ľahší licensing). Súhlasíš?
+3. ~~**IBAN Tatra Banky**~~ ✅ **POTVRDENÝ** — zaznamenané pre Stripe registráciu, **nezapísané v repe** (Stripe dashboard / CF env vars iba)
+6. ~~**Označenie transakcie**~~ ✅ **„Podpora rozvoja Internet IQ Test"** (donation-style copy v UI; faktúrna položka „Podpora rozvoja Internet IQ Test — {oneoff|monthly}")
+8. ~~**Mesačné levels**~~ ✅ **5 / 10 / 25 EUR/mes**
+10. ~~**Verejný `/sponzori` zoznam v MVP**~~ ✅ **ÁNO** + **každý sponzor si zvolí čo zobraziť** — granularne:
+    - `display_name` (povinné ak chce byť na liste)
+    - `display_link` (voliteľné — odkaz na vlastný web / profil)
+    - `display_message` (voliteľné — krátka správa, max 80 znakov)
+    - **Anonymita default OFF** — opt-in checkbox pri checkoute
+11. ~~**Refund policy**~~ ✅ **„No refunds + cancel anytime na monthly"** — explicit checkbox pri checkoute per § 7 ods. 6 zákona č. 102/2014 Z.z. Sporné prípady manuálne cez Stripe (E11.5 runbook).
+12. ~~**Industry pack `passingThreshold`**~~ ✅ **70 %** — vyhovenie ⇒ „Vyhovuje pre {industry}" badge v ResultsView, žiadny hard pass/fail.
+13. ~~**Pack copyrights**~~ ✅ **am.bonum s. r. o.** ako autor (centralizovaná IP per zákon č. 185/2015 Z. z.)
+
+**Všetkých 13 otázok zatvorených.** Sponsorship track môže ísť do E10.1 implementation.
 
 ---
 
