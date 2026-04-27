@@ -62,22 +62,34 @@ update všetkých dotknutých stories.
    zoznam z banku — autor packu manuálne vyberie 12-20 otázok ktoré
    najlepšie pasujú industry. **Nemixujeme heuristikou**, lebo
    senior content review je dôležitejší ako automatika.
-3. **Manuálny builder** (`/test/builder`) je čisto klientský picker —
-   žiadne ukladanie do DB pokým user neklikne "Zdieľaj zostavu". Vtedy
-   `POST /api/test-sets` (cez Supabase RPC) vytvorí riadok v `test_sets`
-   tabuľke s `set_id` UUID a `question_ids JSONB[]`. Share URL:
-   `/test/zostava/{set_id}`. RLS: anon SELECT podľa set_id, anon INSERT.
-4. **Sharing builder cez URL bez DB** ako fallback — base64-encoded
-   question IDs v query string `/test/builder?ids=eyJxIjpbInAtc21zL...`
-   pre malé sady (<10 otázok), inak DB.
-5. **TEST_SIZE flexibility** — pack autori si volia 8–25 otázok, builder
-   user 5–25. `<5` = málo signálu, `>25` = unija fatigue.
+3. **Composer** (`/test/zostav`) je zjednotený nástroj pre firmy — namiesto
+   striktne oddeleného „manuálneho buildera" a „industry pack" toku.
+   Composer umožňuje:
+   - **Pre-load 1-N industry packov** ako východisko (multi-select chips)
+   - **Pridať / odobrať jednotlivé otázky** z banky filtrovanej podľa kategórie / obtiažnosti / textu
+   - **Nastaviť vlastný `passing_threshold`** (slider 50–90, default 70)
+   - **Nastaviť max počet otázok** (slider 5–50, default 15)
+   - **Pomenovať zostavu** (voliteľné `creator_label`, napr. „E-shop Q1 2026 onboarding")
+   Submit → `POST /api/test-sets` → uloží do `test_sets` → redirect
+   `/test/zostava/{set_id}`. Žiadne DB write pokiaľ user klikne „Zdieľať
+   zostavu" alebo „Spustiť" pre seba.
+4. **Sharing composeru cez URL bez DB** ako fallback — base64-encoded
+   payload `{ ids, threshold, max }` v query string
+   `/test/zostav?config=eyJpZHMiO...` pre malé sady (≤10 otázok), inak DB.
+5. **TEST_SIZE flexibility** — pack autori si volia 8–25 otázok ako default
+   pre direct `/test/firma/{slug}` flow. Composer umožňuje **5–50 otázok**.
+   Hranica 50 otázok: nad ňou test trvá > 7 minút čo cílovo vyše únosnosť.
 6. **Honeypot ratio per-pack** — niektoré packy (napr. eshop) majú
    vyšší podiel legit otázok než štandardné 27 % (4/15 v base teste),
-   aby učili dôveryhodnosť. Nastaviteľné v pack manifeste.
-7. **Scoring je rovnaké** — všetky packy + builder testy idú cez
-   `computeScore()` bez zmeny. Pack-level "Vyhovuje pre {industry}"
-   badge sa zobrazuje iba ak `finalScore >= pack.passingThreshold`.
+   aby učili dôveryhodnosť. Nastaviteľné v pack manifeste. Composer ukáže
+   aktuálny pomer pre composed-up zostavu ako informáciu (žiadny enforced
+   limit — firma má rozhodnutie).
+7. **Scoring je rovnaké** — všetky packy + composer zostavy idú cez
+   `computeScore()` bez zmeny. „Vyhovuje pre {label}" badge sa zobrazuje:
+   - V `/test/firma/{slug}` flow ak `finalScore >= pack.passingThreshold`
+   - V `/test/zostava/{set_id}` flow ak `finalScore >= testSet.passing_threshold`
+   - `passingThreshold` v pack manifeste je teda **default sugescia**, nie
+     enforced — composer ju môže prepisať per-zostava.
 
 ### Sponsorship
 
@@ -148,25 +160,29 @@ update všetkých dotknutých stories.
 20. **Bundle impact**: Stripe.js sa dynamicky načíta iba na
     `/podpora` route (lazy import + Suspense). Main chunk zostáva
     pod 30 KB gzip.
-21. **Sponsor perks tiering** — keďže perks (Discord komunita, footer mention)
-    posúvajú právnu povahu z čistej donácie na *paid service*, ale am.bonum
-    nie je platca DPH, faktúra zostáva bez DPH s povinnou poznámkou.
-    Tier pravidlá:
-    - **Discord prístup**: pri akomkoľvek úspešnom one-off ≥ 5 € alebo
-      aktívnej mesačnej subscripcii. Manuálny email invite v MVP.
+21. **Sponsor recognition** — žiadne paid-service perks, len verejné
+    poďakovanie (donation povaha zostáva čistá, právna komplikácia minimálna):
     - **Footer mention** (samostatný consent flag `show_in_footer`):
       gated cez SQL view `footer_sponsors` filtrujúci `total_eur >= 50`
       (one-off cumulatív) ALEBO `monthly_eur >= 25` (active sub).
-      Anonymita zostáva default OFF; user musí zaškrtnúť explicitne pri
-      checkout-e.
-    - **Verejný `/sponzori` zoznam** — granularne nastaviteľný pre sponzora:
+      Anonymita default OFF; user musí explicitne zaškrtnúť.
+    - **Verejný `/sponzori` zoznam** — granularne nastaviteľný:
       - `display_name TEXT` (povinné keď opt-in)
-      - `display_link TEXT NULLABLE` (voliteľný odkaz na vlastný web/profil — sanitizované, `https://` only)
-      - `display_message TEXT NULLABLE CHECK (length(display_message) <= 80)` (voliteľná krátka správa)
-      - DB rozšírenie pre `sponsors` schému (E10.2): pridať `display_link` + `display_message` k existujúcemu `display_name`
+      - `display_link TEXT NULLABLE` (voliteľný `https://` link)
+      - `display_message TEXT NULLABLE` (max 80 znakov)
       - `public_sponsors` view exponuje len tieto 3 + `created_at`
-    - **Ad-free** je symbolický (žiadne reklamy v projekte) — disclose
-      v copy ale žiadny code-side.
+    - **Transparentnosť ako náhrada perkov**: namiesto Discord komunity
+      pridávame `/o-projekte` (E11.6) — explicitne vysvetľuje cieľ,
+      prečo sponsorship a nie členstvo, kam idú peniaze. Plus `/zmeny`
+      (E11.7) — verejný changelog so deploy históriou.
+22. **Project transparency** — sponzori (a každý návštevník) musí vedieť:
+    - **Cieľ projektu**: edukácia o digitálnych podvodoch, free, anonymne
+    - **Prečo sponsorship a nie platený model**: zachovanie donation-povahy,
+      žiadny paywall, žiadne perks ktoré by zmenili právnu klasifikáciu
+    - **Kam idú peniaze**: Cloudflare hosting (~5 €/mes), Supabase (~25 €/mes),
+      Stripe poplatky (~3 % z donations), tvorba nového obsahu, audit a údržba
+    - **Deploy história / changelog** so date + version + changes summary,
+      auto-generovaný z git tagov alebo `CHANGELOG.md`
 
 ---
 
@@ -188,8 +204,8 @@ byť pred UI. Legal docs musia byť pred go-live sponzorstva.
 8.  E7.4   Industry packs batch C (5 packs)    (M,  P3)
 9.  E7.5   /test/firma/$slug route + SEO       (M,  P1)
 10. E7.6   /test/firma index discovery page    (S,  P2)
-11. E8.1   test_sets DB migration + RLS        (XS, P2)
-12. E8.2   /test/builder picker UI             (M,  P2)
+11. E8.1   test_sets DB migration + RLS        (S,  P2)  ← schema rozšírená o threshold/max/creator_label
+12. E8.2   /test/zostav composer UI            (L,  P2)  ← pack-preload + ad-hoc picker + threshold + max
 13. E8.3   /test/zostava/$id share route       (S,  P2)
 
 === Sponsorship track ===
@@ -203,6 +219,9 @@ byť pred UI. Legal docs musia byť pred go-live sponzorstva.
 21. E11.3  /sponzori public list page          (S,  P2)
 22. E11.4  Footer link + cancellation flow     (XS, P2)
 23. E11.5  Refund + AML edge cases playbook    (S,  P3)
+24. E11.6  /o-projekte presentation page       (S,  P1)
+25. E11.7  /zmeny changelog / deploy history   (S,  P2)
+26. E11.8  Transactional email infra           (S,  P1)
 ```
 
 E9.1–E9.4 môžu ísť paralelne (rôzne otázky, žiadny code conflict).
@@ -225,13 +244,17 @@ zlyhajú na nepriamych voľbách.
 | [E7.5](./stories/E7.5-firma-route.md) | `/test/firma/$slug` route + SEO + Quiz JSON-LD | M | P1 | ⛔ Blocked | E7.1 |
 | [E7.6](./stories/E7.6-firma-index.md) | `/test/firma` discovery page | S | P2 | ⛔ Blocked | E7.5 |
 
-### Epic 8 — Manual test builder
+### Epic 8 — Composer (firmy zostavujú vlastné testy)
+
+> Pôvodne plánovaný „Manual test builder". Po review-e PO sa rozšíril na
+> plnohodnotný composer pre firmy: pack pre-load + ad-hoc otázky + custom
+> threshold + max 50 otázok.
 
 | story | title | effort | priority | status | deps |
 |---|---|---|---|---|---|
-| [E8.1](./stories/E8.1-test-sets-migration.md) | `test_sets` table migration + RLS + retention | XS | P2 | 🟡 Ready | — |
-| [E8.2](./stories/E8.2-builder-picker-ui.md) | `/test/builder` filter + picker + start | M | P2 | ⛔ Blocked | E8.1 |
-| [E8.3](./stories/E8.3-zostava-route.md) | `/test/zostava/$id` shareable saved set | S | P2 | ⛔ Blocked | E8.1, E8.2 |
+| [E8.1](./stories/E8.1-test-sets-migration.md) | `test_sets` migration + RLS (extended schema) | S | P2 | 🟡 Ready | — |
+| [E8.2](./stories/E8.2-builder-picker-ui.md) | `/test/zostav` composer UI (pack-preload + picker + threshold) | L | P2 | ⛔ Blocked | E8.1, E7.1 |
+| [E8.3](./stories/E8.3-zostava-route.md) | `/test/zostava/$id` shareable composer set | S | P2 | ⛔ Blocked | E8.1, E8.2 |
 
 ### Epic 9 — Question bank +100
 
@@ -261,6 +284,9 @@ zlyhajú na nepriamych voľbách.
 | [E11.3](./stories/E11.3-sponzori-list.md) | `/sponzori` public donor list (consent-gated) | S | P2 | ⛔ Blocked | E11.1 |
 | [E11.4](./stories/E11.4-footer-cancel-flow.md) | Footer link + Stripe Customer Portal cancel | XS | P2 | ⛔ Blocked | E11.1 |
 | [E11.5](./stories/E11.5-refund-aml-playbook.md) | Refund SOP + AML threshold playbook | S | P3 | ⛔ Blocked | E11.1 |
+| [E11.6](./stories/E11.6-o-projekte-page.md) | `/o-projekte` presentation page (cieľ + transparentnosť) | S | P1 | ⛔ Blocked | E10.5 |
+| [E11.7](./stories/E11.7-changelog-page.md) | `/zmeny` deploy history / changelog | S | P2 | 🟡 Ready | — |
+| [E11.8](./stories/E11.8-email-infra.md) | Transactional email infra (Resend / SES) | S | P1 | ⛔ Blocked | E10.4 |
 
 **Total: 22 stories** (6 + 3 + 4 + 5 + 4).
 
@@ -310,12 +336,12 @@ zlyhajú na nepriamych voľbách.
 3. **Sídlo s.r.o. + IBAN Tatra Banky** — sídlo overené, IBAN treba pri Stripe registrácii (E10 implementation)
 4. ~~**Geografický scope**~~ ✅ **SK + EÚ** (žiadne US/UK rohy)
 5. ~~**Existuje už Stripe účet?**~~ ✅ **NIE** — registrácia v rámci E10 implementation (1–3 dni verifikácia)
-7. ~~**Perks pre sponzorov?**~~ ✅ **ÁNO — selektívne v MVP**:
+7. ~~**Perks pre sponzorov?**~~ ✅ **Minimálne v MVP** (Discord vyradený PO 2026-04-27):
    - **Ad-free** — symbolické (nemáme reklamy), žiadna implementácia
-   - **Discord komunita** — uzavretá Discord skupina pre sponzorov (manuálny invite cez email po platbe v MVP; Stripe → Discord role automation neskôr)
    - **Mention v footri** — top tier sponzori (mesačný odber ≥ 25 €/mes alebo jednorazovo ≥ 50 €) sa zobrazia v `<SiteFooter>` na každej stránke; consent-gated cez `display_name IS NOT NULL`
-   - **Early access** ❌ NIE — nepotrebné komplikuje workflow
-   - **Custom badge** ❌ NIE — neúmerný overhead pre MVP
+   - **`/sponzori` zoznam** — granulárny per-sponsor display
+   - **Discord** ❌ vyradený — žiadna komunita; namiesto toho transparentnosť cez novú `/o-projekte` stránku (E11.6)
+   - **Early access / custom badge** ❌ NIE
 9. ~~**Maximálna jednorazová suma 500 EUR**~~ ✅ **POTVRDENÉ** (výrazne pod AML hranicou 1 000 € per zákon č. 297/2008 Z.z. ⇒ žiadny KYC overhead)
 
 ### ✅ All decisions confirmed by PO (2026-04-27 follow-up)
