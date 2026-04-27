@@ -1697,6 +1697,462 @@ export const QUESTIONS: Question[] = [
     explanation:
       "Side-load APK = malware. Banky NIKDY neinštalujú appky mimo oficiálnych obchodov.",
   },
+
+  // ============ E9.1 — +30 LEGIT URL HONEYPOTS ============
+  // Cieľ: učiť sa rozoznať dôveryhodné URL od scam-ových klonov.
+  // Severity „minor" pri zlej (paranoidnej) odpovedi — pereverenost je menšie zlo než klikanie všetkého.
+
+  // ----- Banking (10) -----
+  {
+    id: "h-url-bank-1",
+    category: "honeypot",
+    difficulty: "medium",
+    prompt: "Banka SLSP ti pošle link na internet banking. Vyzerá takto. Otvoríš?",
+    visual: { kind: "url", url: "https://moja.slsp.sk/login", secure: true },
+    options: [
+      ok("a", "Áno — moja.slsp.sk je oficiálna doména SLSP"),
+      bad("b", "Nie — divný subdoménový tvar", "minor"),
+    ],
+    explanation:
+      "Subdoména `moja.slsp.sk` patrí Slovenskej sporiteľni — používajú ju pre osobné internet banking. Doména druhého rádu (`slsp.sk`) je tá, ktorá určuje vlastníka. Subdomény ako moja/online/m sú normálny pattern.",
+  },
+  {
+    id: "h-url-bank-2",
+    category: "honeypot",
+    difficulty: "medium",
+    prompt: "Aj toto vyzerá ako ČSOB internet banking. Otvoríš?",
+    visual: { kind: "url", url: "https://m.csob.sk", secure: true },
+    options: [
+      ok("a", "Áno — `m` je mobilná verzia, doména csob.sk je legit"),
+      bad("b", "Nie — `m.` je podozrivé", "minor"),
+    ],
+    explanation:
+      "Prefix `m.` (mobile) je bežný pattern u veľkých webov — m.facebook.com, m.alza.sk, m.csob.sk. Doména druhého rádu zostáva pravá: csob.sk patrí ČSOB.",
+  },
+  {
+    id: "h-url-bank-3",
+    category: "honeypot",
+    difficulty: "hard",
+    prompt: "Tatra banka má B2B portál. URL vyzerá takto.",
+    visual: { kind: "url", url: "https://b2b.tatrabanka.sk/login", secure: true },
+    options: [
+      ok("a", "Legit — `b2b.tatrabanka.sk` je oficiálna firemná zóna"),
+      bad("b", "Skoro phishing, neotváram", "minor"),
+    ],
+    explanation:
+      "Tatra banka má samostatné subdomény pre retail a B2B segment. `b2b.tatrabanka.sk` je legit — over si HTTPS certifikát (vlastník: Tatra banka, a.s.).",
+  },
+  {
+    id: "h-url-bank-4",
+    category: "honeypot",
+    difficulty: "hard",
+    prompt: "Poštová banka prešla rebrandom. Kliknutie na 365.bank — risk?",
+    visual: { kind: "url", url: "https://365.bank", secure: true },
+    options: [
+      ok("a", "Legit — `.bank` je regulovaný TLD, 365.bank je oficiálne"),
+      bad("b", "TLD `.bank` znie ako scam, neklikám", "minor"),
+    ],
+    explanation:
+      "TLD `.bank` je gTLD spravovaná organizáciou fTLD Registry Services s prísnymi požiadavkami — DNSSEC povinný, len overené finančné inštitúcie. Poštová banka je pod brandom 365.bank od 2021. Bezpečnejšie než `.com` doména.",
+  },
+  {
+    id: "h-url-bank-5",
+    category: "honeypot",
+    difficulty: "medium",
+    prompt: "VÚB má internet banking. Vidíš túto URL — bezpečné?",
+    visual: { kind: "url", url: "https://ib.vub.sk", secure: true },
+    options: [
+      ok("a", "Áno — `ib.vub.sk` je oficiálny VÚB internet banking"),
+      bad("b", "Krátka URL je podozrivá", "minor"),
+    ],
+    explanation:
+      "Krátkosť URL nie je signál phishingu. `ib.` (Internet Banking) je tradičná subdoména VÚB. Doména druhého rádu vub.sk patrí VÚB banke.",
+  },
+  {
+    id: "h-url-bank-6",
+    category: "honeypot",
+    difficulty: "hard",
+    prompt: "Národná banka Slovenska — pozeráš sa na zoznam regulovaných subjektov.",
+    visual: {
+      kind: "url",
+      url: "https://www.nbs.sk/sk/dohlad-nad-financnym-trhom/zoznamy",
+      secure: true,
+    },
+    options: [
+      ok("a", "Legit — nbs.sk je doména NBS"),
+      bad("b", "URL je dlhá, vyzerá podozrivo", "minor"),
+    ],
+    explanation:
+      "Dlhá path nie je signál — naopak, čím viac štruktúrovaných ciest (/sk/dohlad/...), tým reálnejší obsahový web. NBS používa dlhšie URL pre kategorizáciu obsahu.",
+  },
+  {
+    id: "h-url-bank-7",
+    category: "honeypot",
+    difficulty: "medium",
+    prompt: "George (Erste) bankovníctvo na webe. Real?",
+    visual: { kind: "url", url: "https://georgebanking.com", secure: true },
+    options: [
+      ok("a", "Áno — George je oficiálna platforma Erste / SLSP"),
+      bad("b", "Anglická doména na slovenskú banku, nedôverujem", "minor"),
+    ],
+    explanation:
+      "George je multi-país platform Erste Group; používaný v SK pod SLSP, v ČR pod Českou spořitelnou. Doména `.com` je medzinárodná, ale brand je konzistentný a SLSP tam linkuje z slsp.sk.",
+  },
+  {
+    id: "h-url-bank-8",
+    category: "honeypot",
+    difficulty: "medium",
+    prompt: "ČSOB pošle e-mail s linkom na podporu. URL je takáto.",
+    visual: { kind: "url", url: "https://podpora.csob.sk/kontakt", secure: true },
+    options: [
+      ok("a", "Legit — subdoména podpora.csob.sk je oficiálna"),
+      bad("b", "Veľa subdomén = podozrivé", "minor"),
+    ],
+    explanation:
+      "Banky používajú množstvo subdomén pre rôzne sekcie (podpora, prihlasenie, fakturacia). Vlastnícky určujúca časť je doména druhého rádu — csob.sk.",
+  },
+  {
+    id: "h-url-bank-9",
+    category: "honeypot",
+    difficulty: "hard",
+    prompt: "Prima banka má krátky brand subdoménový tvar. Si si istý?",
+    visual: { kind: "url", url: "https://prima.primabanka.sk", secure: true },
+    options: [
+      ok("a", "Áno — `prima.primabanka.sk` je legitímna"),
+      bad("b", "Duplikácia slova `prima` znie ako klon", "minor"),
+    ],
+    explanation:
+      "Subdoména pre internet banking sa náhodou volá rovnako ako brand. Doména druhého rádu primabanka.sk je vlastnícky kľúč — patrí Prima banke. Žiadny klon.",
+  },
+  {
+    id: "h-url-bank-10",
+    category: "honeypot",
+    difficulty: "hard",
+    prompt: "ČSOB potvrdenie cez SMS — link s tracking ID. Otvoríš?",
+    visual: {
+      kind: "url",
+      url: "https://www.csob.sk/transakcia/0193af-confirm",
+      secure: true,
+    },
+    options: [
+      ok("a", "Áno — doména csob.sk + HTTPS + sensible path"),
+      bad("b", "Náhodne vyzerajúce ID v URL je suspect", "minor"),
+    ],
+    explanation:
+      "Tracking ID-čká v path sú normálny pattern u akejkoľvek transakčnej stránky. Dôležitá je doména druhého rádu (csob.sk) a HTTPS s validnou cert.",
+  },
+
+  // ----- E-shop / komerčné (10) -----
+  {
+    id: "h-url-shop-1",
+    category: "honeypot",
+    difficulty: "medium",
+    prompt: "Alza objednávka — link na sledovanie. Real?",
+    visual: {
+      kind: "url",
+      url: "https://www.alza.sk/objednavka/AB12345678",
+      secure: true,
+    },
+    options: [
+      ok("a", "Áno — alza.sk + cesta /objednavka/ je legit"),
+      bad("b", "Náhodný kód v URL znie ako scam", "minor"),
+    ],
+    explanation:
+      "Alza používa formát `/objednavka/{order-id}` na tracking page. Doména alza.sk je vlastnícky kľúč. Také URL prichádzajú aj v potvrdzovacích e-mailoch.",
+  },
+  {
+    id: "h-url-shop-2",
+    category: "honeypot",
+    difficulty: "medium",
+    prompt: "Mobilná verzia Alzy. Bezpečné?",
+    visual: { kind: "url", url: "https://m.alza.sk/akcia", secure: true },
+    options: [
+      ok("a", "Áno — m. je mobilná subdoména Alzy"),
+      bad("b", "`m.` prefix znie phishingovo", "minor"),
+    ],
+    explanation:
+      "Pre mobilné prostredie e-shopy používajú m. subdoménu (alebo respond responsive design na hlavnej doméne). Alza má m.alza.sk, mall m.mall.sk, atď. Žiadny scam.",
+  },
+  {
+    id: "h-url-shop-3",
+    category: "honeypot",
+    difficulty: "easy",
+    prompt: "Heureka link na porovnanie cien.",
+    visual: {
+      kind: "url",
+      url: "https://www.heureka.sk/iphone-15-pro/recenzie/",
+      secure: true,
+    },
+    options: [
+      ok("a", "Legit — heureka.sk je porovnávač cien"),
+      bad("b", "Recenzia URL znie spammy", "minor"),
+    ],
+    explanation:
+      "Heureka.sk patrí Heureka.cz a.s. — najznámejší cenový porovnávač v ČR/SK. Cesty `/produkt/recenzie/` sú normálny pattern.",
+  },
+  {
+    id: "h-url-shop-4",
+    category: "honeypot",
+    difficulty: "medium",
+    prompt: "Slovenská pošta — sledovanie balíka cez ich web.",
+    visual: {
+      kind: "url",
+      url: "https://tandt.posta.sk/sledovanie/RR123456789SK",
+      secure: true,
+    },
+    options: [
+      ok("a", "Áno — tandt.posta.sk je oficiálny tracking"),
+      bad("b", "`tandt` znie ako náhodný hack", "minor"),
+    ],
+    explanation:
+      'Skratka tandt znamená „Track and Trace" — interná subdoména Slovenskej pošty pre sledovanie zásielok. Doména druhého rádu posta.sk patrí Slovenskej pošte. Tracking ID v path je štandardný.',
+  },
+  {
+    id: "h-url-shop-5",
+    category: "honeypot",
+    difficulty: "medium",
+    prompt: "Notino voucher uplatnenie — link z e-mailu.",
+    visual: {
+      kind: "url",
+      url: "https://www.notino.sk/voucher/redeem/X9K2-PMNT",
+      secure: true,
+    },
+    options: [
+      ok("a", "Legit — notino.sk + cesta voucher/redeem"),
+      bad("b", "Voucher kód v URL znie ako pasca", "minor"),
+    ],
+    explanation:
+      "Notino (czech krásová e-shop) má SK doménu notino.sk, voucher/redeem path s krátkym kódom je normálny commerce pattern.",
+  },
+  {
+    id: "h-url-shop-6",
+    category: "honeypot",
+    difficulty: "hard",
+    prompt: "Mall.sk pošle linka po reklamácii.",
+    visual: {
+      kind: "url",
+      url: "https://account.mall.sk/reklamacie/12345",
+      secure: true,
+    },
+    options: [
+      ok("a", "Áno — account. je legit subdoména Mall.sk"),
+      bad("b", "Reklamačná URL by mala byť na hlavnej doméne", "minor"),
+    ],
+    explanation:
+      "Veľké e-shopy (Mall, Alza, Notino) majú samostatnú `account.` subdoménu pre user-area (objednávky, reklamácie, profil). To je dobrá architektonická prax — nie indikátor phishingu.",
+  },
+  {
+    id: "h-url-shop-7",
+    category: "honeypot",
+    difficulty: "medium",
+    prompt: "Dr. Max e-shop pre lekárenský online predaj.",
+    visual: { kind: "url", url: "https://eshop.drmax.sk/akcia", secure: true },
+    options: [
+      ok("a", "Legit — drmax.sk patrí Dr. Max lekárňam"),
+      bad("b", "Krátka doména na zdravotnícku firmu znie suspect", "minor"),
+    ],
+    explanation:
+      "Dr. Max (sieť lekární) má v SR doménu drmax.sk a e-shop subdoménu eshop.drmax.sk. SK lekárenské e-shopy potrebujú licenciu od ŠÚKL — overiteľné na sukl.sk.",
+  },
+  {
+    id: "h-url-shop-8",
+    category: "honeypot",
+    difficulty: "medium",
+    prompt: "Zalando po objednávke pošle tracking link.",
+    visual: {
+      kind: "url",
+      url: "https://www.zalando.sk/myaccount/orders/123456",
+      secure: true,
+    },
+    options: [
+      ok("a", "Áno — zalando.sk je legit, myaccount je user area"),
+      bad("b", "Anglické slovo `myaccount` v SK doméne podozrivé", "minor"),
+    ],
+    explanation:
+      "Zalando je nemecký e-shop s viacjazyčnými verziami. Anglické path slová (myaccount, orders) sú interné a nemajú vplyv na vlastníctvo domény. zalando.sk patrí Zalando SE.",
+  },
+  {
+    id: "h-url-shop-9",
+    category: "honeypot",
+    difficulty: "hard",
+    prompt: "Booking.com potvrdenie rezervácie — link.",
+    visual: {
+      kind: "url",
+      url: "https://secure.booking.com/myreservations.sk.html?aid=123",
+      secure: true,
+    },
+    options: [
+      ok("a", "Legit — secure.booking.com s SK lokalizáciou"),
+      bad("b", "`?aid=123` query param znie ako tracking scam", "minor"),
+    ],
+    explanation:
+      "Booking používa `secure.booking.com` pre transakčné stránky. `aid=` je affiliate ID (kto poslal traffic) — bežný komercia pattern, žiadny phishing.",
+  },
+  {
+    id: "h-url-shop-10",
+    category: "honeypot",
+    difficulty: "easy",
+    prompt: "Kvet od Heureka.sk linkuje recenzie produktu.",
+    visual: {
+      kind: "url",
+      url: "https://obchody.heureka.sk/alza-sk/recenzie/",
+      secure: true,
+    },
+    options: [
+      ok("a", "Legit — Heureka má `obchody.` subdoménu pre overených predajcov"),
+      bad("b", "Sub-subdoména je suspect", "minor"),
+    ],
+    explanation:
+      "Heureka má `obchody.heureka.sk` subdoménu kde sú profily overených e-shopov. Tieto stránky sú regulované — pred zverejnením Heureka manuálne overuje oprávnenosť.",
+  },
+
+  // ----- eGov / štátne (10) -----
+  {
+    id: "h-url-gov-1",
+    category: "honeypot",
+    difficulty: "medium",
+    prompt: "Slovensko.sk ti pošle notifikáciu o doručenke v elektronickej schránke.",
+    visual: {
+      kind: "url",
+      url: "https://www.slovensko.sk/sk/elektronicka-schranka",
+      secure: true,
+    },
+    options: [
+      ok("a", "Legit — slovensko.sk je centrálny portál verejnej správy"),
+      bad("b", "Štátny web by mal mať .gov.sk doménu", "minor"),
+    ],
+    explanation:
+      "Slovensko.sk je oficiálny ústredný portál SR (NASES, gov-grade hosting). Doména `.sk` (nie `.gov.sk`) je v SR pravidelná aj pre štátne stránky vyšších úrovní.",
+  },
+  {
+    id: "h-url-gov-2",
+    category: "honeypot",
+    difficulty: "medium",
+    prompt: "Finančná správa — portál pre podávanie daňových priznaní.",
+    visual: {
+      kind: "url",
+      url: "https://podania.financnasprava.sk/dorucenia",
+      secure: true,
+    },
+    options: [
+      ok("a", "Legit — podania.financnasprava.sk je oficiálny portál"),
+      bad("b", "Doména je dlhá a chýba .gov", "minor"),
+    ],
+    explanation:
+      "FS používa `financnasprava.sk` pre informačnú časť a `podania.financnasprava.sk` pre transakčný portál (PFS). HTTPS certifikát overuje vlastníka — Finančné riaditeľstvo SR.",
+  },
+  {
+    id: "h-url-gov-3",
+    category: "honeypot",
+    difficulty: "medium",
+    prompt: "Sociálna poisťovňa — portál.",
+    visual: { kind: "url", url: "https://www.socpoist.sk/portal", secure: true },
+    options: [
+      ok("a", "Legit — socpoist.sk je SP"),
+      bad("b", "Skratka domény vyzerá ako klon", "minor"),
+    ],
+    explanation:
+      "Sociálna poisťovňa má historickú doménu socpoist.sk. Zaužívané skratky štátnych inštitúcií sú legit, kým doménu vlastní príslušná inštitúcia (overiteľné v SK-NIC whois).",
+  },
+  {
+    id: "h-url-gov-4",
+    category: "honeypot",
+    difficulty: "hard",
+    prompt: "MV SR — kontrola pokút online.",
+    visual: { kind: "url", url: "https://www.minv.sk/?platby-pokuty", secure: true },
+    options: [
+      ok("a", "Legit — minv.sk je Ministerstvo vnútra SR"),
+      bad("b", "Query string s pokútami znie ako pasca", "minor"),
+    ],
+    explanation:
+      "minv.sk je oficiálna doména Ministerstva vnútra. Query string `?platby-pokuty` je SEO redirect na sekciu o platbe pokút — žiadny scam. Reálnu výzvu o pokutu však polícia neposiela cez SMS link, vždy poštou.",
+  },
+  {
+    id: "h-url-gov-5",
+    category: "honeypot",
+    difficulty: "medium",
+    prompt: "ÚVZ SR — verejné zdravotníctvo, oznam.",
+    visual: { kind: "url", url: "https://www.uvzsr.sk/oznamy/2026", secure: true },
+    options: [
+      ok("a", "Legit — uvzsr.sk patrí Úradu verejného zdravotníctva"),
+      bad("b", "Skratka uvzsr je suspect", "minor"),
+    ],
+    explanation:
+      "Skratka ÚVZSR = Úrad verejného zdravotníctva SR. Štátne organizácie majú často dlhé skratkové domény. Vlastníctvo overiteľné v whois.",
+  },
+  {
+    id: "h-url-gov-6",
+    category: "honeypot",
+    difficulty: "hard",
+    prompt: "Justice.gov.sk — elektronické podanie do súdneho registra.",
+    visual: {
+      kind: "url",
+      url: "https://www.justice.gov.sk/sluzby/elektronicke-podanie",
+      secure: true,
+    },
+    options: [
+      ok("a", "Legit — justice.gov.sk je Ministerstvo spravodlivosti"),
+      bad("b", ".gov.sk je nezvyčajné, asi scam", "minor"),
+    ],
+    explanation:
+      "`.gov.sk` je rezervovaná SK-NIC zóna iba pre štátne orgány. Domény ako justice.gov.sk, finance.gov.sk, mzv.gov.sk sú garantované štátne — silnejší trust signál ako bežná .sk.",
+  },
+  {
+    id: "h-url-gov-7",
+    category: "honeypot",
+    difficulty: "medium",
+    prompt: "Štatistický úrad SR — register právnických osôb (RPO) lookup.",
+    visual: { kind: "url", url: "https://rpo.statistics.sk/rpo", secure: true },
+    options: [
+      ok("a", "Legit — statistics.sk je ŠÚ SR, rpo. je register"),
+      bad("b", "Anglický `statistics` na slovenský úrad je divné", "minor"),
+    ],
+    explanation:
+      "Štatistický úrad SR má historickú doménu statistics.sk (anglické pomenovanie z 90s, kým zaviedli .sk pre štátne orgány). RPO je oficiálny register a doména je trust-worthy.",
+  },
+  {
+    id: "h-url-gov-8",
+    category: "honeypot",
+    difficulty: "medium",
+    prompt: "Obchodný register Slovenskej republiky.",
+    visual: {
+      kind: "url",
+      url: "https://www.orsr.sk/vypis.asp?ID=237161&SID=8&P=1",
+      secure: true,
+    },
+    options: [
+      ok("a", "Legit — orsr.sk je Obchodný register SR"),
+      bad("b", "Query stringy s viacero ID je suspect", "minor"),
+    ],
+    explanation:
+      "ORSR.sk patrí Ministerstvu spravodlivosti — staršie ASP-based UI s query stringmi je len legacy infraštruktúra, nie scam. Doména druhého rádu je vlastnícky kľúč.",
+  },
+  {
+    id: "h-url-gov-9",
+    category: "honeypot",
+    difficulty: "hard",
+    prompt: "eKasa — portál pre živnostníkov a registrácie pokladníc.",
+    visual: { kind: "url", url: "https://ekasa.financnasprava.sk", secure: true },
+    options: [
+      ok("a", "Legit — `ekasa.` je subdoména financnasprava.sk"),
+      bad("b", "Krátky brand-subdoména na štátnom webe podozrivé", "minor"),
+    ],
+    explanation:
+      "FS má samostatné subdomény pre rôzne služby — ekasa, podania, eda, pfs. Doménový vlastník je rovnaký (Finančné riaditeľstvo SR), len rozdelené pre architektúru.",
+  },
+  {
+    id: "h-url-gov-10",
+    category: "honeypot",
+    difficulty: "medium",
+    prompt: "Datacentrum Mestia Bratislavy — služba občanom.",
+    visual: { kind: "url", url: "https://datacentrum.gov.sk/sluzby", secure: true },
+    options: [
+      ok("a", "Legit — .gov.sk je rezervovaná štátna zóna"),
+      bad("b", "Slovo `datacentrum` znie ako server scam", "minor"),
+    ],
+    explanation:
+      "DataCentrum (DataCentrum elektronizácie územnej samosprávy Slovenska, DEUS) je príspevková organizácia MIRRI SR, .gov.sk doména im patrí. Skratka DEUS / dlhšie meno organizácie sa občas skracuje.",
+  },
 ];
 
 const TEST_SIZE = 15;
@@ -1720,13 +2176,18 @@ export function getTestQuestions(): Question[] {
       }
     }
   }
-  // Fill the rest randomly
+  // Fill the rest randomly — but cap honeypot at 4/15 (~27 %) so the
+  // expanding honeypot bank (E9.x) does not flip default test into a
+  // paranoia-trainer with too few real scam scenarios.
+  const HONEYPOT_CAP = 4;
+  let honeypotCount = selected.filter((q) => q.category === "honeypot").length;
   for (const q of shuffled) {
     if (selected.length >= TEST_SIZE) break;
-    if (!used.has(q.id)) {
-      selected.push(q);
-      used.add(q.id);
-    }
+    if (used.has(q.id)) continue;
+    if (q.category === "honeypot" && honeypotCount >= HONEYPOT_CAP) continue;
+    selected.push(q);
+    used.add(q.id);
+    if (q.category === "honeypot") honeypotCount++;
   }
 
   // Final shuffle so categories aren't grouped
