@@ -98,9 +98,139 @@ export type Database = {
         };
         Relationships: [];
       };
+      sponsors: {
+        Row: {
+          id: string;
+          stripe_customer_id: string;
+          display_name: string | null;
+          display_link: string | null;
+          display_message: string | null;
+          show_in_footer: boolean;
+          created_at: string;
+          total_eur: number;
+        };
+        Insert: {
+          id?: string;
+          stripe_customer_id: string;
+          display_name?: string | null;
+          display_link?: string | null;
+          display_message?: string | null;
+          show_in_footer?: boolean;
+          created_at?: string;
+          total_eur?: number;
+        };
+        Update: {
+          id?: string;
+          stripe_customer_id?: string;
+          display_name?: string | null;
+          display_link?: string | null;
+          display_message?: string | null;
+          show_in_footer?: boolean;
+          created_at?: string;
+          total_eur?: number;
+        };
+        Relationships: [];
+      };
+      donations: {
+        Row: {
+          id: string;
+          sponsor_id: string;
+          stripe_payment_intent_id: string | null;
+          amount_eur: number;
+          currency: string;
+          kind: "oneoff" | "subscription_invoice" | "refund";
+          refund_of_donation_id: string | null;
+          invoice_pdf_url: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          sponsor_id: string;
+          stripe_payment_intent_id?: string | null;
+          amount_eur: number;
+          currency?: string;
+          kind: "oneoff" | "subscription_invoice" | "refund";
+          refund_of_donation_id?: string | null;
+          invoice_pdf_url?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          sponsor_id?: string;
+          stripe_payment_intent_id?: string | null;
+          amount_eur?: number;
+          currency?: string;
+          kind?: "oneoff" | "subscription_invoice" | "refund";
+          refund_of_donation_id?: string | null;
+          invoice_pdf_url?: string | null;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "donations_sponsor_id_fkey";
+            columns: ["sponsor_id"];
+            isOneToOne: false;
+            referencedRelation: "sponsors";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      subscriptions: {
+        Row: {
+          id: string;
+          sponsor_id: string;
+          stripe_subscription_id: string | null;
+          status: string;
+          monthly_eur: number;
+          started_at: string;
+          cancelled_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          sponsor_id: string;
+          stripe_subscription_id?: string | null;
+          status: string;
+          monthly_eur: number;
+          started_at?: string;
+          cancelled_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          sponsor_id?: string;
+          stripe_subscription_id?: string | null;
+          status?: string;
+          monthly_eur?: number;
+          started_at?: string;
+          cancelled_at?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "subscriptions_sponsor_id_fkey";
+            columns: ["sponsor_id"];
+            isOneToOne: false;
+            referencedRelation: "sponsors";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
     };
     Views: {
-      [_ in never]: never;
+      public_sponsors: {
+        Row: {
+          id: string;
+          display_name: string;
+          display_link: string | null;
+          display_message: string | null;
+          created_at: string;
+        };
+      };
+      footer_sponsors: {
+        Row: {
+          id: string;
+          display_name: string;
+          display_link: string | null;
+        };
+      };
     };
     Functions: {
       [_ in never]: never;

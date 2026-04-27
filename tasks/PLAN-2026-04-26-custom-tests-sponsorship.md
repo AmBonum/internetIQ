@@ -304,8 +304,8 @@ zlyhajú na nepriamych voľbách.
 | story | title | effort | priority | status | deps |
 |---|---|---|---|---|---|
 | [E10.1](./stories/E10.1-legal-architecture-doc.md) | Legal + Stripe architecture decision doc (DPH, AML, faktúra) | S | P1 | ✅ Done | — |
-| [E10.2](./stories/E10.2-sponsors-schema.md) | `sponsors` + `donations` + `subscriptions` migration + RLS | S | P1 | 🟡 Ready | E10.1 |
-| [E10.3](./stories/E10.3-stripe-webhook-function.md) | CF Pages Function — Stripe webhook handler | M | P1 | ⛔ Blocked | E10.2 |
+| [E10.2](./stories/E10.2-sponsors-schema.md) | `sponsors` + `donations` + `subscriptions` migration + RLS | S | P1 | ✅ Done | E10.1 |
+| [E10.3](./stories/E10.3-stripe-webhook-function.md) | CF Pages Function — Stripe webhook handler | M | P1 | 🟡 Ready | E10.2 |
 | [E10.4](./stories/E10.4-secrets-csp-setup.md) | CSP + `.dev.vars` + Cloudflare env vars + Stripe keys | XS | P1 | 🟡 Ready | E10.1 |
 | [E10.5](./stories/E10.5-privacy-consent-bump.md) | Privacy update + `CONSENT_VERSION` 1.2.0 + cookie matrix update | S | P1 | 🟡 Ready | E10.1 |
 

@@ -204,6 +204,90 @@ BEGIN
 END $$;
 
 -- ============================================================================
+-- E10.2 — Sponsorship schema (sponsors, donations, subscriptions)
+-- ============================================================================
+
+CREATE TABLE IF NOT EXISTS public.sponsors (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  stripe_customer_id TEXT UNIQUE NOT NULL,
+  display_name TEXT,
+  display_link TEXT,
+  display_message TEXT,
+  show_in_footer BOOLEAN NOT NULL DEFAULT false,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  total_eur NUMERIC(10, 2) NOT NULL DEFAULT 0,
+  CONSTRAINT sponsors_display_link_https CHECK (
+    display_link IS NULL OR display_link LIKE 'https://%'
+  ),
+  CONSTRAINT sponsors_display_message_len CHECK (
+    display_message IS NULL OR length(display_message) <= 80
+  )
+);
+ALTER TABLE public.sponsors ENABLE ROW LEVEL SECURITY;
+CREATE INDEX IF NOT EXISTS sponsors_stripe_customer_id_idx
+  ON public.sponsors (stripe_customer_id);
+
+CREATE TABLE IF NOT EXISTS public.donations (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  sponsor_id UUID NOT NULL REFERENCES public.sponsors(id) ON DELETE RESTRICT,
+  stripe_payment_intent_id TEXT UNIQUE,
+  amount_eur NUMERIC(10, 2) NOT NULL,
+  currency TEXT NOT NULL DEFAULT 'EUR',
+  kind TEXT NOT NULL CHECK (kind IN ('oneoff', 'subscription_invoice', 'refund')),
+  refund_of_donation_id UUID REFERENCES public.donations(id) ON DELETE RESTRICT,
+  invoice_pdf_url TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  CONSTRAINT donations_refund_consistency CHECK (
+    (kind = 'refund' AND refund_of_donation_id IS NOT NULL AND amount_eur < 0)
+    OR (kind <> 'refund' AND refund_of_donation_id IS NULL AND amount_eur > 0)
+  )
+);
+ALTER TABLE public.donations ENABLE ROW LEVEL SECURITY;
+CREATE INDEX IF NOT EXISTS donations_sponsor_id_idx ON public.donations (sponsor_id);
+CREATE INDEX IF NOT EXISTS donations_created_at_idx ON public.donations (created_at DESC);
+
+CREATE TABLE IF NOT EXISTS public.subscriptions (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  sponsor_id UUID NOT NULL REFERENCES public.sponsors(id) ON DELETE RESTRICT,
+  stripe_subscription_id TEXT UNIQUE,
+  status TEXT NOT NULL,
+  monthly_eur NUMERIC(10, 2) NOT NULL CHECK (monthly_eur > 0),
+  started_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  cancelled_at TIMESTAMPTZ
+);
+ALTER TABLE public.subscriptions ENABLE ROW LEVEL SECURITY;
+CREATE INDEX IF NOT EXISTS subscriptions_sponsor_id_idx ON public.subscriptions (sponsor_id);
+CREATE INDEX IF NOT EXISTS subscriptions_active_idx
+  ON public.subscriptions (sponsor_id) WHERE cancelled_at IS NULL;
+
+CREATE OR REPLACE FUNCTION public.update_sponsor_total()
+RETURNS TRIGGER LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
+BEGIN
+  UPDATE public.sponsors SET total_eur = total_eur + NEW.amount_eur WHERE id = NEW.sponsor_id;
+  RETURN NEW;
+END;
+$$;
+DROP TRIGGER IF EXISTS donations_update_sponsor_total ON public.donations;
+CREATE TRIGGER donations_update_sponsor_total AFTER INSERT ON public.donations
+FOR EACH ROW EXECUTE FUNCTION public.update_sponsor_total();
+REVOKE ALL ON FUNCTION public.update_sponsor_total() FROM anon, authenticated;
+
+DROP VIEW IF EXISTS public.public_sponsors;
+CREATE VIEW public.public_sponsors AS
+SELECT id, display_name, display_link, display_message, created_at
+FROM public.sponsors WHERE display_name IS NOT NULL;
+GRANT SELECT ON public.public_sponsors TO anon, authenticated;
+
+DROP VIEW IF EXISTS public.footer_sponsors;
+CREATE VIEW public.footer_sponsors AS
+SELECT DISTINCT s.id, s.display_name, s.display_link
+FROM public.sponsors s
+LEFT JOIN public.subscriptions sub ON sub.sponsor_id = s.id AND sub.cancelled_at IS NULL
+WHERE s.show_in_footer = true AND s.display_name IS NOT NULL
+  AND (s.total_eur >= 50 OR sub.monthly_eur >= 25);
+GRANT SELECT ON public.footer_sponsors TO anon, authenticated;
+
+-- ============================================================================
 -- HOTOVO!
 -- Teraz choď do Settings -> API a skopíruj si:
 --   - Project URL  (napr. https://abcdef.supabase.co)
