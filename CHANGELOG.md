@@ -19,11 +19,18 @@ Verzie idú od najnovšej. Drobné úpravy textov a interné práce neuvádzame.
 - Verejný **zoznam sponzorov**, ktorí pri podpore zaškrtli súhlas so zverejnením mena. Anonymita je default.
 - Stránka **Spravovať podporu** — pošleme ti na e-mail magic-link na Stripe Customer Portal pre prípad, že si stratil/a potvrdzujúci e-mail.
 - Verejný changelog (toto stránka).
+- **6 ďalších školení** — AI a deepfake podvody, QR / quishing, krádež kont na sociálnych sieťach, podvody pri nábore do práce, fyzické podvody (skimming, fake POS), tipy ako chrániť seniorov a deti. Spolu je teraz dostupných **14 školení**.
+- **Demografické testy** popri firemných balíkoch — *Žiaci do 16*, *Študenti*, *Seniori* a *Všeobecný test*. Každý má vlastný výber otázok primeraný cieľovej skupine.
+- **Filter kategórií** na stránke *Školenia* — môžeš si zobraziť iba školenia o phishingu, scenároch alebo URL.
+- **FAQ sekcia** na úvodnej stránke s odpoveďami na najčastejšie otázky o teste, anonymite a podpore.
+- Po dokončení testu sa **úvodný titulok prispôsobuje skóre** — pre slabší výsledok motivačný tón, pre vysoký pochvalný.
+- **15 nových otázok** zameraných na konkrétne odvetvia a vekové skupiny (študenti, seniori, žiaci).
 
 ### Zmenené
 - **Identifikácia prevádzkovateľa** v zásadách ochrany súkromia — projekt teraz transparentne vystupuje ako am.bonum s. r. o. (predtým fyzická osoba). Cookie banner sa znova zobrazil, aby si mohol/a aktualizovať svoj súhlas pod správnu entitu.
 - Texty na stránkach **O projekte**, **Cookies** a **Súkromie** o trackingu: sformulované tak, aby boli zrozumiteľné a konzistentné s tým, čo cookie banner naozaj robí — analytika a marketing sa zapnú **iba so súhlasom**.
 - V hlavičke stránky pribudol odkaz **Podporiť projekt**; v päte stránky **Sponzori** a **Zmeny**.
+- Firemné testy presunuté z `/test/firma/...` na kratší a zrozumiteľnejší **`/testy/...`**. Staré linky redirectujú.
 
 ### Opravené
 - Drobná chyba pri prepínaní medzi rôznymi testami: po dokončení jedného testu sa pri kliknutí na iný niekedy zobrazil starý výsledok. Teraz sa každý test začne čisto od prvej otázky.

@@ -203,7 +203,7 @@ zvolíš inak).
 |---|---|---|---|---|---|
 | [E4.1](./stories/E4.1-data-trap-copy-and-taxonomy.md) | Copy & taxonómia citlivých polí | S | P1 | ✅ Done | — |
 | [E4.2](./stories/E4.2-trap-dialog-component.md) | `<TrapDialog />` komponent | M | P1 | ✅ Done | — |
-| [E4.3](./stories/E4.3-trap-dialog-integration.md) | Integrácia `TrapDialog` do `ResultsView` | S | P1 | 🟡 Ready | — |
+| [E4.3](./stories/E4.3-trap-dialog-integration.md) | Integrácia `TrapDialog` do `ResultsView` | S | P1 | ✅ Done | — |
 
 ### Epic 5 — Sekcia bezplatných kurzov
 

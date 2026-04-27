@@ -35,7 +35,7 @@ owner, vývojára aj reviewera.
 | Question bank `src/lib/quiz/questions.ts` (~100 SK scam scenarios) | Hotové, 5 kategórií, 14 honeypot otázok | E9 expanduje na 200+, prevažne honeypot a legit-look examples |
 | `getTestQuestions()` — random 15 z banku s category quotas | Hotové (`TEST_SIZE = 15`) | E7 doplní `getTestQuestionsForPack(slug)` ktorý vyberá podľa pack manifestu |
 | `TestFlow` + sessionStorage persistence + scrollRestoration | Hotové (cdd097e) | E7/E8 musia honoritovať že "/test" má vlastný session state |
-| Course system pod `/kurzy` + Zod schema + Schema.org JSON-LD | Hotové, 8 kurzov | E7 industry packs reusne ten istý content authoring pattern |
+| Course system pod `/skolenia` (predtým `/kurzy`) + Zod schema + Schema.org JSON-LD | Hotové, 14 kurzov (8 pôvodných + 6 doplnkových mimo PLAN-2026-04-25 — pozri CHANGELOG `[Unreleased]`) | E7 industry packs reusne ten istý content authoring pattern |
 | Supabase `attempts` tabuľka + RLS + 36-mesačná retencia (pg_cron) | Hotové | E10 pridá `sponsors` tabuľku v rovnakom RLS-strict štýle |
 | Privacy + cookies stránka, `CONSENT_VERSION 1.1.0` | Hotové, kontakt `subenai.podpora@gmail.com` | E10 vyžaduje bump na 1.2.0 (nový "payment" data category) |
 | `public/_headers` CSP — `connect-src 'self' https://*.supabase.co` | Hotové | E10 rozšíri o `js.stripe.com` + `api.stripe.com` + `q.stripe.com` |
@@ -77,7 +77,7 @@ update všetkých dotknutých stories.
    payload `{ ids, threshold, max }` v query string
    `/test/zostav?config=eyJpZHMiO...` pre malé sady (≤10 otázok), inak DB.
 5. **TEST_SIZE flexibility** — pack autori si volia 8–25 otázok ako default
-   pre direct `/test/firma/{slug}` flow. Composer umožňuje **5–50 otázok**.
+   pre direct `/testy/{slug}` flow. Composer umožňuje **5–50 otázok**.
    Hranica 50 otázok: nad ňou test trvá > 7 minút čo cílovo vyše únosnosť.
 6. **Honeypot ratio per-pack** — niektoré packy (napr. eshop) majú
    vyšší podiel legit otázok než štandardné 27 % (4/15 v base teste),
@@ -86,7 +86,7 @@ update všetkých dotknutých stories.
    limit — firma má rozhodnutie).
 7. **Scoring je rovnaké** — všetky packy + composer zostavy idú cez
    `computeScore()` bez zmeny. „Vyhovuje pre {label}" badge sa zobrazuje:
-   - V `/test/firma/{slug}` flow ak `finalScore >= pack.passingThreshold`
+   - V `/testy/{slug}` flow ak `finalScore >= pack.passingThreshold`
    - V `/test/zostava/{set_id}` flow ak `finalScore >= testSet.passing_threshold`
    - `passingThreshold` v pack manifeste je teda **default sugescia**, nie
      enforced — composer ju môže prepisať per-zostava.
@@ -227,8 +227,8 @@ byť pred UI. Legal docs musia byť pred go-live sponzorstva.
 6.  E7.2   Industry packs batch A (5 packs)    (M,  P1)
 7.  E7.3   Industry packs batch B (5 packs)    (M,  P2)
 8.  E7.4   Industry packs batch C (5 packs)    (M,  P3)
-9.  E7.5   /test/firma/$slug route + SEO       (M,  P1)
-10. E7.6   /test/firma index discovery page    (S,  P2)
+9.  E7.5   /testy/$slug route + SEO            (M,  P1)
+10. E7.6   /testy index discovery page         (S,  P2)
 11. E8.1   test_sets DB migration + RLS        (S,  P2)  ← schema rozšírená o threshold/max/creator_label
 12. E8.2   /test/zostav composer UI            (L,  P2)  ← pack-preload + ad-hoc picker + threshold + max
 13. E8.3   /test/zostava/$id share route       (S,  P2)
@@ -275,8 +275,8 @@ zlyhajú na nepriamych voľbách.
 | [E7.2](./stories/E7.2-industry-packs-batch-a.md) | Industry packs A: e-shop, gastro, autoservis, IT, vereje sluzby | M | P1 | ✅ Done | E7.1 |
 | [E7.3](./stories/E7.3-industry-packs-batch-b.md) | Industry packs B: dispečing, doprava, marketing, zdravotnictvo, skoly | M | P2 | 🟡 Ready | E7.1 |
 | [E7.4](./stories/E7.4-industry-packs-batch-c.md) | Industry packs C: strojová výroba, pneuservis, SME účto, HORECA, servis | M | P3 | 🟡 Ready | E7.1 |
-| [E7.5](./stories/E7.5-firma-route.md) | `/test/firma/$slug` route + SEO + Quiz JSON-LD | M | P1 | ✅ Done | E7.1 |
-| [E7.6](./stories/E7.6-firma-index.md) | `/test/firma` discovery page | S | P2 | ✅ Done | E7.5 |
+| [E7.5](./stories/E7.5-firma-route.md) | `/testy/$slug` route + SEO + Quiz JSON-LD (premenované z `/test/firma/$slug` 2026-04-27) | M | P1 | ✅ Done | E7.1 |
+| [E7.6](./stories/E7.6-firma-index.md) | `/testy` discovery page (premenované z `/test/firma` 2026-04-27) | S | P2 | ✅ Done | E7.5 |
 
 ### Epic 8 — Composer (firmy zostavujú vlastné testy)
 
@@ -296,7 +296,7 @@ zlyhajú na nepriamych voľbách.
 |---|---|---|---|---|---|
 | [E9.1](./stories/E9.1-legit-url-questions.md) | +30 legitimate URL examples (banking, e-shop, eGov) | S | P1 | ✅ Done | — |
 | [E9.2](./stories/E9.2-legit-sms-borderline.md) | +20 legit SMS + borderline-suspicious-but-OK | S | P1 | 🟡 Ready | — |
-| [E9.3](./stories/E9.3-industry-specific-scams.md) | +20 industry-specific scam scenarios | S | P2 | 🟡 Ready | — |
+| [E9.3](./stories/E9.3-industry-specific-scams.md) | +20 industry-specific scam scenarios | S | P2 | 🟡 Partial (15/20, commit 18ec867) | — |
 | [E9.4](./stories/E9.4-honeypot-extension.md) | +30 honeypot / „vyzerá podozrivo, ale nie je" | S | P2 | 🟡 Partial (cap only) | — |
 
 ### Epic 10 — Sponsorship infrastructure
@@ -341,6 +341,30 @@ zlyhajú na nepriamych voľbách.
 
 **Total: 32 stories** (6 + 3 + 4 + 5 + 8 + 7).
 (E11 je 8 stories po pridaní E11.6/E11.7/E11.8.)
+
+---
+
+## Off-roadmap drift (2026-04-27 → 2026-04-28)
+
+Nasledujúce zmeny **nie sú** v žiadnej user story tohto plánu — landli mimo
+roadmap-y na základe priebežných product decisions. Trackujeme ich tu pre
+auditovateľnosť; user-visible položky sú aj v `CHANGELOG.md [Unreleased]`.
+
+| Commit | Zmena | Story / decision rationale |
+|---|---|---|
+| 18ec867 | 4 demografické test-packy: `seniori`, `studenti`, `vseobecny`, `ziaci-do-16` + 15 nových otázok pre tieto skupiny | Doplnok k Epic 7 — demografia popri industries; pokrýva čiastočne aj E9.3 (15/20). Stories spätne netvoríme — pack content guide ([E7-pack-authoring-guide.md](./E7-pack-authoring-guide.md)) je dostatočná spec pre review. |
+| 671dcfd | 6 nových kurzov: `ai-deepfake-podvody`, `chran-svojich-blizkych`, `fyzicke-podvody`, `kradez-kont-socialnych-sieti`, `nabor-prace-podvody`, `qr-quishing` | Rozšírenie Epic 5 (PLAN-2026-04-25) z 8 na 14 kurzov. Course authoring guide ([E5-course-authoring-guide.md](./E5-course-authoring-guide.md)) + Zod schema poskytujú dostatočnú spec. |
+| dcde153 | Skóre-závislé taglines v `ResultsView` + FAQ sekcie na úvodnej stránke | UX iteration; bezpečné, žiadny nový data flow. |
+| 1a556f6 | Filter kategórií na `/skolenia` index | Discovery vylepšenie pre 14 kurzov (bez filtra by index bol stena). |
+| f099e49 | Layered defence pre `/api/portal-magic-link` (rate-limit per IP, fingerprint, replay-window) | Security hardening nad rámec E11.4 AC; reagovalo na CR concern o open magic-link endpointe. |
+| 4ba55d7 | Premenovanie `/test/firma/*` → `/testy/*`, `/kurzy/*` → `/skolenia/*` (route alias zachovaný cez `_redirects`) | Skrátený URL pattern. Story files E7.5/E7.6 + E5.2/E5.3 + sitemap aktualizované. |
+| 6fae6fa, a8dc816 | Refactor: globálne premenné v `src/config/{routes,site}.ts`, ROUTES.* konstanty namiesto hardcoded stringov | Pure refactor. Žiadny user-visible dopad; znižuje šancu drift-u pri budúcom premenovávaní. |
+
+**Ponaučenie**: ďalšie content additions (kurzy / packy) by mali ísť cez
+priamy update PLAN indexu (jeden riadok do exec orderu + Epic tabuľky)
+namiesto úplne novej story — story file overhead je veľký pre
+content-only zmeny. Drift section je expanded register záznamov
+mimo planned stories.
 
 ---
 
