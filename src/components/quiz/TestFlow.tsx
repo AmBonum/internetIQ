@@ -12,6 +12,28 @@ import { ResultsView } from "./ResultsView";
 
 type Phase = "intro" | "playing" | "done";
 
+/**
+ * Unified config for TestFlow. The default flow uses the random
+ * banked picker. Pack and composer flows pass a curated, ordered
+ * list with custom passing threshold and a label rendered as the
+ * „Vyhovuje pre {label}" badge in ResultsView.
+ */
+export type TestFlowConfig =
+  | { kind: "default" }
+  | {
+      kind: "pack";
+      questions: Question[];
+      passingThreshold: number;
+      label: string;
+    }
+  | {
+      kind: "composer";
+      questions: Question[];
+      passingThreshold: number;
+      label: string;
+      testSetId: string;
+    };
+
 const RESULT_STORAGE_KEY = "iiq_last_result_v1";
 
 interface PersistedResult {
@@ -50,14 +72,16 @@ function clearPersistedResult() {
   }
 }
 
-export function TestFlow() {
+export function TestFlow({ config = { kind: "default" } }: { config?: TestFlowConfig } = {}) {
   // Restore prior completed test from sessionStorage (per-tab) so that
   // browser-back from a course CTA returns the user to their result
   // instead of restarting the quiz.
   const restored = typeof window !== "undefined" ? loadPersistedResult() : null;
 
   const [phase, setPhase] = useState<Phase>(restored ? "done" : "intro");
-  const [questions, setQuestions] = useState<Question[]>([]);
+  const [questions, setQuestions] = useState<Question[]>(
+    config.kind === "default" ? [] : config.questions,
+  );
   const [index, setIndex] = useState(0);
   const [answers, setAnswers] = useState<AnswerRecord[]>(restored?.answers ?? []);
   const [result, setResult] = useState<ScoreResult | null>(restored?.result ?? null);
@@ -65,7 +89,11 @@ export function TestFlow() {
   // Pick questions on mount — only when starting fresh.
   useEffect(() => {
     if (restored) return;
-    setQuestions(getTestQuestions());
+    if (config.kind === "default") {
+      setQuestions(getTestQuestions());
+    } else {
+      setQuestions(config.questions);
+    }
     const t = setTimeout(() => setPhase("playing"), 900);
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -89,7 +117,7 @@ export function TestFlow() {
 
   function restart() {
     clearPersistedResult();
-    setQuestions(getTestQuestions());
+    setQuestions(config.kind === "default" ? getTestQuestions() : config.questions);
     setIndex(0);
     setAnswers([]);
     setResult(null);
@@ -97,11 +125,22 @@ export function TestFlow() {
     setTimeout(() => setPhase("playing"), 700);
   }
 
+  const passingThreshold = config.kind === "default" ? undefined : config.passingThreshold;
+  const passLabel = config.kind === "default" ? undefined : config.label;
+
   // Render done state FIRST — when restoring from sessionStorage we have
   // result but questions=[] (questions are reshuffled on restart, not
   // needed for the review screen which looks them up by id).
   if (phase === "done" && result) {
-    return <ResultsView result={result} answers={answers} onRestart={restart} />;
+    return (
+      <ResultsView
+        result={result}
+        answers={answers}
+        onRestart={restart}
+        passingThreshold={passingThreshold}
+        passLabel={passLabel}
+      />
+    );
   }
 
   if (phase === "intro" || questions.length === 0) {

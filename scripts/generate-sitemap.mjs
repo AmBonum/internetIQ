@@ -24,31 +24,31 @@ const STATIC_ROUTES = [
   { loc: "/privacy", priority: "0.3", changefreq: "yearly" },
 ];
 
-async function loadCourses() {
+async function loadSlugs(dirRel) {
   // Use a quick TS-aware loader path. We can't import the TS file directly
-  // from Node without a transpiler — but we know the module exports
-  // a constant `COURSES` with `slug` + `updatedAt`. Read the index.ts and
-  // grep slugs from the file system instead. Simpler & dependency-free.
+  // from Node without a transpiler — but we know each module exports a
+  // constant with `slug` + `updatedAt`. Grep slugs from file system.
   const { readdir, readFile } = await import("node:fs/promises");
-  const dir = resolve(ROOT, "src/content/courses");
+  const dir = resolve(ROOT, dirRel);
   const files = await readdir(dir);
-  const courses = [];
+  const items = [];
   for (const file of files) {
     if (!file.endsWith(".ts") || file.startsWith("_") || file === "index.ts") continue;
     const src = await readFile(resolve(dir, file), "utf8");
     const slugMatch = src.match(/slug:\s*['"`]([a-z0-9-]+)['"`]/);
     const updatedMatch = src.match(/updatedAt:\s*['"`](\d{4}-\d{2}-\d{2})/);
     if (slugMatch) {
-      courses.push({
+      items.push({
         slug: slugMatch[1],
         lastmod: updatedMatch ? updatedMatch[1] : TODAY,
       });
     }
   }
-  return courses;
+  return items;
 }
 
-const courses = await loadCourses();
+const courses = await loadSlugs("src/content/courses");
+const packs = await loadSlugs("src/content/test-packs");
 
 const urls = [
   ...STATIC_ROUTES.map((r) => ({ ...r, lastmod: TODAY })),
@@ -57,6 +57,12 @@ const urls = [
     priority: "0.8",
     changefreq: "monthly",
     lastmod: c.lastmod,
+  })),
+  ...packs.map((p) => ({
+    loc: `/test/firma/${p.slug}`,
+    priority: "0.85",
+    changefreq: "monthly",
+    lastmod: p.lastmod,
   })),
 ];
 
@@ -76,7 +82,9 @@ ${urls
 `;
 
 await writeFile(resolve(ROOT, "public/sitemap.xml"), xml, "utf8");
-console.log(`Sitemap written: ${urls.length} URLs (${courses.length} courses)`);
+console.log(
+  `Sitemap written: ${urls.length} URLs (${courses.length} courses, ${packs.length} packs)`,
+);
 
 // Allow being invoked via `node scripts/generate-sitemap.mjs` directly
 if (import.meta.url === pathToFileURL(process.argv[1]).href) {

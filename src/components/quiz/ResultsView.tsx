@@ -23,6 +23,10 @@ interface Props {
   result: ScoreResult;
   answers: AnswerRecord[];
   onRestart: () => void;
+  /** Optional pack/composer context — when set, renders the
+   *  „Vyhovuje pre {label}" badge if score crosses the threshold. */
+  passingThreshold?: number;
+  passLabel?: string;
 }
 
 function genShareId(): string {
@@ -34,7 +38,9 @@ function genShareId(): string {
   return s;
 }
 
-export function ResultsView({ result, answers, onRestart }: Props) {
+export function ResultsView({ result, answers, onRestart, passingThreshold, passLabel }: Props) {
+  const passes =
+    typeof passingThreshold === "number" && !!passLabel && result.finalScore >= passingThreshold;
   const { record } = useConsent();
   const personality = PERSONALITIES[result.personality];
   // Deterministic variant per result (so refresh shows same copy)
@@ -242,6 +248,26 @@ export function ResultsView({ result, answers, onRestart }: Props) {
         {showRest && (
           <div className="mt-2 animate-fade-in-up text-base text-muted-foreground">
             Si lepší než <span className="font-bold text-primary">{result.percentile} %</span> ľudí.
+          </div>
+        )}
+        {showRest && passes && (
+          <div
+            className="mt-4 inline-flex items-center gap-2 rounded-full border border-success/40 bg-success/10 px-4 py-2 text-sm font-semibold text-success animate-fade-in-up"
+            role="status"
+          >
+            <span aria-hidden="true">✅</span>
+            <span>Vyhovuje pre {passLabel}</span>
+          </div>
+        )}
+        {showRest && !passes && typeof passingThreshold === "number" && passLabel && (
+          <div
+            className="mt-4 inline-flex items-center gap-2 rounded-full border border-warning/40 bg-warning/10 px-4 py-2 text-xs text-warning animate-fade-in-up"
+            role="status"
+          >
+            <span>
+              Nedosiahnutý prah {passingThreshold} % pre {passLabel} — pozri kurzy nižšie a skús
+              znova.
+            </span>
           </div>
         )}
       </div>

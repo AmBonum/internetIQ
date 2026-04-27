@@ -16,6 +16,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as KurzyIndexRouteImport } from './routes/kurzy.index'
 import { Route as RShareIdRouteImport } from './routes/r.$shareId'
 import { Route as KurzySlugRouteImport } from './routes/kurzy.$slug'
+import { Route as TestFirmaSlugRouteImport } from './routes/test.firma.$slug'
 
 const TestRoute = TestRouteImport.update({
   id: '/test',
@@ -52,34 +53,42 @@ const KurzySlugRoute = KurzySlugRouteImport.update({
   path: '/kurzy/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TestFirmaSlugRoute = TestFirmaSlugRouteImport.update({
+  id: '/firma/$slug',
+  path: '/firma/$slug',
+  getParentRoute: () => TestRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/cookies': typeof CookiesRoute
   '/privacy': typeof PrivacyRoute
-  '/test': typeof TestRoute
+  '/test': typeof TestRouteWithChildren
   '/kurzy/$slug': typeof KurzySlugRoute
   '/r/$shareId': typeof RShareIdRoute
   '/kurzy/': typeof KurzyIndexRoute
+  '/test/firma/$slug': typeof TestFirmaSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/cookies': typeof CookiesRoute
   '/privacy': typeof PrivacyRoute
-  '/test': typeof TestRoute
+  '/test': typeof TestRouteWithChildren
   '/kurzy/$slug': typeof KurzySlugRoute
   '/r/$shareId': typeof RShareIdRoute
   '/kurzy': typeof KurzyIndexRoute
+  '/test/firma/$slug': typeof TestFirmaSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/cookies': typeof CookiesRoute
   '/privacy': typeof PrivacyRoute
-  '/test': typeof TestRoute
+  '/test': typeof TestRouteWithChildren
   '/kurzy/$slug': typeof KurzySlugRoute
   '/r/$shareId': typeof RShareIdRoute
   '/kurzy/': typeof KurzyIndexRoute
+  '/test/firma/$slug': typeof TestFirmaSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -91,6 +100,7 @@ export interface FileRouteTypes {
     | '/kurzy/$slug'
     | '/r/$shareId'
     | '/kurzy/'
+    | '/test/firma/$slug'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -100,6 +110,7 @@ export interface FileRouteTypes {
     | '/kurzy/$slug'
     | '/r/$shareId'
     | '/kurzy'
+    | '/test/firma/$slug'
   id:
     | '__root__'
     | '/'
@@ -109,13 +120,14 @@ export interface FileRouteTypes {
     | '/kurzy/$slug'
     | '/r/$shareId'
     | '/kurzy/'
+    | '/test/firma/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CookiesRoute: typeof CookiesRoute
   PrivacyRoute: typeof PrivacyRoute
-  TestRoute: typeof TestRoute
+  TestRoute: typeof TestRouteWithChildren
   KurzySlugRoute: typeof KurzySlugRoute
   RShareIdRoute: typeof RShareIdRoute
   KurzyIndexRoute: typeof KurzyIndexRoute
@@ -172,14 +184,31 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof KurzySlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/test/firma/$slug': {
+      id: '/test/firma/$slug'
+      path: '/firma/$slug'
+      fullPath: '/test/firma/$slug'
+      preLoaderRoute: typeof TestFirmaSlugRouteImport
+      parentRoute: typeof TestRoute
+    }
   }
 }
+
+interface TestRouteChildren {
+  TestFirmaSlugRoute: typeof TestFirmaSlugRoute
+}
+
+const TestRouteChildren: TestRouteChildren = {
+  TestFirmaSlugRoute: TestFirmaSlugRoute,
+}
+
+const TestRouteWithChildren = TestRoute._addFileChildren(TestRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CookiesRoute: CookiesRoute,
   PrivacyRoute: PrivacyRoute,
-  TestRoute: TestRoute,
+  TestRoute: TestRouteWithChildren,
   KurzySlugRoute: KurzySlugRoute,
   RShareIdRoute: RShareIdRoute,
   KurzyIndexRoute: KurzyIndexRoute,
