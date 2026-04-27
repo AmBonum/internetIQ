@@ -28,7 +28,7 @@ function PrivacyPage() {
             Zásady ochrany súkromia
           </h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            Posledná aktualizácia: 27. apríla 2026 (verzia 1.2.0)
+            Posledná aktualizácia: 27. apríla 2026 (verzia 1.2.1)
           </p>
         </header>
 
@@ -36,17 +36,31 @@ function PrivacyPage() {
           <section className="space-y-2">
             <h2 className="text-xl font-semibold">1. Prevádzkovateľ</h2>
             <p className="text-sm leading-relaxed text-muted-foreground">
-              Prevádzkovateľom v zmysle čl. 4 ods. 7 GDPR je <strong>Lubomír Volčko</strong>,
-              fyzická osoba, Košice, Slovensko. Kontakt vo veciach ochrany osobných údajov:{" "}
-              <a href="mailto:segnities@gmail.com" className="underline underline-offset-2">
-                segnities@gmail.com
-              </a>
-              .
+              Prevádzkovateľom v zmysle čl. 4 ods. 7 GDPR a § 5 písm. o) zákona č. 18/2018 Z. z. je:
             </p>
+            <ul className="list-none space-y-1 pl-0 text-sm leading-relaxed text-muted-foreground">
+              <li>
+                <strong className="text-foreground">am.bonum s. r. o.</strong>
+              </li>
+              <li>Sídlo: Škultétyho 1560/3, 052 01 Spišská Nová Ves, Slovensko</li>
+              <li>IČO: 55 055 290 · DIČ: 2121850005 · IČ DPH: nie sme platcami DPH</li>
+              <li>
+                Zápis: Mestský súd Košice, oddiel Sro, vložka č. 55453/V (deň zápisu
+                23.&nbsp;11.&nbsp;2022)
+              </li>
+              <li>Štatutár: Ľubomír Volčko, konateľ konajúci samostatne</li>
+              <li>
+                Kontakt vo veciach ochrany osobných údajov:{" "}
+                <a href="mailto:segnities@gmail.com" className="underline underline-offset-2">
+                  segnities@gmail.com
+                </a>
+              </li>
+            </ul>
             <p className="text-sm leading-relaxed text-muted-foreground">
               Zodpovednú osobu (DPO) prevádzkovateľ nemá určenú — povinnosť mu nevyplýva z čl. 37
-              GDPR (rozsah spracúvania je obmedzený, nejde o systematické monitorovanie vo veľkom
-              rozsahu ani o osobitné kategórie údajov).
+              ods. 1 GDPR ani z § 44 zákona č. 18/2018 Z. z. (nejde o orgán verejnej moci, hlavné
+              činnosti nezahŕňajú systematické monitorovanie dotknutých osôb vo veľkom rozsahu, ani
+              spracúvanie osobitných kategórií údajov podľa čl. 9 GDPR vo veľkom rozsahu).
             </p>
           </section>
 
