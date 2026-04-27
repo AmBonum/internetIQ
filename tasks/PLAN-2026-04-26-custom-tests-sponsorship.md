@@ -318,7 +318,7 @@ zlyhajú na nepriamych voľbách.
 | [E11.3](./stories/E11.3-sponzori-list.md) | `/sponzori` public donor list (consent-gated) | S | P2 | ⛔ Blocked | E11.1 |
 | [E11.4](./stories/E11.4-footer-cancel-flow.md) | Footer link + Stripe Customer Portal cancel | XS | P2 | ⛔ Blocked | E11.1 |
 | [E11.5](./stories/E11.5-refund-aml-playbook.md) | Refund SOP + AML threshold playbook | S | P3 | ⛔ Blocked | E11.1 |
-| [E11.6](./stories/E11.6-o-projekte-page.md) | `/o-projekte` presentation page (cieľ + transparentnosť) | S | P1 | 🟡 Ready | E10.5 |
+| [E11.6](./stories/E11.6-o-projekte-page.md) | `/o-projekte` presentation page (cieľ + transparentnosť) | S | P1 | ✅ Done | E10.5 |
 | [E11.7](./stories/E11.7-changelog-page.md) | `/zmeny` deploy history / changelog | S | P2 | 🟡 Ready | — |
 | [E11.8](./stories/E11.8-email-infra.md) | Transactional email infra (Resend / SES) | S | P1 | ⛔ Blocked | E10.4 |
 

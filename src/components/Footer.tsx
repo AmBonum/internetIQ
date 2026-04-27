@@ -8,8 +8,8 @@ export function Footer() {
     <footer className="mt-24 border-t border-border/60 py-8 text-center text-sm text-muted-foreground">
       <p>
         subenai · spravené s 🍺 v Košiciach ·{" "}
-        <Link to="/" className="hover:text-foreground transition-colors">
-          O nás
+        <Link to="/o-projekte" className="hover:text-foreground transition-colors">
+          O projekte
         </Link>
       </p>
       <p className="mt-2 space-x-3">

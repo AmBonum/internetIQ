@@ -22,6 +22,7 @@ const STATIC_ROUTES = [
   { loc: "/skolenia", priority: "0.9", changefreq: "weekly" },
   { loc: "/cookies", priority: "0.3", changefreq: "yearly" },
   { loc: "/privacy", priority: "0.3", changefreq: "yearly" },
+  { loc: "/o-projekte", priority: "0.5", changefreq: "monthly" },
 ];
 
 async function loadSlugs(dirRel) {

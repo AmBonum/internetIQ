@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as OProjekteRouteImport } from './routes/o-projekte'
 import { Route as CookiesRouteImport } from './routes/cookies'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TestIndexRouteImport } from './routes/test.index'
@@ -22,6 +23,11 @@ import { Route as TestFirmaSlugRouteImport } from './routes/test.firma.$slug'
 const PrivacyRoute = PrivacyRouteImport.update({
   id: '/privacy',
   path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OProjekteRoute = OProjekteRouteImport.update({
+  id: '/o-projekte',
+  path: '/o-projekte',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CookiesRoute = CookiesRouteImport.update({
@@ -68,6 +74,7 @@ const TestFirmaSlugRoute = TestFirmaSlugRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/cookies': typeof CookiesRoute
+  '/o-projekte': typeof OProjekteRoute
   '/privacy': typeof PrivacyRoute
   '/r/$shareId': typeof RShareIdRoute
   '/skolenia/$slug': typeof SkoleniaSlugRoute
@@ -79,6 +86,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/cookies': typeof CookiesRoute
+  '/o-projekte': typeof OProjekteRoute
   '/privacy': typeof PrivacyRoute
   '/r/$shareId': typeof RShareIdRoute
   '/skolenia/$slug': typeof SkoleniaSlugRoute
@@ -91,6 +99,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/cookies': typeof CookiesRoute
+  '/o-projekte': typeof OProjekteRoute
   '/privacy': typeof PrivacyRoute
   '/r/$shareId': typeof RShareIdRoute
   '/skolenia/$slug': typeof SkoleniaSlugRoute
@@ -104,6 +113,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/cookies'
+    | '/o-projekte'
     | '/privacy'
     | '/r/$shareId'
     | '/skolenia/$slug'
@@ -115,6 +125,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/cookies'
+    | '/o-projekte'
     | '/privacy'
     | '/r/$shareId'
     | '/skolenia/$slug'
@@ -126,6 +137,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/cookies'
+    | '/o-projekte'
     | '/privacy'
     | '/r/$shareId'
     | '/skolenia/$slug'
@@ -138,6 +150,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CookiesRoute: typeof CookiesRoute
+  OProjekteRoute: typeof OProjekteRoute
   PrivacyRoute: typeof PrivacyRoute
   RShareIdRoute: typeof RShareIdRoute
   SkoleniaSlugRoute: typeof SkoleniaSlugRoute
@@ -154,6 +167,13 @@ declare module '@tanstack/react-router' {
       path: '/privacy'
       fullPath: '/privacy'
       preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/o-projekte': {
+      id: '/o-projekte'
+      path: '/o-projekte'
+      fullPath: '/o-projekte'
+      preLoaderRoute: typeof OProjekteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/cookies': {
@@ -218,6 +238,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CookiesRoute: CookiesRoute,
+  OProjekteRoute: OProjekteRoute,
   PrivacyRoute: PrivacyRoute,
   RShareIdRoute: RShareIdRoute,
   SkoleniaSlugRoute: SkoleniaSlugRoute,
