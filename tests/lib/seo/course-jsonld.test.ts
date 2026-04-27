@@ -31,9 +31,9 @@ describe("buildCourseJsonLd", () => {
     expect(json.timeRequired).toBe("PT12M");
   });
 
-  it("URL points at the canonical /kurzy/<slug> path", () => {
+  it("URL points at the canonical /skolenia/<slug> path", () => {
     const json = buildCourseJsonLd(fixture);
-    expect(json.url).toBe("https://internetiq.lvtesting.eu/kurzy/test-course");
+    expect(json.url).toBe("https://internetiq.lvtesting.eu/skolenia/test-course");
   });
 
   it("provider is the site Organization", () => {

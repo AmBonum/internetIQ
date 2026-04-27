@@ -131,10 +131,10 @@ export function SurveyCard({ shareId, onDone }: Props) {
         </p>
         {wantsCourses === true && (
           <a
-            href="/kurzy"
+            href="/skolenia"
             className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline"
           >
-            Pozri si naše bezplatné kurzy →
+            Pozri si naše bezplatné školenia →
           </a>
         )}
       </div>
@@ -278,7 +278,7 @@ export function SurveyCard({ shareId, onDone }: Props) {
 
           <SurveyQuestion
             type="yesno"
-            label="Mali by sme robiť kurzy zadarmo?"
+            label="Mali by sme robiť školenia zadarmo?"
             value={wantsCourses}
             onChange={setWantsCourses}
           />

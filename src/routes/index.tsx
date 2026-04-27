@@ -75,12 +75,6 @@ function Index() {
             <span className="text-xs text-muted-foreground">
               Bez registrácie · 90 sekúnd · Zadarmo
             </span>
-            <Link
-              to="/kurzy"
-              className="mt-2 text-sm text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
-            >
-              alebo si pozri bezplatné kurzy →
-            </Link>
           </div>
         </div>
 
@@ -119,6 +113,41 @@ function Index() {
           </div>
         </section>
 
+        {/* What else is here */}
+        <section className="mt-20 grid gap-4 sm:grid-cols-2">
+          <Link
+            to="/test/firma"
+            className="group rounded-2xl border border-border/60 bg-card/70 p-6 shadow-card backdrop-blur transition hover:border-primary/50 hover:bg-card"
+          >
+            <div className="text-3xl">🏢</div>
+            <h2 className="mt-3 text-lg font-bold group-hover:text-primary">Testy pre firmy</h2>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Predefinované testy podľa branže — e-shop, gastro, IT, autoservis. Otestuj celý tím
+              naraz. 5–15 minút.
+            </p>
+            <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-primary">
+              Pozrieť testy{" "}
+              <span className="transition-transform group-hover:translate-x-1">→</span>
+            </span>
+          </Link>
+
+          <Link
+            to="/skolenia"
+            className="group rounded-2xl border border-border/60 bg-card/70 p-6 shadow-card backdrop-blur transition hover:border-primary/50 hover:bg-card"
+          >
+            <div className="text-3xl">📚</div>
+            <h2 className="mt-3 text-lg font-bold group-hover:text-primary">Bezplatné školenia</h2>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Phishing, smishing, romance scams, BEC podvody. Krátke kurzy s reálnymi príkladmi zo
+              slovenského prostredia.
+            </p>
+            <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-primary">
+              Pozrieť školenia{" "}
+              <span className="transition-transform group-hover:translate-x-1">→</span>
+            </span>
+          </Link>
+        </section>
+
         {/* FAQ */}
         <section className="mt-20">
           <h2 className="text-2xl font-bold">Časté otázky</h2>
@@ -132,7 +161,16 @@ function Index() {
             </div>
             <div>
               <dt className="font-semibold">Je to zadarmo?</dt>
-              <dd className="mt-1 text-muted-foreground">Áno. Bez reklám. Bez registrácie.</dd>
+              <dd className="mt-1 text-muted-foreground">
+                Áno. Test aj všetky školenia sú bezplatné. Bez reklám. Bez registrácie.
+              </dd>
+            </div>
+            <div>
+              <dt className="font-semibold">Čo sú testy pre firmy?</dt>
+              <dd className="mt-1 text-muted-foreground">
+                Predpripravené sady otázok prispôsobené konkrétnej branži. E-shop dostane otázky o
+                falošných objednávkach, gastro o falošných kontrolách. Stačí zdieľať link s tímom.
+              </dd>
             </div>
             <div>
               <dt className="font-semibold">Dá sa to podvádzať?</dt>

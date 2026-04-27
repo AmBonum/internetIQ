@@ -13,8 +13,8 @@ export function Footer() {
         </Link>
       </p>
       <p className="mt-2 space-x-3">
-        <Link to="/kurzy" className="hover:text-foreground transition-colors">
-          Kurzy
+        <Link to="/skolenia" className="hover:text-foreground transition-colors">
+          Školenia
         </Link>
         <span aria-hidden="true">·</span>
         <Link to="/privacy" className="hover:text-foreground transition-colors">

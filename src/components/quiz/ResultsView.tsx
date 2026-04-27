@@ -147,7 +147,7 @@ export function ResultsView({ result, answers, onRestart, passingThreshold, pass
         insights: result.insights,
         stats: result.stats,
         flags: result.flags,
-        answers,
+        answers: answers as unknown as import("@/integrations/supabase/types").Json,
         total_time_ms: result.stats.totalTimeMs,
       });
       if (error) {
@@ -265,7 +265,7 @@ export function ResultsView({ result, answers, onRestart, passingThreshold, pass
             role="status"
           >
             <span>
-              Nedosiahnutý prah {passingThreshold} % pre {passLabel} — pozri kurzy nižšie a skús
+              Nedosiahnutý prah {passingThreshold} % pre {passLabel} — pozri školenia nižšie a skús
               znova.
             </span>
           </div>

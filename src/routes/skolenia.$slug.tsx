@@ -10,7 +10,7 @@ import { buildCourseJsonLd } from "@/lib/seo/course-jsonld";
 const SITE_ORIGIN = "https://internetiq.lvtesting.eu";
 const COPYRIGHT_HOLDER = "Internet IQ Test";
 
-export const Route = createFileRoute("/kurzy/$slug")({
+export const Route = createFileRoute("/skolenia/$slug")({
   loader: ({ params }) => {
     const course = getCourseBySlug(params.slug);
     if (!course) throw notFound();
@@ -18,7 +18,7 @@ export const Route = createFileRoute("/kurzy/$slug")({
   },
   head: ({ loaderData: course }) => {
     if (!course) return { meta: [] };
-    const url = `${SITE_ORIGIN}/kurzy/${course.slug}`;
+    const url = `${SITE_ORIGIN}/skolenia/${course.slug}`;
     return {
       meta: [
         { title: `${course.title} — Bezplatný kurz · Internet IQ Test` },
@@ -98,7 +98,7 @@ function CoursePage() {
             <Link to="/test">Otestuj sa</Link>
           </Button>
           <Button asChild variant="outline">
-            <Link to="/kurzy">Späť na kurzy</Link>
+            <Link to="/skolenia">Späť na školenia</Link>
           </Button>
         </div>
 

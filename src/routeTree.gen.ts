@@ -13,9 +13,9 @@ import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as CookiesRouteImport } from './routes/cookies'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TestIndexRouteImport } from './routes/test.index'
-import { Route as KurzyIndexRouteImport } from './routes/kurzy.index'
+import { Route as SkoleniaIndexRouteImport } from './routes/skolenia.index'
+import { Route as SkoleniaSlugRouteImport } from './routes/skolenia.$slug'
 import { Route as RShareIdRouteImport } from './routes/r.$shareId'
-import { Route as KurzySlugRouteImport } from './routes/kurzy.$slug'
 import { Route as TestFirmaIndexRouteImport } from './routes/test.firma.index'
 import { Route as TestFirmaSlugRouteImport } from './routes/test.firma.$slug'
 
@@ -39,9 +39,14 @@ const TestIndexRoute = TestIndexRouteImport.update({
   path: '/test/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const KurzyIndexRoute = KurzyIndexRouteImport.update({
-  id: '/kurzy/',
-  path: '/kurzy/',
+const SkoleniaIndexRoute = SkoleniaIndexRouteImport.update({
+  id: '/skolenia/',
+  path: '/skolenia/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SkoleniaSlugRoute = SkoleniaSlugRouteImport.update({
+  id: '/skolenia/$slug',
+  path: '/skolenia/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RShareIdRoute = RShareIdRouteImport.update({
@@ -49,29 +54,24 @@ const RShareIdRoute = RShareIdRouteImport.update({
   path: '/r/$shareId',
   getParentRoute: () => rootRouteImport,
 } as any)
-const KurzySlugRoute = KurzySlugRouteImport.update({
-  id: '/kurzy/$slug',
-  path: '/kurzy/$slug',
+const TestFirmaIndexRoute = TestFirmaIndexRouteImport.update({
+  id: '/test/firma/',
+  path: '/test/firma/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const TestFirmaIndexRoute = TestFirmaIndexRouteImport.update({
-  id: '/firma/',
-  path: '/firma/',
-  getParentRoute: () => TestRoute,
-} as any)
 const TestFirmaSlugRoute = TestFirmaSlugRouteImport.update({
-  id: '/firma/$slug',
-  path: '/firma/$slug',
-  getParentRoute: () => TestRoute,
+  id: '/test/firma/$slug',
+  path: '/test/firma/$slug',
+  getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/cookies': typeof CookiesRoute
   '/privacy': typeof PrivacyRoute
-  '/kurzy/$slug': typeof KurzySlugRoute
   '/r/$shareId': typeof RShareIdRoute
-  '/kurzy/': typeof KurzyIndexRoute
+  '/skolenia/$slug': typeof SkoleniaSlugRoute
+  '/skolenia/': typeof SkoleniaIndexRoute
   '/test/': typeof TestIndexRoute
   '/test/firma/$slug': typeof TestFirmaSlugRoute
   '/test/firma/': typeof TestFirmaIndexRoute
@@ -80,9 +80,9 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/cookies': typeof CookiesRoute
   '/privacy': typeof PrivacyRoute
-  '/kurzy/$slug': typeof KurzySlugRoute
   '/r/$shareId': typeof RShareIdRoute
-  '/kurzy': typeof KurzyIndexRoute
+  '/skolenia/$slug': typeof SkoleniaSlugRoute
+  '/skolenia': typeof SkoleniaIndexRoute
   '/test': typeof TestIndexRoute
   '/test/firma/$slug': typeof TestFirmaSlugRoute
   '/test/firma': typeof TestFirmaIndexRoute
@@ -92,9 +92,9 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/cookies': typeof CookiesRoute
   '/privacy': typeof PrivacyRoute
-  '/kurzy/$slug': typeof KurzySlugRoute
   '/r/$shareId': typeof RShareIdRoute
-  '/kurzy/': typeof KurzyIndexRoute
+  '/skolenia/$slug': typeof SkoleniaSlugRoute
+  '/skolenia/': typeof SkoleniaIndexRoute
   '/test/': typeof TestIndexRoute
   '/test/firma/$slug': typeof TestFirmaSlugRoute
   '/test/firma/': typeof TestFirmaIndexRoute
@@ -105,9 +105,9 @@ export interface FileRouteTypes {
     | '/'
     | '/cookies'
     | '/privacy'
-    | '/kurzy/$slug'
     | '/r/$shareId'
-    | '/kurzy/'
+    | '/skolenia/$slug'
+    | '/skolenia/'
     | '/test/'
     | '/test/firma/$slug'
     | '/test/firma/'
@@ -116,9 +116,9 @@ export interface FileRouteTypes {
     | '/'
     | '/cookies'
     | '/privacy'
-    | '/kurzy/$slug'
     | '/r/$shareId'
-    | '/kurzy'
+    | '/skolenia/$slug'
+    | '/skolenia'
     | '/test'
     | '/test/firma/$slug'
     | '/test/firma'
@@ -127,9 +127,9 @@ export interface FileRouteTypes {
     | '/'
     | '/cookies'
     | '/privacy'
-    | '/kurzy/$slug'
     | '/r/$shareId'
-    | '/kurzy/'
+    | '/skolenia/$slug'
+    | '/skolenia/'
     | '/test/'
     | '/test/firma/$slug'
     | '/test/firma/'
@@ -139,10 +139,12 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CookiesRoute: typeof CookiesRoute
   PrivacyRoute: typeof PrivacyRoute
-  KurzySlugRoute: typeof KurzySlugRoute
   RShareIdRoute: typeof RShareIdRoute
-  KurzyIndexRoute: typeof KurzyIndexRoute
+  SkoleniaSlugRoute: typeof SkoleniaSlugRoute
+  SkoleniaIndexRoute: typeof SkoleniaIndexRoute
   TestIndexRoute: typeof TestIndexRoute
+  TestFirmaSlugRoute: typeof TestFirmaSlugRoute
+  TestFirmaIndexRoute: typeof TestFirmaIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -175,11 +177,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TestIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/kurzy/': {
-      id: '/kurzy/'
-      path: '/kurzy'
-      fullPath: '/kurzy/'
-      preLoaderRoute: typeof KurzyIndexRouteImport
+    '/skolenia/': {
+      id: '/skolenia/'
+      path: '/skolenia'
+      fullPath: '/skolenia/'
+      preLoaderRoute: typeof SkoleniaIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/skolenia/$slug': {
+      id: '/skolenia/$slug'
+      path: '/skolenia/$slug'
+      fullPath: '/skolenia/$slug'
+      preLoaderRoute: typeof SkoleniaSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/r/$shareId': {
@@ -189,26 +198,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RShareIdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/kurzy/$slug': {
-      id: '/kurzy/$slug'
-      path: '/kurzy/$slug'
-      fullPath: '/kurzy/$slug'
-      preLoaderRoute: typeof KurzySlugRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/test/firma/': {
       id: '/test/firma/'
-      path: '/firma'
+      path: '/test/firma'
       fullPath: '/test/firma/'
       preLoaderRoute: typeof TestFirmaIndexRouteImport
-      parentRoute: typeof TestRoute
+      parentRoute: typeof rootRouteImport
     }
     '/test/firma/$slug': {
       id: '/test/firma/$slug'
-      path: '/firma/$slug'
+      path: '/test/firma/$slug'
       fullPath: '/test/firma/$slug'
       preLoaderRoute: typeof TestFirmaSlugRouteImport
-      parentRoute: typeof TestRoute
+      parentRoute: typeof rootRouteImport
     }
   }
 }
@@ -217,10 +219,12 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CookiesRoute: CookiesRoute,
   PrivacyRoute: PrivacyRoute,
-  KurzySlugRoute: KurzySlugRoute,
   RShareIdRoute: RShareIdRoute,
-  KurzyIndexRoute: KurzyIndexRoute,
+  SkoleniaSlugRoute: SkoleniaSlugRoute,
+  SkoleniaIndexRoute: SkoleniaIndexRoute,
   TestIndexRoute: TestIndexRoute,
+  TestFirmaSlugRoute: TestFirmaSlugRoute,
+  TestFirmaIndexRoute: TestFirmaIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

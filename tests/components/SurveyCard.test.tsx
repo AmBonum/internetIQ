@@ -37,7 +37,7 @@ describe("SurveyCard — E2.3 growth questions", () => {
     expect(screen.getByText(/Čoho sa najviac obávaš na internete\?/i)).toBeInTheDocument();
     expect(screen.getByText(/Už ťa niekto raz oklamal\?/i)).toBeInTheDocument();
     expect(screen.getByText(/Odkiaľ vieš o tomto teste\?/i)).toBeInTheDocument();
-    expect(screen.getByText(/Mali by sme robiť kurzy zadarmo\?/i)).toBeInTheDocument();
+    expect(screen.getByText(/Mali by sme robiť školenia zadarmo\?/i)).toBeInTheDocument();
   });
 
   it("hides the interests multi-select until wantsCourses is true", () => {
@@ -124,7 +124,7 @@ describe("SurveyCard — E2.3 growth questions", () => {
     expect(payload.interests).toBeUndefined();
   });
 
-  it("after success with wantsCourses=true, thank-you state shows /kurzy CTA", async () => {
+  it("after success with wantsCourses=true, thank-you state shows /skolenia CTA", async () => {
     render(<SurveyCard shareId="ABC12345" />);
     expand();
     fireEvent.click(screen.getByRole("radio", { name: "Áno" }));
@@ -132,11 +132,11 @@ describe("SurveyCard — E2.3 growth questions", () => {
 
     await waitFor(() => expect(screen.getByText(/Vďaka!/)).toBeInTheDocument());
     expect(
-      screen.getByRole("link", { name: /Pozri si naše bezplatné kurzy/i }),
+      screen.getByRole("link", { name: /Pozri si naše bezplatné školenia/i }),
     ).toBeInTheDocument();
   });
 
-  it("after success with wantsCourses=false, thank-you state has NO /kurzy CTA", async () => {
+  it("after success with wantsCourses=false, thank-you state has NO /skolenia CTA", async () => {
     render(<SurveyCard shareId="ABC12345" />);
     expand();
     fireEvent.click(screen.getByRole("radio", { name: "Nie" }));
@@ -144,7 +144,7 @@ describe("SurveyCard — E2.3 growth questions", () => {
 
     await waitFor(() => expect(screen.getByText(/Vďaka!/)).toBeInTheDocument());
     expect(
-      screen.queryByRole("link", { name: /Pozri si naše bezplatné kurzy/i }),
+      screen.queryByRole("link", { name: /Pozri si naše bezplatné školenia/i }),
     ).not.toBeInTheDocument();
   });
 

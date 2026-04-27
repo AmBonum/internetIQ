@@ -6,6 +6,14 @@ import path from "path";
 
 export default defineConfig({
   plugins: [tailwindcss(), TanStackRouterVite(), react()],
+  server: {
+    watch: {
+      // Prevent infinite HMR loop: the router plugin writes routeTree.gen.ts,
+      // which Vite would re-detect and trigger another generation cycle.
+      // The plugin invalidates the module itself — external watch causes the loop.
+      ignored: ["**/routeTree.gen.ts"],
+    },
+  },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

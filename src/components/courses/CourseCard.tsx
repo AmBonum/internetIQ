@@ -15,7 +15,7 @@ const CATEGORY_LABEL: Record<Course["category"], string> = {
 export function CourseCard({ course }: { course: Course }) {
   return (
     <Link
-      to="/kurzy/$slug"
+      to="/skolenia/$slug"
       params={{ slug: course.slug }}
       className="group block rounded-2xl border border-border/60 bg-card/70 p-5 transition hover:border-primary/50 hover:bg-card focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
     >

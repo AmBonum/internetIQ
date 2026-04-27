@@ -223,6 +223,7 @@ export type Database = {
           display_message: string | null;
           created_at: string;
         };
+        Relationships: [];
       };
       footer_sponsors: {
         Row: {
@@ -230,6 +231,7 @@ export type Database = {
           display_name: string;
           display_link: string | null;
         };
+        Relationships: [];
       };
     };
     Functions: {

@@ -2,8 +2,8 @@ import { Link, useLocation } from "@tanstack/react-router";
 
 const NAV_ITEMS = [
   { to: "/test", label: "Test" },
-  { to: "/test/firma", label: "Pre firmy" },
-  { to: "/kurzy", label: "Kurzy" },
+  { to: "/test/firma", label: "Testy" },
+  { to: "/skolenia", label: "Školenia" },
 ] as const;
 
 export function SiteHeader() {
@@ -48,8 +48,8 @@ export function SiteHeader() {
         </Link>
         <div className="flex items-center gap-1">
           {navItem("/test", "Test")}
-          {navItem("/test/firma", "Pre firmy")}
-          {navItem("/kurzy", "Kurzy")}
+          {navItem("/test/firma", "Testy")}
+          {navItem("/skolenia", "Školenia")}
         </div>
       </nav>
     </header>

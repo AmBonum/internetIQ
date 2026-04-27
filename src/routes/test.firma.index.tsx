@@ -152,7 +152,7 @@ function FirmaIndexPage() {
             <Link to="/test">Štandardný test (15 otázok)</Link>
           </Button>
           <Button asChild variant="outline">
-            <Link to="/kurzy">Pozri bezplatné kurzy</Link>
+            <Link to="/skolenia">Pozri bezplatné školenia</Link>
           </Button>
         </div>
       </main>

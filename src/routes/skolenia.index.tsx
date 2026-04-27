@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 
 const SITE_ORIGIN = "https://internetiq.lvtesting.eu";
 
-export const Route = createFileRoute("/kurzy/")({
+export const Route = createFileRoute("/skolenia/")({
   head: () => {
     const url = `${SITE_ORIGIN}/kurzy`;
     return {
@@ -55,15 +55,15 @@ function CoursesIndexPage() {
     <div className="min-h-screen bg-background">
       <main className="mx-auto max-w-5xl px-4 pb-12 pt-12 sm:pt-16">
         <header className="mb-10 text-center">
-          <h1 className="text-4xl font-black sm:text-5xl">Bezplatné kurzy</h1>
+          <h1 className="text-4xl font-black sm:text-5xl">Bezplatné školenia</h1>
           <p className="mx-auto mt-3 max-w-2xl text-base text-muted-foreground sm:text-lg">
-            Krátke kurzy o tom, ako rozoznať najčastejšie podvody na slovenskom internete. Žiadna
-            registrácia, žiadne reklamy. 5 – 10 minút na kurz.
+            Krátke školenia o tom, ako rozoznať najčastejšie podvody na slovenskom internete. Žiadna
+            registrácia, žiadne reklamy. 5 – 10 minút na školenie.
           </p>
         </header>
 
         {COURSES.length === 0 ? (
-          <p className="text-center text-muted-foreground">Kurzy sa pripravujú.</p>
+          <p className="text-center text-muted-foreground">Školenia sa pripravujú.</p>
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {COURSES.map((c) => (

@@ -19,7 +19,7 @@ const TODAY = new Date().toISOString().slice(0, 10);
 const STATIC_ROUTES = [
   { loc: "/", priority: "1.0", changefreq: "weekly" },
   { loc: "/test", priority: "0.9", changefreq: "monthly" },
-  { loc: "/kurzy", priority: "0.9", changefreq: "weekly" },
+  { loc: "/skolenia", priority: "0.9", changefreq: "weekly" },
   { loc: "/cookies", priority: "0.3", changefreq: "yearly" },
   { loc: "/privacy", priority: "0.3", changefreq: "yearly" },
 ];
@@ -53,7 +53,7 @@ const packs = await loadSlugs("src/content/test-packs");
 const urls = [
   ...STATIC_ROUTES.map((r) => ({ ...r, lastmod: TODAY })),
   ...courses.map((c) => ({
-    loc: `/kurzy/${c.slug}`,
+    loc: `/skolenia/${c.slug}`,
     priority: "0.8",
     changefreq: "monthly",
     lastmod: c.lastmod,

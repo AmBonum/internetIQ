@@ -32,7 +32,7 @@ overview pre product owner, vývojára a code reviewera.
 | `AnswerRecord` type s `optionId`, `correct`, `severity`, `responseMs`, `category`, `difficulty` | Hotové | Stačí ho serializovať do JSON pre persistenciu (E3.1) |
 | Supabase tabuľka `attempts` — má `breakdown`, `flags`, `insights`, `stats` (Json) | **Nemá `answers` JSONB stĺpec** | E3.1 vyžaduje migráciu (`ALTER TABLE ... ADD COLUMN answers JSONB ...`) |
 | `SurveyCard.tsx` — už zbiera nickname/age/gender/city/country/self_caution | Existuje, integrované do `attempts` cez UPDATE podľa `share_id` | E2.3 ho rozšíri o nové rastové polia + samostatné typy otázok |
-| Routing — file-based TanStack Router (`src/routes/`) | Hotové | Kurzy: `routes/kurzy.tsx` (index) + `routes/kurzy.$slug.tsx` (detail) |
+| Routing — file-based TanStack Router (`src/routes/`) | Hotové | Školenia: `routes/skolenia.index.tsx` + `routes/skolenia.$slug.tsx` (premenované z `kurzy.*` 2026-04-27) |
 | Consent banner + dialog | Hotové, otvorené 2026-04-25 | E1.1 fixuje len jeden bug v dialógu |
 | `attempts` typy v `src/integrations/supabase/types.ts` | Auto-generované | Po každej migrácii treba `npx supabase gen types typescript` |
 | Translations | Iba SK | Stories píšu po slovensky; i18n infra nie je predmetom tohto plánu |
@@ -210,8 +210,8 @@ zvolíš inak).
 | ID | Title | Effort | Priority | Status | Závislosti |
 |---|---|---|---|---|---|
 | [E5.1](./stories/E5.1-course-content-schema.md) | Course content schema + registry | S | P2 | ✅ Done | — |
-| [E5.2](./stories/E5.2-courses-index-route.md) | `/kurzy` — index route | M | P2 | ✅ Done | — |
-| [E5.3](./stories/E5.3-course-onepager-template.md) | `/kurzy/$slug` — one-pager template | M | P2 | ✅ Done (MVP) | — |
+| [E5.2](./stories/E5.2-courses-index-route.md) | `/skolenia` — index route (bolo `/kurzy`) | M | P2 | ✅ Done | — |
+| [E5.3](./stories/E5.3-course-onepager-template.md) | `/skolenia/$slug` — one-pager template (bolo `/kurzy/$slug`) | M | P2 | ✅ Done (MVP) | — |
 | [E5.4](./stories/E5.4-course-sms-smishing.md) | Kurz #1: SMS smishing | M | P2 | ✅ Done | E5.1, E5.3 |
 | [E5.5](./stories/E5.5-course-email-phishing.md) | Kurz #2: Email phishing | M | P2 | ✅ Done | E5.1, E5.3 |
 | [E5.6](./stories/E5.6-course-vishing.md) | Kurz #3: Vishing (telefonické podvody) | M | P2 | ✅ Done | E5.1, E5.3 |

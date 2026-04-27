@@ -1,0 +1,2 @@
+/kurzy /skolenia 301
+/kurzy/* /skolenia/:splat 301
