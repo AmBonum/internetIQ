@@ -1,0 +1,401 @@
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import Stripe from "stripe";
+
+import {
+  onRequestPost,
+  processEvent,
+  MAX_AML_AMOUNT_EUR,
+  STRIPE_API_VERSION,
+  type Env,
+} from "../../functions/api/stripe-webhook";
+
+const TEST_WEBHOOK_SECRET = "whsec_test_secret_for_unit_tests_only";
+
+const env: Env = {
+  STRIPE_SECRET_KEY: "sk_test_dummy",
+  STRIPE_WEBHOOK_SECRET: TEST_WEBHOOK_SECRET,
+  SUPABASE_URL: "https://example.supabase.co",
+  SUPABASE_SERVICE_ROLE_KEY: "service-role-key",
+};
+
+type MockBuilder = {
+  insert: ReturnType<typeof vi.fn>;
+  select: ReturnType<typeof vi.fn>;
+  update: ReturnType<typeof vi.fn>;
+  eq: ReturnType<typeof vi.fn>;
+  single: ReturnType<typeof vi.fn>;
+  maybeSingle: ReturnType<typeof vi.fn>;
+};
+
+interface MockState {
+  sponsorByCustomer: Map<string, string>;
+  donationsByPaymentIntent: Map<string, { id: string; sponsor_id: string }>;
+  insertedDonations: unknown[];
+  insertedSubscriptions: unknown[];
+  updatedSubscriptions: { id: string; patch: Record<string, unknown> }[];
+}
+
+let state: MockState;
+let supabaseFromCalls: string[];
+
+function makeMockSupabase() {
+  state = {
+    sponsorByCustomer: new Map(),
+    donationsByPaymentIntent: new Map(),
+    insertedDonations: [],
+    insertedSubscriptions: [],
+    updatedSubscriptions: [],
+  };
+  supabaseFromCalls = [];
+
+  function buildBuilder(table: string): MockBuilder {
+    let pendingFilter: { column: string; value: string } | null = null;
+    let pendingInsert: Record<string, unknown> | null = null;
+    let pendingUpdate: Record<string, unknown> | null = null;
+
+    const builder: MockBuilder = {
+      insert: vi.fn((payload: Record<string, unknown>) => {
+        pendingInsert = payload;
+        return builder;
+      }),
+      update: vi.fn((payload: Record<string, unknown>) => {
+        pendingUpdate = payload;
+        return builder;
+      }),
+      select: vi.fn(() => builder),
+      eq: vi.fn((column: string, value: string) => {
+        pendingFilter = { column, value };
+        if (table === "subscriptions" && pendingUpdate) {
+          state.updatedSubscriptions.push({ id: value, patch: pendingUpdate });
+          return Promise.resolve({ data: null, error: null });
+        }
+        return builder;
+      }),
+      single: vi.fn(async () => {
+        if (table === "sponsors" && pendingInsert) {
+          const customerId = pendingInsert.stripe_customer_id as string;
+          if (state.sponsorByCustomer.has(customerId)) {
+            return {
+              data: null,
+              error: { code: "23505", message: "duplicate key" },
+            };
+          }
+          const id = `sponsor-${state.sponsorByCustomer.size + 1}`;
+          state.sponsorByCustomer.set(customerId, id);
+          return { data: { id }, error: null };
+        }
+        if (table === "sponsors" && pendingFilter) {
+          const id = state.sponsorByCustomer.get(pendingFilter.value);
+          return id ? { data: { id }, error: null } : { data: null, error: null };
+        }
+        if (table === "donations" && pendingInsert) {
+          const pi = pendingInsert.stripe_payment_intent_id as string | null;
+          if (pi && state.donationsByPaymentIntent.has(pi)) {
+            return {
+              data: null,
+              error: { code: "23505", message: "duplicate key" },
+            };
+          }
+          const id = `donation-${state.insertedDonations.length + 1}`;
+          state.insertedDonations.push({ id, ...pendingInsert });
+          if (pi) {
+            state.donationsByPaymentIntent.set(pi, {
+              id,
+              sponsor_id: pendingInsert.sponsor_id as string,
+            });
+          }
+          return { data: { id }, error: null };
+        }
+        return { data: null, error: null };
+      }),
+      maybeSingle: vi.fn(async () => {
+        if (table === "sponsors" && pendingFilter) {
+          const id = state.sponsorByCustomer.get(pendingFilter.value);
+          return { data: id ? { id } : null, error: null };
+        }
+        if (table === "donations" && pendingFilter) {
+          const row = state.donationsByPaymentIntent.get(pendingFilter.value);
+          return { data: row ?? null, error: null };
+        }
+        return { data: null, error: null };
+      }),
+    };
+    return builder;
+  }
+
+  return {
+    from: vi.fn((table: string) => {
+      supabaseFromCalls.push(table);
+      const builder = buildBuilder(table);
+      if (table === "subscriptions") {
+        builder.insert = vi.fn((payload: Record<string, unknown>) => {
+          state.insertedSubscriptions.push(payload);
+          return Promise.resolve({ data: null, error: null });
+        }) as unknown as MockBuilder["insert"];
+      }
+      return builder;
+    }),
+  };
+}
+
+vi.mock("@supabase/supabase-js", () => ({
+  createClient: vi.fn(() => makeMockSupabase()),
+}));
+
+async function signed(eventBody: object): Promise<{ body: string; signature: string }> {
+  const body = JSON.stringify(eventBody);
+  const stripe = new Stripe("sk_test_dummy", { apiVersion: STRIPE_API_VERSION });
+  const signature = await stripe.webhooks.generateTestHeaderStringAsync({
+    payload: body,
+    secret: TEST_WEBHOOK_SECRET,
+  });
+  return { body, signature };
+}
+
+function makeEvent<T>(
+  type: string,
+  object: T,
+  overrides: Partial<Stripe.Event> = {},
+): Stripe.Event {
+  return {
+    id: `evt_${Math.random().toString(36).slice(2, 10)}`,
+    object: "event",
+    api_version: STRIPE_API_VERSION,
+    created: Math.floor(Date.now() / 1000),
+    data: { object: object as unknown as Stripe.Event.Data["object"] },
+    livemode: false,
+    pending_webhooks: 1,
+    request: { id: null, idempotency_key: null },
+    type,
+    ...overrides,
+  } as unknown as Stripe.Event;
+}
+
+beforeEach(() => {
+  state = {
+    sponsorByCustomer: new Map(),
+    donationsByPaymentIntent: new Map(),
+    insertedDonations: [],
+    insertedSubscriptions: [],
+    updatedSubscriptions: [],
+  };
+});
+
+describe("stripe-webhook signature verification", () => {
+  it("returns 400 when Stripe-Signature header is missing", async () => {
+    const req = new Request("https://example.com/api/stripe-webhook", {
+      method: "POST",
+      body: "{}",
+    });
+    const res = await onRequestPost({ request: req, env });
+    expect(res.status).toBe(400);
+    expect(await res.json()).toEqual({ error: "missing_signature" });
+  });
+
+  it("returns 400 when signature does not match the body", async () => {
+    const event = makeEvent("checkout.session.completed", {});
+    const { body } = await signed(event);
+    const req = new Request("https://example.com/api/stripe-webhook", {
+      method: "POST",
+      headers: { "stripe-signature": "t=1,v1=deadbeef" },
+      body,
+    });
+    const res = await onRequestPost({ request: req, env });
+    expect(res.status).toBe(400);
+    expect(await res.json()).toEqual({ error: "signature_verification_failed" });
+  });
+
+  it("accepts a request signed with the configured secret", async () => {
+    const event = makeEvent("payment_intent.created", { id: "pi_x" });
+    const { body, signature } = await signed(event);
+    const req = new Request("https://example.com/api/stripe-webhook", {
+      method: "POST",
+      headers: { "stripe-signature": signature },
+      body,
+    });
+    const res = await onRequestPost({ request: req, env });
+    expect(res.status).toBe(200);
+    expect(await res.json()).toMatchObject({ received: true, ignored: "payment_intent.created" });
+  });
+});
+
+describe("processEvent — checkout.session.completed (oneoff)", () => {
+  it("upserts sponsor and inserts donation", async () => {
+    const supabase = makeMockSupabase();
+    const event = makeEvent("checkout.session.completed", {
+      id: "cs_1",
+      mode: "payment",
+      customer: "cus_oneoff",
+      payment_intent: "pi_oneoff_1",
+      amount_total: 500, // 5.00 EUR
+      currency: "eur",
+    });
+    const result = await processEvent(event, supabase as never);
+    expect(result.status).toBe(200);
+    expect(state.insertedDonations).toHaveLength(1);
+    expect(state.insertedDonations[0]).toMatchObject({
+      stripe_payment_intent_id: "pi_oneoff_1",
+      amount_eur: 5,
+      kind: "oneoff",
+      currency: "EUR",
+    });
+  });
+
+  it("rejects amounts above the AML hard limit", async () => {
+    const supabase = makeMockSupabase();
+    const event = makeEvent("checkout.session.completed", {
+      mode: "payment",
+      customer: "cus_x",
+      payment_intent: "pi_big",
+      amount_total: (MAX_AML_AMOUNT_EUR + 1) * 100,
+      currency: "eur",
+    });
+    const result = await processEvent(event, supabase as never);
+    expect(result.status).toBe(400);
+    expect(result.body).toMatchObject({ error: "aml_limit_exceeded" });
+    expect(state.insertedDonations).toHaveLength(0);
+  });
+
+  it("ignores subscription-mode checkout sessions (handled by invoice.paid)", async () => {
+    const supabase = makeMockSupabase();
+    const event = makeEvent("checkout.session.completed", {
+      mode: "subscription",
+      customer: "cus_x",
+      payment_intent: null,
+      amount_total: 0,
+      currency: "eur",
+    });
+    const result = await processEvent(event, supabase as never);
+    expect(result.status).toBe(200);
+    expect(state.insertedDonations).toHaveLength(0);
+  });
+
+  it("returns idempotent success on duplicate payment_intent_id", async () => {
+    const supabase = makeMockSupabase();
+    const sharedPI = "pi_dup";
+    const event = makeEvent("checkout.session.completed", {
+      mode: "payment",
+      customer: "cus_dup",
+      payment_intent: sharedPI,
+      amount_total: 1000,
+      currency: "eur",
+    });
+    const first = await processEvent(event, supabase as never);
+    const second = await processEvent(event, supabase as never);
+    expect(first.status).toBe(200);
+    expect(second.status).toBe(200);
+    expect(state.insertedDonations).toHaveLength(1);
+  });
+});
+
+describe("processEvent — invoice.paid (subscription)", () => {
+  it("inserts a subscription_invoice donation", async () => {
+    const supabase = makeMockSupabase();
+    const event = makeEvent("invoice.paid", {
+      id: "in_1",
+      customer: "cus_sub",
+      payment_intent: "pi_sub_1",
+      amount_paid: 1000,
+      currency: "eur",
+      invoice_pdf: "https://stripe.example/invoice.pdf",
+    });
+    const result = await processEvent(event, supabase as never);
+    expect(result.status).toBe(200);
+    expect(state.insertedDonations[0]).toMatchObject({
+      kind: "subscription_invoice",
+      amount_eur: 10,
+      invoice_pdf_url: "https://stripe.example/invoice.pdf",
+    });
+  });
+});
+
+describe("processEvent — subscription lifecycle", () => {
+  it("created → inserts subscriptions row", async () => {
+    const supabase = makeMockSupabase();
+    const event = makeEvent("customer.subscription.created", {
+      id: "sub_1",
+      customer: "cus_sub",
+      status: "active",
+      start_date: 1714000000,
+      items: { data: [{ price: { unit_amount: 500 } }] },
+    });
+    const result = await processEvent(event, supabase as never);
+    expect(result.status).toBe(200);
+    expect(state.insertedSubscriptions).toHaveLength(1);
+    expect(state.insertedSubscriptions[0]).toMatchObject({
+      stripe_subscription_id: "sub_1",
+      status: "active",
+      monthly_eur: 5,
+    });
+  });
+
+  it("deleted → marks cancelled_at on the subscription", async () => {
+    const supabase = makeMockSupabase();
+    const event = makeEvent("customer.subscription.deleted", {
+      id: "sub_to_cancel",
+      customer: "cus_sub",
+      status: "canceled",
+    });
+    const result = await processEvent(event, supabase as never);
+    expect(result.status).toBe(200);
+    const update = state.updatedSubscriptions.find((u) => u.id === "sub_to_cancel");
+    expect(update?.patch).toMatchObject({ status: "canceled" });
+    expect(update?.patch.cancelled_at).toBeTypeOf("string");
+  });
+});
+
+describe("processEvent — charge.refunded", () => {
+  it("inserts a negative-amount refund row linked to the original donation", async () => {
+    const supabase = makeMockSupabase();
+    const original = makeEvent("checkout.session.completed", {
+      mode: "payment",
+      customer: "cus_ref",
+      payment_intent: "pi_ref_orig",
+      amount_total: 2000,
+      currency: "eur",
+    });
+    await processEvent(original, supabase as never);
+
+    const refund = makeEvent("charge.refunded", {
+      id: "ch_1",
+      payment_intent: "pi_ref_orig",
+      amount_refunded: 2000,
+      currency: "eur",
+    });
+    const result = await processEvent(refund, supabase as never);
+
+    expect(result.status).toBe(200);
+    const refundRow = state.insertedDonations.find(
+      (d) => (d as { kind?: string }).kind === "refund",
+    );
+    expect(refundRow).toMatchObject({
+      kind: "refund",
+      amount_eur: -20,
+      refund_of_donation_id: "donation-1",
+      stripe_payment_intent_id: null,
+    });
+  });
+
+  it("returns 200 when refund event has no matching original donation", async () => {
+    const supabase = makeMockSupabase();
+    const refund = makeEvent("charge.refunded", {
+      id: "ch_orphan",
+      payment_intent: "pi_unknown",
+      amount_refunded: 500,
+      currency: "eur",
+    });
+    const result = await processEvent(refund, supabase as never);
+    expect(result.status).toBe(200);
+    expect(result.body).toMatchObject({ no_original: true });
+  });
+});
+
+describe("processEvent — unknown event types", () => {
+  it("returns 200 with ignored flag for events we do not handle", async () => {
+    const supabase = makeMockSupabase();
+    const event = makeEvent("payment_method.attached", { id: "pm_x" });
+    const result = await processEvent(event, supabase as never);
+    expect(result.status).toBe(200);
+    expect(result.body).toMatchObject({ ignored: "payment_method.attached" });
+  });
+});

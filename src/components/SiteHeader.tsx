@@ -1,10 +1,11 @@
 import { Link, useLocation } from "@tanstack/react-router";
 
 const NAV_ITEMS = [
-  { to: "/test", label: "Test" },
   { to: "/test/firma", label: "Testy" },
   { to: "/skolenia", label: "Školenia" },
 ] as const;
+
+const CTA_ITEM = { to: "/test", label: "Spustiť rýchly test" } as const;
 
 export function SiteHeader() {
   const { pathname } = useLocation();
@@ -40,10 +41,17 @@ export function SiteHeader() {
           <img src="/favicon.svg" alt="" aria-hidden="true" className="h-7 w-7 sm:hidden" />
           <img src="/logo.svg" alt="subenai" className="hidden sm:block h-7 w-auto" />
         </Link>
-        <div className="flex items-center gap-1">
-          {navItem("/test", "Test")}
+        <div className="flex items-center gap-1 sm:gap-2">
           {navItem("/test/firma", "Testy")}
           {navItem("/skolenia", "Školenia")}
+          <Link
+            to={CTA_ITEM.to}
+            aria-label={CTA_ITEM.label}
+            className="ml-1 inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-2xl bg-accent-gradient px-3 py-1.5 text-xs font-bold text-primary-foreground shadow-glow transition-transform hover:scale-[1.03] active:scale-[0.99] sm:px-4 sm:py-2 sm:text-sm"
+          >
+            Spustiť <span className="hidden sm:inline">rýchly </span>test
+            <span aria-hidden="true">→</span>
+          </Link>
         </div>
       </nav>
     </header>
