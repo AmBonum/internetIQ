@@ -1,0 +1,46 @@
+# =============================================================================
+# Cloudflare Pages Functions secrets — local dev preview
+# =============================================================================
+# Copy this file to `.dev.vars` (which is in .gitignore) and fill in the real
+# values. `wrangler pages dev` and the local CF Pages dev runtime read from
+# `.dev.vars` automatically. Do NOT commit `.dev.vars`.
+#
+# In production, set these in Cloudflare Pages dashboard:
+#   Project → Settings → Environment variables → Production
+# Mark secrets (STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET,
+# SUPABASE_SERVICE_ROLE_KEY, RESEND_API_KEY, JWT_SECRET) as type "Secret"
+# so they don't leak in build logs.
+# =============================================================================
+
+# --- Stripe (E10) -----------------------------------------------------------
+# Test mode keys during development; live keys after Stripe verifies the s.r.o.
+# Get from https://dashboard.stripe.com/test/apikeys
+STRIPE_SECRET_KEY=sk_test_replace_me
+STRIPE_PUBLISHABLE_KEY=pk_test_replace_me
+
+# Webhook signing secret. Generate via:
+#   stripe listen --forward-to http://localhost:8788/api/stripe-webhook
+# Or in Dashboard → Developers → Webhooks → endpoint → "Signing secret".
+STRIPE_WEBHOOK_SECRET=whsec_replace_me
+
+# --- Supabase (E10.3 webhook needs service role) ----------------------------
+# Service role key bypasses RLS — NEVER ship to the client bundle.
+# Get from Supabase Dashboard → Project Settings → API → service_role key.
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=eyJ_replace_me
+
+# --- Email (E11.8) ----------------------------------------------------------
+# Resend API key for transactional emails (magic link, refund alerts).
+# Get from https://resend.com/api-keys.
+RESEND_API_KEY=re_replace_me
+EMAIL_FROM=noreply@lvtesting.eu
+EMAIL_REPLY_TO=segnities@gmail.com
+OPS_EMAIL=segnities@gmail.com
+
+# --- JWT (E12 author auth + E12.3 respondent attempt token) -----------------
+# Random 32-byte hex string. Generate via:
+#   node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+JWT_SECRET=replace_me_with_64_hex_chars
+
+# --- Site (informational; used in absolute URLs from server functions) ------
+SITE_ORIGIN=https://internetiq.lvtesting.eu

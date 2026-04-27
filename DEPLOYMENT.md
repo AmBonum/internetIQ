@@ -150,3 +150,68 @@ Tvoja appka beží na vlastnej doméne, vlastnom GitHub repe, vlastnom Supabase 
 **Doména neukazuje na appku**
 - DNS propagácia môže trvať až 48h. Skontroluj na https://dnschecker.org
 - Skontroluj, že CNAME ukazuje presne na `tvoj-projekt.pages.dev`
+
+---
+
+## 💳 Stripe sponsorship setup (E10+)
+
+Sponzorský flow potrebuje samostatné env vars na **Cloudflare Pages
+Functions** (server-side, nikdy nie v client bundle).
+
+### Krok 1 — vytvor Stripe účet pre s.r.o.
+
+1. https://stripe.com/sk → Sign up
+2. Pre **am.bonum s. r. o.** zadaj IČO 55 055 290, DIČ 2121850005, IBAN
+   Tatra banky, kópiu OP konateľa
+3. Verifikácia 1–3 dni (Stripe potvrdí cez e-mail)
+4. Kým neuvidíš „Activate live mode" tlačidlo, používaj iba **test
+   mode** (`sk_test_*`, `pk_test_*`) na vývoj
+
+### Krok 2 — env vars do Cloudflare
+
+V dashboardi: Cloudflare Pages → tvoj projekt → **Settings** →
+**Environment variables** → **Production**:
+
+| Variable | Type | Hodnota |
+|---|---|---|
+| `STRIPE_PUBLISHABLE_KEY` | Plain text | `pk_live_...` (po activate) |
+| `STRIPE_SECRET_KEY` | **Secret** | `sk_live_...` |
+| `STRIPE_WEBHOOK_SECRET` | **Secret** | `whsec_...` (z Webhook endpoint) |
+| `SUPABASE_SERVICE_ROLE_KEY` | **Secret** | service_role JWT |
+| `RESEND_API_KEY` | **Secret** | `re_...` (po DKIM verify) |
+| `JWT_SECRET` | **Secret** | 64-hex random (`node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`) |
+| `EMAIL_FROM` | Plain text | `noreply@lvtesting.eu` |
+| `EMAIL_REPLY_TO` | Plain text | `segnities@gmail.com` |
+| `OPS_EMAIL` | Plain text | `segnities@gmail.com` |
+| `SITE_ORIGIN` | Plain text | `https://internetiq.lvtesting.eu` |
+
+⚠️ Mark **Secret** type (nie Plain) všetky `*_KEY` / `*_SECRET` polia,
+aby sa neobjavili v build logoch.
+
+### Krok 3 — lokálny dev s wranglerom
+
+```bash
+cp .dev.vars.example .dev.vars
+# Vyplň test-mode keys
+npx wrangler pages dev -- npm run dev
+```
+
+### Krok 4 — Stripe webhook endpoint
+
+V Stripe Dashboard → Developers → Webhooks → **Add endpoint**:
+- URL: `https://internetiq.lvtesting.eu/api/stripe-webhook`
+- Events: `checkout.session.completed`, `invoice.paid`,
+  `customer.subscription.{created,updated,deleted}`, `charge.refunded`
+- Skopíruj „Signing secret" (whsec_…) → vlož ako `STRIPE_WEBHOOK_SECRET`
+
+### Krok 5 — bundle audit (CI gate)
+
+Pred každým merge spusť:
+
+```bash
+npm run audit:bundle
+```
+
+Skript zachytí (a) tracker SDK kód v dist/, (b) leak `STRIPE_SECRET`,
+`whsec_`, `service_role` alebo `RESEND_API_KEY` references do client
+bundle. Akýkoľvek hit = exit 1.
