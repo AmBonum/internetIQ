@@ -3,6 +3,7 @@ import { Link, useLocation } from "@tanstack/react-router";
 const NAV_ITEMS = [
   { to: "/test/firma", label: "Testy" },
   { to: "/skolenia", label: "Školenia" },
+  { to: "/podpora", label: "Podporiť" },
 ] as const;
 
 const CTA_ITEM = { to: "/test", label: "Spustiť rýchly test" } as const;
@@ -44,6 +45,15 @@ export function SiteHeader() {
         <div className="flex items-center gap-1 sm:gap-2">
           {navItem("/test/firma", "Testy")}
           {navItem("/skolenia", "Školenia")}
+          <Link
+            to="/podpora"
+            className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors hover:text-foreground ${
+              activeTo === "/podpora" ? "text-foreground" : "text-muted-foreground"
+            }`}
+          >
+            <span className="sm:hidden">Podporiť</span>
+            <span className="hidden sm:inline">Podporiť projekt</span>
+          </Link>
           <Link
             to={CTA_ITEM.to}
             aria-label={CTA_ITEM.label}
