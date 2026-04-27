@@ -34,17 +34,35 @@ export type TestFlowConfig =
       testSetId: string;
     };
 
-const RESULT_STORAGE_KEY = "iiq_last_result_v1";
+const RESULT_STORAGE_KEY_PREFIX = "iiq_last_result_v1";
 
 interface PersistedResult {
   result: ScoreResult;
   answers: AnswerRecord[];
 }
 
-function loadPersistedResult(): PersistedResult | null {
+function storageKeyFor(config: TestFlowConfig): string {
+  if (config.kind === "default") return `${RESULT_STORAGE_KEY_PREFIX}:default`;
+  if (config.kind === "pack") return `${RESULT_STORAGE_KEY_PREFIX}:pack:${config.label}`;
+  return `${RESULT_STORAGE_KEY_PREFIX}:composer:${config.testSetId}`;
+}
+
+function isBackForwardNavigation(): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    const entry = window.performance.getEntriesByType("navigation")[0] as
+      | PerformanceNavigationTiming
+      | undefined;
+    return entry?.type === "back_forward";
+  } catch {
+    return false;
+  }
+}
+
+function loadPersistedResult(key: string): PersistedResult | null {
   if (typeof window === "undefined") return null;
   try {
-    const raw = window.sessionStorage.getItem(RESULT_STORAGE_KEY);
+    const raw = window.sessionStorage.getItem(key);
     if (!raw) return null;
     const parsed = JSON.parse(raw) as PersistedResult;
     if (!parsed.result || !Array.isArray(parsed.answers)) return null;
@@ -54,29 +72,35 @@ function loadPersistedResult(): PersistedResult | null {
   }
 }
 
-function savePersistedResult(payload: PersistedResult) {
+function savePersistedResult(key: string, payload: PersistedResult) {
   if (typeof window === "undefined") return;
   try {
-    window.sessionStorage.setItem(RESULT_STORAGE_KEY, JSON.stringify(payload));
+    window.sessionStorage.setItem(key, JSON.stringify(payload));
   } catch {
     // sessionStorage can be disabled / quota-full; non-fatal.
   }
 }
 
-function clearPersistedResult() {
+function clearPersistedResult(key: string) {
   if (typeof window === "undefined") return;
   try {
-    window.sessionStorage.removeItem(RESULT_STORAGE_KEY);
+    window.sessionStorage.removeItem(key);
   } catch {
     // non-fatal
   }
 }
 
 export function TestFlow({ config = { kind: "default" } }: { config?: TestFlowConfig } = {}) {
-  // Restore prior completed test from sessionStorage (per-tab) so that
-  // browser-back from a course CTA returns the user to their result
-  // instead of restarting the quiz.
-  const restored = typeof window !== "undefined" ? loadPersistedResult() : null;
+  const storageKey = storageKeyFor(config);
+  // Restore prior completed test ONLY when the user used the browser's
+  // back/forward button — fresh navigation (link click, address bar) must
+  // start a clean test, even if a stale result lives in sessionStorage.
+  // Drop any stale entry for this key on fresh navigation so it can't
+  // resurface later in the same tab via cross-test contamination.
+  const restored =
+    typeof window !== "undefined" && isBackForwardNavigation()
+      ? loadPersistedResult(storageKey)
+      : (clearPersistedResult(storageKey), null);
 
   const [phase, setPhase] = useState<Phase>(restored ? "done" : "intro");
   const [questions, setQuestions] = useState<Question[]>(
@@ -109,14 +133,14 @@ export function TestFlow({ config = { kind: "default" } }: { config?: TestFlowCo
       const finalResult = computeScore(next);
       setResult(finalResult);
       setPhase("done");
-      savePersistedResult({ result: finalResult, answers: next });
+      savePersistedResult(storageKey, { result: finalResult, answers: next });
     } else {
       setIndex(index + 1);
     }
   }
 
   function restart() {
-    clearPersistedResult();
+    clearPersistedResult(storageKey);
     setQuestions(config.kind === "default" ? getTestQuestions() : config.questions);
     setIndex(0);
     setAnswers([]);
