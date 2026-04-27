@@ -51,7 +51,7 @@ export async function drawIgStoryToCanvas(args: DrawArgs): Promise<Blob> {
   const labelFont = "800 52px system-ui, -apple-system, Segoe UI, Roboto";
   ctx.font = labelFont;
   const labelW = ctx.measureText("subenai").width;
-  const blockW = badgeSize + badgePad + labelW;
+  const blockW = badgePad + labelW;
   const blockX = (W - blockW) / 2;
   const blockY = 148;
 

@@ -34,7 +34,7 @@ const COLUMNS: { title: string; links: FooterLink[] }[] = [
     links: [
       { to: "/privacy", label: "Súkromie" },
       { to: "/cookies", label: "Cookies" },
-      { to: "/spravovat-podporu", label: "Spravovať podporu" },
+      { to: "/spravovat-podporu", label: "Spravovať podporu (sponzori)" },
     ],
   },
 ];
@@ -51,19 +51,23 @@ let cachedSponsorsPromise: Promise<FooterSponsor[]> | null = null;
 
 function loadFooterSponsors(): Promise<FooterSponsor[]> {
   if (!cachedSponsorsPromise) {
-    cachedSponsorsPromise = supabase
-      .from("footer_sponsors")
-      .select("id, display_name, display_link")
-      .order("created_at", { ascending: false })
-      .limit(50)
-      .then(({ data, error }) => {
-        if (error) {
-          // Reset cache on error so next render retries.
-          cachedSponsorsPromise = null;
-          return [];
-        }
-        return (data ?? []) as FooterSponsor[];
-      });
+    // Supabase builder returns PromiseLike, not Promise — wrap so .catch/.finally are available.
+    const p = Promise.resolve(
+      supabase
+        .from("footer_sponsors")
+        .select("id, display_name, display_link")
+        .order("created_at", { ascending: false })
+        .limit(50),
+    ).then(({ data, error }) => {
+      if (error) {
+        // Reset cache on error so next render retries.
+        cachedSponsorsPromise = null;
+        return [] as FooterSponsor[];
+      }
+      return (data ?? []) as FooterSponsor[];
+    });
+    cachedSponsorsPromise = p;
+    return p;
   }
   return cachedSponsorsPromise;
 }
@@ -93,7 +97,7 @@ export function Footer() {
             Bezplatný edukatívny nástroj pre slovenský digitálny svet.
           </p>
           <p className="text-xs text-muted-foreground">
-            spravené s 🍺 v Košiciach ·{" "}
+            spravené s 🍺 v Novejši ·{" "}
             <Link
               to="/zmeny"
               className="font-mono hover:text-foreground transition-colors"

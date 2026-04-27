@@ -1,8 +1,21 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useMemo, useState } from "react";
 import { COURSES } from "@/content/courses";
+import type { CourseCategory } from "@/content/courses";
 import { CourseCard } from "@/components/courses/CourseCard";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
+
+const CATEGORY_LABEL: Record<CourseCategory, string> = {
+  sms: "SMS",
+  email: "Email",
+  voice: "Telefón",
+  marketplace: "Marketplace",
+  investicie: "Investície",
+  vztahy: "Vzťahy",
+  data: "Data hygiene",
+  obecne: "Všeobecné",
+};
 
 const SITE_ORIGIN = "https://subenai.lvtesting.eu";
 
@@ -51,6 +64,28 @@ export const Route = createFileRoute("/skolenia/")({
 });
 
 function CoursesIndexPage() {
+  const [activeCategories, setActiveCategories] = useState<Set<CourseCategory>>(new Set());
+
+  const availableCategories = useMemo(() => {
+    const seen = new Set<CourseCategory>();
+    for (const c of COURSES) seen.add(c.category);
+    return [...seen];
+  }, []);
+
+  const filtered = useMemo(() => {
+    if (activeCategories.size === 0) return COURSES;
+    return COURSES.filter((c) => activeCategories.has(c.category));
+  }, [activeCategories]);
+
+  function toggleCategory(cat: CourseCategory) {
+    setActiveCategories((prev) => {
+      const next = new Set(prev);
+      if (next.has(cat)) next.delete(cat);
+      else next.add(cat);
+      return next;
+    });
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <main className="mx-auto max-w-5xl px-4 pb-12 pt-12 sm:pt-16">
@@ -58,15 +93,58 @@ function CoursesIndexPage() {
           <h1 className="text-4xl font-black sm:text-5xl">Bezplatné školenia</h1>
           <p className="mx-auto mt-3 max-w-2xl text-base text-muted-foreground sm:text-lg">
             Krátke školenia o tom, ako rozoznať najčastejšie podvody na slovenskom internete. Žiadna
-            registrácia, žiadne reklamy. 5 – 10 minút na školenie.
+            registrácia, žiadne reklamy. 5 – 20 minút na školenie.
           </p>
         </header>
 
-        {COURSES.length === 0 ? (
-          <p className="text-center text-muted-foreground">Školenia sa pripravujú.</p>
+        {availableCategories.length > 1 && (
+          <section
+            aria-labelledby="filters-h"
+            className="mb-8 rounded-2xl border border-border/60 bg-card/30 p-4"
+          >
+            <h2
+              id="filters-h"
+              className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground"
+            >
+              Filter podľa témy
+            </h2>
+            <div className="flex flex-wrap gap-2">
+              {availableCategories.map((cat) => {
+                const active = activeCategories.has(cat);
+                return (
+                  <button
+                    key={cat}
+                    type="button"
+                    onClick={() => toggleCategory(cat)}
+                    aria-pressed={active}
+                    className={`rounded-full border px-3 py-1.5 text-sm transition ${
+                      active
+                        ? "border-primary bg-primary/15 text-primary"
+                        : "border-border/60 bg-background/40 text-muted-foreground hover:border-primary/40 hover:text-foreground"
+                    }`}
+                  >
+                    {CATEGORY_LABEL[cat]}
+                  </button>
+                );
+              })}
+              {activeCategories.size > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setActiveCategories(new Set())}
+                  className="ml-auto text-xs text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
+                >
+                  Vyčistiť ({activeCategories.size})
+                </button>
+              )}
+            </div>
+          </section>
+        )}
+
+        {filtered.length === 0 ? (
+          <p className="text-center text-muted-foreground">Žiadne školenia pre vybraté filtre.</p>
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {COURSES.map((c) => (
+            {filtered.map((c) => (
               <CourseCard key={c.slug} course={c} />
             ))}
           </div>
@@ -74,7 +152,7 @@ function CoursesIndexPage() {
 
         <div className="mt-12 flex justify-center">
           <Button asChild>
-            <Link to="/test">Otestuj sa najprv (90 sekúnd)</Link>
+            <Link to="/test">Otestuj sa (cca 90 sekúnd)</Link>
           </Button>
         </div>
       </main>
