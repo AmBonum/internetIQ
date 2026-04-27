@@ -116,6 +116,18 @@ export function Footer() {
               v{CURRENT_VERSION}
             </Link>
           </p>
+          <br/>
+          <p className="text-xs text-muted-foreground">
+            powered by{" "}
+            <a
+              href="https://www.lvtesting.eu"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary hover:text-foreground transition-colors"
+            >
+              lvtesting.eu
+            </a>
+          </p>
         </div>
 
         {COLUMNS.map((col) => (
