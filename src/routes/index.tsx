@@ -1,26 +1,65 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { Footer } from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "subenai — Zistíš, či by si prežil" },
+      { title: "subenai — Otestuj sa, kým ťa otestuje podvodník" },
       {
         name: "description",
         content:
-          "10 otázok. 90 sekúnd. Reálne scam správy, emaily a stránky. Zisti, či by si na internete prežil — alebo ťa scammeri rozoberú na súčiastky.",
+          "10 otázok. 90 sekúnd. Reálne scam správy, emaily a stránky. Otestuj sa, kým ťa otestuje podvodník — bezplatne, bez registrácie.",
       },
       { property: "og:title", content: "subenai" },
       {
         property: "og:description",
-        content: "Be online, but safe.",
+        content: "Otestuj sa, kým ťa otestuje podvodník.",
       },
     ],
   }),
   component: Index,
 });
+
+const FAQ_ITEMS: { id: string; question: string; answer: string }[] = [
+  {
+    id: "vazne",
+    question: "Je to seriózne použiteľné?",
+    answer:
+      "Otázky sú stavané podľa reálnych scam vzorcov, ktoré sa na Slovensku objavili v posledných mesiacoch. Nie je to bezpečnostný audit, ale pošli to rodičom alebo kolegom — uvidíš, kde majú slabinu.",
+  },
+  {
+    id: "zadarmo",
+    question: "Je to zadarmo?",
+    answer:
+      "Áno. Test, školenia, výsledok aj zdieľanie sú bezplatné. Žiadne reklamy, žiadna registrácia, žiadne paywally. Projekt funguje z dobrovoľných príspevkov.",
+  },
+  {
+    id: "firmy",
+    question: "Čo sú testy pre firmy?",
+    answer:
+      "Predpripravené sady otázok prispôsobené konkrétnej branži. E-shop dostane otázky o falošných objednávkach, gastro o fake kontrolách, IT o BEC podvodoch. Stačí zdieľať link s tímom — výsledok dostane každý sám pre seba.",
+  },
+  {
+    id: "podvadzanie",
+    question: "Dá sa to podvádzať?",
+    answer:
+      "Skús. Časový limit beží, otázky sa miešajú, googliť asi nestihneš. Uvidíme, kto z nás je chytrejší.",
+  },
+  {
+    id: "data",
+    question: "Aké údaje o mne ukladáte?",
+    answer:
+      "Iba tvoje odpovede a skóre — anonymne, bez mena, bez e-mailu, bez IP. Detaily v Zásadách ochrany súkromia v päte stránky.",
+  },
+];
 
 function Index() {
   const [count, setCount] = useState<number | null>(null);
@@ -53,15 +92,13 @@ function Index() {
               : `Už otestovaných ${displayCount.toLocaleString("sk-SK")} ľudí`}
           </div>
 
-          <h1 className="text-balance text-5xl font-black leading-[1.05] tracking-tight sm:text-7xl">
-            subenai
-            <br />
-            <span className="text-foreground">Zistíš, či by si prežil.</span>
+          <h1 className="text-balance text-4xl font-black leading-[1.05] tracking-tight sm:text-6xl md:text-7xl">
+            Otestuj sa skôr, <span className="text-primary">než ťa otestuje podvodník.</span>
           </h1>
 
           <p className="mx-auto mt-6 max-w-xl text-balance text-base text-muted-foreground sm:text-lg">
-            10 otázok. 90 sekúnd. Reálne scam správy, emaily a stránky. Uvidíš, kde máš slabinu — a
-            či by si z nej žil.
+            10 otázok. 90 sekúnd. Reálne scam SMS-ky, emaily a stránky zo slovenského prostredia.
+            Uvidíš, kde máš slabinu — bez toho, aby ťa to stálo peniaze.
           </p>
 
           <div className="mt-10 flex flex-col items-center gap-3">
@@ -113,74 +150,155 @@ function Index() {
           </div>
         </section>
 
-        {/* What else is here */}
-        <section className="mt-20 grid gap-4 sm:grid-cols-2">
-          <Link
+        {/* Feature cards: Testy / Školenia / O projekte */}
+        <section className="mt-20 grid gap-4 md:grid-cols-3" aria-labelledby="features-h">
+          <h2 id="features-h" className="sr-only">
+            Čo všetko tu nájdeš
+          </h2>
+          <FeatureCard
             to="/test/firma"
-            className="group rounded-2xl border border-border/60 bg-card/70 p-6 shadow-card backdrop-blur transition hover:border-primary/50 hover:bg-card"
-          >
-            <div className="text-3xl">🏢</div>
-            <h2 className="mt-3 text-lg font-bold group-hover:text-primary">Testy pre firmy</h2>
-            <p className="mt-2 text-sm text-muted-foreground">
-              Predefinované testy podľa branže — e-shop, gastro, IT, autoservis. Otestuj celý tím
-              naraz. 5–15 minút.
-            </p>
-            <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-primary">
-              Pozrieť testy{" "}
-              <span className="transition-transform group-hover:translate-x-1">→</span>
-            </span>
-          </Link>
-
-          <Link
+            emoji="🏢"
+            title="Testy pre firmy"
+            description="Predefinované sady podľa branže — e-shop, gastro, IT, autoservis, verejné služby. Otestuj celý tím naraz, každý dostane vlastný výsledok."
+            cta="Pozrieť firemné testy"
+          />
+          <FeatureCard
             to="/skolenia"
-            className="group rounded-2xl border border-border/60 bg-card/70 p-6 shadow-card backdrop-blur transition hover:border-primary/50 hover:bg-card"
-          >
-            <div className="text-3xl">📚</div>
-            <h2 className="mt-3 text-lg font-bold group-hover:text-primary">Bezplatné školenia</h2>
-            <p className="mt-2 text-sm text-muted-foreground">
-              Phishing, smishing, romance scams, BEC podvody. Krátke kurzy s reálnymi príkladmi zo
-              slovenského prostredia.
+            emoji="📚"
+            title="Bezplatné školenia"
+            description="8 kurzov: phishing, smishing, vishing, BEC, marketplace, investičné a romance scams, hygiena údajov. Krátke, so slovenskými scenármi."
+            cta="Prejsť do školení"
+          />
+          <FeatureCard
+            to="/o-projekte"
+            emoji="🛡️"
+            title="O projekte"
+            description="Prečo je to zadarmo, prečo bez reklám, kam idú peniaze. Transparentne — žiadny paywall, žiadne dark patterns, žiadne tracking bez súhlasu."
+            cta="Spoznaj projekt"
+          />
+        </section>
+
+        {/* Sponsorship — primary new ask, full-width gradient panel */}
+        <section
+          aria-labelledby="support-h"
+          className="relative mt-16 overflow-hidden rounded-3xl border border-primary/40 bg-card p-8 sm:p-12"
+        >
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 bg-accent-gradient opacity-[0.08]"
+          />
+          <div className="relative flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+            <div className="max-w-xl space-y-3">
+              <p className="text-xs font-bold uppercase tracking-wider text-primary">
+                Misia projektu
+              </p>
+              <h2 id="support-h" className="text-2xl font-black tracking-tight sm:text-3xl">
+                Pomôž udržať to bezplatné pre všetkých.
+              </h2>
+              <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">
+                Robíme to preto, aby aj seniori, dôchodcovia a ne-technickí používatelia vedeli
+                rozpoznať podvod skôr, než ich pripraví o peniaze. Bez reklám. Bez paywallu.
+                Príspevok od <strong className="text-foreground">5 € mesačne</strong> alebo
+                jednorazovo pomáha pokryť hosting, novú tvorbu obsahu a údržbu.
+              </p>
+            </div>
+            <div className="flex flex-col gap-3 sm:flex-row md:flex-col">
+              <Link
+                to="/podpora"
+                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-accent-gradient px-6 py-3 text-base font-bold text-primary-foreground shadow-glow transition-transform hover:scale-[1.03] active:scale-[0.99]"
+              >
+                Podporiť projekt
+                <span aria-hidden="true">→</span>
+              </Link>
+              <Link
+                to="/o-projekte"
+                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-border/60 bg-background/60 px-6 py-3 text-sm font-semibold text-foreground transition-colors hover:bg-background"
+              >
+                Dozvedieť sa viac
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        {/* Sponsors thank-you — small acknowledgement block */}
+        <section
+          aria-labelledby="sponsors-h"
+          className="mt-12 flex flex-col items-start justify-between gap-4 rounded-2xl border border-border/60 bg-card/50 p-6 sm:flex-row sm:items-center"
+        >
+          <div className="space-y-1">
+            <p className="text-2xl" aria-hidden="true">
+              🙏
             </p>
-            <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-primary">
-              Pozrieť školenia{" "}
-              <span className="transition-transform group-hover:translate-x-1">→</span>
-            </span>
+            <h2 id="sponsors-h" className="text-base font-bold">
+              Vďaka týmto ľuďom funguje subenai
+            </h2>
+            <p className="text-sm text-muted-foreground">
+              Verejné poďakovanie sponzorom, ktorí súhlasili so zverejnením mena. Anonymita je
+              default — väčšina podporovateľov tu nie je vidieť.
+            </p>
+          </div>
+          <Link
+            to="/sponzori"
+            className="inline-flex shrink-0 items-center gap-2 rounded-xl border border-border bg-background px-5 py-2.5 text-sm font-semibold text-foreground transition-colors hover:border-primary/40"
+          >
+            Pozrieť zoznam
+            <span aria-hidden="true">→</span>
           </Link>
         </section>
 
         {/* FAQ */}
         <section className="mt-20">
           <h2 className="text-2xl font-bold">Časté otázky</h2>
-          <dl className="mt-6 space-y-5 text-sm">
-            <div>
-              <dt className="font-semibold">Je to seriózne použiteľné?</dt>
-              <dd className="mt-1 text-muted-foreground">
-                Otázky stavané podľa reálnych scam vzorcov. Nie je to audit, ale pošli to rodičom —
-                a uvidíš.
-              </dd>
-            </div>
-            <div>
-              <dt className="font-semibold">Je to zadarmo?</dt>
-              <dd className="mt-1 text-muted-foreground">
-                Áno. Test aj všetky školenia sú bezplatné. Bez reklám. Bez registrácie.
-              </dd>
-            </div>
-            <div>
-              <dt className="font-semibold">Čo sú testy pre firmy?</dt>
-              <dd className="mt-1 text-muted-foreground">
-                Predpripravené sady otázok prispôsobené konkrétnej branži. E-shop dostane otázky o
-                falošných objednávkach, gastro o falošných kontrolách. Stačí zdieľať link s tímom.
-              </dd>
-            </div>
-            <div>
-              <dt className="font-semibold">Dá sa to podvádzať?</dt>
-              <dd className="mt-1 text-muted-foreground">Skús. Uvidíme, kto z nás je chytrejší.</dd>
-            </div>
-          </dl>
+          <Accordion
+            type="single"
+            collapsible
+            className="mt-6 rounded-2xl border border-border/60 bg-card/40 px-5"
+          >
+            {FAQ_ITEMS.map((item) => (
+              <AccordionItem
+                key={item.id}
+                value={item.id}
+                className="border-b border-border/40 last:border-b-0"
+              >
+                <AccordionTrigger className="text-left text-base font-semibold">
+                  {item.question}
+                </AccordionTrigger>
+                <AccordionContent className="text-sm leading-relaxed text-muted-foreground">
+                  {item.answer}
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
         </section>
 
         <Footer />
       </main>
     </div>
+  );
+}
+
+interface FeatureCardProps {
+  to: string;
+  emoji: string;
+  title: string;
+  description: string;
+  cta: string;
+}
+
+function FeatureCard({ to, emoji, title, description, cta }: FeatureCardProps) {
+  return (
+    <Link
+      to={to}
+      className="group flex h-full flex-col rounded-2xl border border-border/60 bg-card/70 p-6 shadow-card backdrop-blur transition hover:border-primary/50 hover:bg-card"
+    >
+      <div className="text-3xl" aria-hidden="true">
+        {emoji}
+      </div>
+      <h3 className="mt-3 text-lg font-bold group-hover:text-primary">{title}</h3>
+      <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{description}</p>
+      <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-primary">
+        {cta} <span className="transition-transform group-hover:translate-x-1">→</span>
+      </span>
+    </Link>
   );
 }
