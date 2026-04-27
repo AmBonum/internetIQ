@@ -1,0 +1,72 @@
+[
+  {
+    "version": "1.4.0",
+    "date": "2026-04-26",
+    "added": [],
+    "changed": [
+      "Premenovanie projektu z **internetiq** na **subenai**. Nové logo (gradient acid-lime → emerald), nový favicon, nová doména. Obsah testu, kurzov a celá funkcionalita zostala nezmenená."
+    ],
+    "fixed": [],
+    "removed": [],
+    "deprecated": [],
+    "security": []
+  },
+  {
+    "version": "1.3.0",
+    "date": "2026-04-25",
+    "added": [
+      "**Testy pre konkrétne odvetvia** — e-shop, gastro, autoservis, IT vývoj, verejné služby. Každý balík má vlastný výber otázok a vlastnú hranicu „Vyhovuje pre…\" pri vyhodnotení.",
+      "**Stovka nových otázok** — phishing, smishing, vishing, marketplace podvody, BEC, investičné podvody, romance scams.",
+      "**8 nových školení** pod sekciou *Školenia* (predtým *Kurzy*) s detailným rozpisom, ako jednotlivé typy podvodov vyzerajú a ako sa im brániť."
+    ],
+    "changed": [
+      "Úvodná stránka prepísaná pre prvý dojem: *„Zistíš, či by si prežil.\"*"
+    ],
+    "fixed": [],
+    "removed": [],
+    "deprecated": [],
+    "security": []
+  },
+  {
+    "version": "1.2.0",
+    "date": "2026-04-20",
+    "added": [
+      "**Detailný review tvojich odpovedí** po dokončení testu — pre každú otázku vidíš svoju odpoveď, správnu odpoveď a krátke vysvetlenie.",
+      "**Voliteľný prieskum** po teste (vek, pohlavie, miesto, sebahodnotenie, najväčšia obava online, či si už raz nasadol/a). Nič nie je povinné, môžeš odoslať aj prázdny formulár.",
+      "**Edukatívny popup** po výsledku, ktorý ťa vyzve „vyplniť\" citlivé údaje — a okamžite vysvetlí, prečo to bola past. Nič z toho, čo do popupu napíšeš, neopustí tvoj prehliadač.",
+      "**Zdieľanie výsledku** cez sociálne siete (Facebook, Messenger, WhatsApp, X, LinkedIn, Telegram). Bez tracking pixelov — len obyčajné odkazy."
+    ],
+    "changed": [],
+    "fixed": [],
+    "removed": [],
+    "deprecated": [],
+    "security": []
+  },
+  {
+    "version": "1.1.0",
+    "date": "2026-04-15",
+    "added": [
+      "**Skóre, percentil a archetyp osobnosti** po dokončení testu.",
+      "**Zdieľateľný odkaz** na tvoj výsledok cez krátky kód — nikoho neidentifikuje.",
+      "**Cookie consent** s 4 kategóriami (nutné, predvoľby, analytika, marketing). Default: nič mimo nutných.",
+      "Stránky **Súkromie** a **Cookies** so zoznamom toho, čo presne spracúvame, ako dlho a na akom právnom základe."
+    ],
+    "changed": [],
+    "fixed": [],
+    "removed": [],
+    "deprecated": [],
+    "security": []
+  },
+  {
+    "version": "1.0.0",
+    "date": "2026-04-10",
+    "added": [
+      "Prvé verejné spustenie: 15-otázkový test rozpoznávania scam-ov a phishingu, anonymne, bez registrácie."
+    ],
+    "changed": [],
+    "fixed": [],
+    "removed": [],
+    "deprecated": [],
+    "security": []
+  }
+]
