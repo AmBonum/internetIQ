@@ -54,6 +54,15 @@ describe("test-packs registry", () => {
     expect(result.ok, result.ok ? "" : `missing: ${result.missing.join(", ")}`).toBe(true);
   });
 
+  it("every REGISTERED pack references only existing question IDs", () => {
+    for (const p of TEST_PACKS) {
+      const result = validatePackQuestionIds(p);
+      expect(result.ok, result.ok ? "" : `${p.slug} missing: ${result.missing.join(", ")}`).toBe(
+        true,
+      );
+    }
+  });
+
   it("validatePackQuestionIds reports missing IDs for an invalid pack", () => {
     const orphan = { ...templatePack, questionIds: [...templatePack.questionIds, "nope-xyz-999"] };
     const result = validatePackQuestionIds(orphan);

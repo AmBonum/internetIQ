@@ -184,6 +184,31 @@ update všetkých dotknutých stories.
     - **Deploy história / changelog** so date + version + changes summary,
       auto-generovaný z git tagov alebo `CHANGELOG.md`
 
+### Education mode (E12)
+
+23. **Education mode = opt-in PII collection** — composer (E8.2) má toggle
+    „Zbierať odpovede s menom a emailom" (default OFF). Keď ON:
+    - `test_sets.collects_responses = true`, `test_sets.author_password_hash`
+      (bcrypt) je povinné
+    - Pri test-taking flow respondent zadá `name + email` + zaškrtne GDPR
+      consent (čl. 6 ods. 1 písm. a — explicitný súhlas)
+    - `attempts.respondent_name + respondent_email` ukladané vedľa skóre
+    - Autor cez `/test/zostava/{id}/vysledky` zadá heslo → vidí agregáty + tabuľku
+24. **Author auth** — bcrypt hash (cost factor 10) `test_sets.author_password_hash`,
+    žiadny user account systém. Heslo je shared secret medzi autorom a app.
+    Brute-force protekcia: rate limit 5 pokusov / 15 min na CF Pages Function.
+    JWT signed token (10 min TTL) issued po úspešnom login → access k results JSON.
+25. **Respondent retencia** — meno + email klasifikované ako „edu odpovede"
+    kategória v privacy. Default retencia **12 mesiacov** (krátka, lebo edu
+    use-case = jeden semester / kurz). Po expírácii anonymizujeme (nullify
+    name/email), ale skóre a anwers_jsonb zostávajú pre štatistiky autora.
+    Sám autor môže manuálne zmazať konkrétneho respondenta cez dashboard.
+26. **CONSENT_VERSION** bump 1.2.0 → **1.3.0** pri E12 launch. Banner sa znova
+    objaví — copy: „Pridali sme možnosť zbierať odpovede pre edukačné účely."
+27. **Spam ochrana** — invisible honeypot field na intake form (bot-deterrent),
+    rate limit 3 attempts / 5 min / IP / test_set, email format validation
+    (no MX check — gating cez DNS lookup je prílišný overhead pre MVP).
+
 ---
 
 ## Suggested execution order
@@ -222,6 +247,15 @@ byť pred UI. Legal docs musia byť pred go-live sponzorstva.
 24. E11.6  /o-projekte presentation page       (S,  P1)
 25. E11.7  /zmeny changelog / deploy history   (S,  P2)
 26. E11.8  Transactional email infra           (S,  P1)
+
+=== Education track (autori zbierajú odpovede) ===
+27. E12.6  Privacy + CONSENT_VERSION 1.3.0     (S,  P1)  ← gatekeeper
+28. E12.1  Schema (author pwd + respondent PII) (S,  P2)
+29. E12.3  Respondent intake (name+email+GDPR) (S,  P2)
+30. E12.7  Anti-spam (rate limit + honey-trap)  (S,  P2)
+31. E12.2  Composer toggle + password setup    (M,  P2)
+32. E12.4  Results dashboard (password-gated)  (M,  P2)
+33. E12.5  Author how-to guide                 (S,  P2)
 ```
 
 E9.1–E9.4 môžu ísť paralelne (rôzne otázky, žiadny code conflict).
@@ -238,7 +272,7 @@ zlyhajú na nepriamych voľbách.
 | story | title | effort | priority | status | deps |
 |---|---|---|---|---|---|
 | [E7.1](./stories/E7.1-test-pack-schema.md) | Test pack content schema + registry | S | P1 | ✅ Done | E9.1 (banky musia obsahovať priemyselné otázky) |
-| [E7.2](./stories/E7.2-industry-packs-batch-a.md) | Industry packs A: e-shop, gastro, autoservis, IT, vereje sluzby | M | P1 | 🟡 Ready | E7.1 |
+| [E7.2](./stories/E7.2-industry-packs-batch-a.md) | Industry packs A: e-shop, gastro, autoservis, IT, vereje sluzby | M | P1 | ✅ Done | E7.1 |
 | [E7.3](./stories/E7.3-industry-packs-batch-b.md) | Industry packs B: dispečing, doprava, marketing, zdravotnictvo, skoly | M | P2 | 🟡 Ready | E7.1 |
 | [E7.4](./stories/E7.4-industry-packs-batch-c.md) | Industry packs C: strojová výroba, pneuservis, SME účto, HORECA, servis | M | P3 | 🟡 Ready | E7.1 |
 | [E7.5](./stories/E7.5-firma-route.md) | `/test/firma/$slug` route + SEO + Quiz JSON-LD | M | P1 | ✅ Done | E7.1 |
@@ -288,7 +322,25 @@ zlyhajú na nepriamych voľbách.
 | [E11.7](./stories/E11.7-changelog-page.md) | `/zmeny` deploy history / changelog | S | P2 | 🟡 Ready | — |
 | [E11.8](./stories/E11.8-email-infra.md) | Transactional email infra (Resend / SES) | S | P1 | ⛔ Blocked | E10.4 |
 
-**Total: 22 stories** (6 + 3 + 4 + 5 + 4).
+### Epic 12 — Education mode (autori zbierajú výsledky)
+
+> Učitelia / firmy môžu pri composer-i zapnúť „zbierať odpovede" — študent / zamestnanec
+> pri spustení testu zadá meno a e-mail, autor potom cez password-protected link vidí
+> agregáty + per-respondent výsledky. Pridáva PII track ku doteraz anon-only flow,
+> takže vyžaduje samostatný GDPR consent od respondenta + privacy update.
+
+| story | title | effort | priority | status | deps |
+|---|---|---|---|---|---|
+| [E12.1](./stories/E12.1-edu-schema.md) | Schema rozšírenie: `test_sets` author password + `attempts` respondent name/email + RLS | S | P2 | ⛔ Blocked | E8.1 |
+| [E12.2](./stories/E12.2-composer-edu-toggle.md) | Composer UI: „Zbierať odpovede s menom a emailom" toggle + heslo authora | M | P2 | ⛔ Blocked | E12.1, E8.2 |
+| [E12.3](./stories/E12.3-respondent-intake.md) | Test intro form pre respondenta (name + email + GDPR consent) keď collects_responses=true | S | P2 | ⛔ Blocked | E12.1 |
+| [E12.4](./stories/E12.4-results-dashboard.md) | `/test/zostava/$id/vysledky` dashboard s password gate + agregáty + tabuľka | M | P2 | ⛔ Blocked | E12.1, E12.3 |
+| [E12.5](./stories/E12.5-edu-author-guide.md) | Autor guide: ako vytvoriť test, zdieľať, pozerať výsledky | S | P2 | ⛔ Blocked | E12.4 |
+| [E12.6](./stories/E12.6-edu-privacy.md) | Privacy update + CONSENT_VERSION 1.3.0 (nová kategória „edu odpovede") | S | P1 | ⛔ Blocked | E12.1 |
+| [E12.7](./stories/E12.7-anti-spam.md) | Email format validation + per-pack anti-spam (rate limit + honey-trap field) | S | P2 | ⛔ Blocked | E12.3 |
+
+**Total: 32 stories** (6 + 3 + 4 + 5 + 8 + 7).
+(E11 je 8 stories po pridaní E11.6/E11.7/E11.8.)
 
 ---
 

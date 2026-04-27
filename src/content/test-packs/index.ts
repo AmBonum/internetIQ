@@ -3,12 +3,21 @@ import { QUESTIONS } from "@/lib/quiz/questions";
 // `_template` is imported only to keep the schema compile-checked
 // against a concrete sample; intentionally NOT registered in TEST_PACKS.
 import "./_template";
+import { eshopPack } from "./eshop";
+import { gastroHorecaPack } from "./gastro-horeca";
+import { autoservisPack } from "./autoservis";
+import { itVyvojPack } from "./it-vyvoj";
+import { verejneSluzbyPack } from "./verejne-sluzby";
 
 export type { TestPack, Industry } from "./_schema";
 export { testPackSchema } from "./_schema";
 
 export const TEST_PACKS: TestPack[] = [
-  // packs land here in E7.2–E7.4
+  eshopPack,
+  gastroHorecaPack,
+  autoservisPack,
+  itVyvojPack,
+  verejneSluzbyPack,
 ];
 
 const slugs = new Set<string>();
