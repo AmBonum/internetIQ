@@ -46,7 +46,7 @@ export async function drawIgStoryToCanvas(args: DrawArgs): Promise<Blob> {
   ctx.fillRect(0, 0, W, H);
 
   // ===== Brand header =====
-  const labelFont = "800 52px system-ui, -apple-system, Segoe UI, Roboto";
+  const labelFont = "800 60px system-ui, -apple-system, Segoe UI, Roboto";
   const blockY = 148;
 
   // "subenai" in brand lime-green
