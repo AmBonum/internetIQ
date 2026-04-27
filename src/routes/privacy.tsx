@@ -301,7 +301,8 @@ function PrivacyPage() {
               stanoveného algoritmu, no
               <strong> nemá žiadny právny ani podobne významný účinok</strong> na teba v zmysle čl.
               22 GDPR. Slúži výlučne na zábavu a edukáciu. Profilovanie na marketingové účely
-              nevykonávame.
+              vykonávame iba s explicitným súhlasom (kategória „marketing" v cookie banneri);
+              aktuálne žiadne marketingové profilovanie neprebieha.
             </p>
             <p className="text-sm leading-relaxed text-muted-foreground">
               Review odpovedí na share linku je read-only zobrazenie tvojich uložených odpovedí —

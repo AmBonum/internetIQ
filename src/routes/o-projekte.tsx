@@ -199,19 +199,15 @@ export function AboutPage() {
             className="space-y-3 rounded-2xl border border-border/60 bg-card p-6"
           >
             <h2 id="co-nerobime" className="text-xl font-semibold">
-              6. Čo nerobíme
+              6. Čo nerobíme (a kde je hranica)
             </h2>
             <ul className="list-disc space-y-1.5 pl-5 text-sm leading-relaxed text-muted-foreground">
               <li>
-                <strong>Žiadne reklamy</strong> — ani vlastné, ani affiliate, ani natívne
+                <strong>Žiadne reklamy v obsahu</strong> — ani vlastné, ani affiliate, ani natívne
               </li>
               <li>
-                <strong>Žiadny tracking pre marketing</strong> — žiaden FB Pixel, žiaden Google
-                Analytics na sledovanie konverzií, žiadne remarketingové cookies
-              </li>
-              <li>
-                <strong>Žiadne prefavoring sponzorov v obsahu</strong> — sponzor nemôže ovplyvniť
-                ktoré scam pattern učíme ani ako ich klasifikujeme
+                <strong>Sponzori nemôžu ovplyvňovať obsah</strong> — žiadne prefavoring scam
+                patternov, žiadne menené klasifikácie, žiadne sponsored kurzy
               </li>
               <li>
                 <strong>Žiadny paywall</strong> — ani na otázky, ani na kurzy, ani na výsledok testu
@@ -219,6 +215,16 @@ export function AboutPage() {
               <li>
                 <strong>Žiadne dark patterns</strong> — cancel mesačného odberu je jeden klik,
                 žiadny „are you sure" loop, žiadne pause-tactics
+              </li>
+              <li>
+                <strong>Žiadne tracking bez explicitného súhlasu</strong> — analytika ani
+                marketingové nástroje sa nezapnú, kým ich nepovolíš v cookie banneri (kategórie
+                „analytika" / „marketing"). Bez súhlasu žiadne pixely, žiadne externé skripty,
+                žiadny remarketing. Súhlas môžeš kedykoľvek odvolať cez{" "}
+                <Link to="/cookies" className="underline underline-offset-2 hover:text-foreground">
+                  Nastavenia cookies
+                </Link>
+                .
               </li>
             </ul>
           </section>

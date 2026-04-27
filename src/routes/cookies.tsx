@@ -170,8 +170,14 @@ function CookiesPage() {
               </li>
               <li>
                 <strong>
-                  Žiadne reklamné siete, žiadne sociálne pluginy, žiadny Google Analytics.
-                </strong>
+                  Aktuálne neintegrujeme žiadne reklamné siete, sociálne pluginy ani externú
+                  analytiku (napr. Google Analytics).
+                </strong>{" "}
+                Ak by sme niekedy pridali analytický alebo marketingový nástroj (napr. pre meranie
+                návštevnosti, A/B testy alebo reklamné kampane), aktivuje sa <strong>iba</strong> s
+                tvojím opt-in súhlasom v kategórii „analytika" alebo „marketing". Pri pridaní nového
+                sprostredkovateľa zvýšime verziu týchto zásad — banner sa znova zobrazí a vyžiadame
+                od teba nový súhlas.
               </li>
             </ul>
           </section>

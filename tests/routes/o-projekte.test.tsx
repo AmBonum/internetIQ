@@ -43,10 +43,10 @@ describe("AboutPage (/o-projekte)", () => {
     expect(within(main).getByRole("heading", { name: /Čo nerobíme/i })).toBeInTheDocument();
   });
 
-  it("explicitly disclaims ad/tracking/paywall practices", () => {
+  it("explicitly disclaims ads / paywall / dark patterns and gates tracking on explicit consent", () => {
     render(<AboutPage />);
-    expect(screen.getByText(/Žiadne reklamy/i)).toBeInTheDocument();
-    expect(screen.getByText(/Žiadny tracking pre marketing/i)).toBeInTheDocument();
+    expect(screen.getByText(/Žiadne reklamy v obsahu/i)).toBeInTheDocument();
+    expect(screen.getByText(/Žiadne tracking bez explicitného súhlasu/i)).toBeInTheDocument();
     expect(screen.getByText(/Žiadny paywall/i)).toBeInTheDocument();
     expect(screen.getByText(/Žiadne dark patterns/i)).toBeInTheDocument();
   });
