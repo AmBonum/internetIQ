@@ -45,7 +45,12 @@ export function ResultsView({ result, answers, onRestart, passingThreshold, pass
   const personality = PERSONALITIES[result.personality];
   // Deterministic variant per result (so refresh shows same copy)
   const variant = useMemo(
-    () => pickPersonalityVariant(personality, result.finalScore + result.stats.criticalMistakes),
+    () =>
+      pickPersonalityVariant(
+        personality,
+        result.finalScore + result.stats.criticalMistakes,
+        result.finalScore,
+      ),
     [personality, result.finalScore, result.stats.criticalMistakes],
   );
 
@@ -286,6 +291,23 @@ export function ResultsView({ result, answers, onRestart, passingThreshold, pass
                 </li>
               ))}
             </ul>
+            {variant.relatedCourses && variant.relatedCourses.length > 0 && (
+              <div className="mt-4 space-y-1 border-t border-border/60 pt-3">
+                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Odporúčané školenia
+                </p>
+                {variant.relatedCourses.map(({ label, slug }) => (
+                  <Link
+                    key={slug}
+                    to="/skolenia/$slug"
+                    params={{ slug }}
+                    className="block text-sm text-primary underline-offset-2 hover:underline"
+                  >
+                    → {label}
+                  </Link>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Breakdown */}

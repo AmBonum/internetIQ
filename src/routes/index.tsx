@@ -28,36 +28,106 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-const FAQ_ITEMS: { id: string; question: string; answer: string }[] = [
+const FAQ_SECTIONS: {
+  title: string;
+  items: { id: string; question: string; answer: string }[];
+}[] = [
   {
-    id: "vazne",
-    question: "Je to seriózne použiteľné?",
-    answer:
-      "Otázky sú stavané podľa reálnych scam vzorcov, ktoré sa na Slovensku objavili v posledných mesiacoch. Nie je to bezpečnostný audit, ale pošli to rodičom alebo kolegom — uvidíš, kde majú slabinu.",
+    title: "Rýchly test",
+    items: [
+      {
+        id: "vazne",
+        question: "Je to seriózne použiteľné?",
+        answer:
+          "Otázky sú stavané podľa reálnych scam vzorcov, ktoré sa na Slovensku objavili v posledných mesiacoch. Nie je to bezpečnostný audit, ale pošli to rodičom alebo kolegom — uvidíš, kde majú slabinu.",
+      },
+      {
+        id: "podvadzanie",
+        question: "Dá sa to podvádzať?",
+        answer:
+          "Skús. Časový limit beží, otázky sa miešajú, googliť asi nestihneš. Uvidíme, kto z nás je chytrejší.",
+      },
+      {
+        id: "vysledok",
+        question: "Čo dostanem po skončení testu?",
+        answer:
+          "Skóre, kategóriu (Skúsený / Pozorný / Zraniteľný / Ľahká korisť) a prehľad každej otázky s vysvetlením. Výsledok si môžeš uložiť ako obrázok alebo zdieľať — nikomu neukáže tvoje konkrétne odpovede.",
+      },
+    ],
   },
   {
-    id: "zadarmo",
-    question: "Je to zadarmo?",
-    answer:
-      "Áno. Test, školenia, výsledok aj zdieľanie sú bezplatné. Žiadne reklamy, žiadna registrácia, žiadne paywally. Projekt funguje z dobrovoľných príspevkov.",
+    title: "Testy",
+    items: [
+      {
+        id: "firmy",
+        question: "Čo sú testy pre firmy?",
+        answer:
+          "Predpripravené sady otázok prispôsobené konkrétnej branži. E-shop dostane otázky o falošných objednávkach, gastro o fake kontrolách, IT o BEC podvodoch. Stačí zdieľať link s tímom — výsledok dostane každý sám pre seba.",
+      },
+      {
+        id: "demograficke",
+        question: "Existujú testy pre bežných ľudí, nie len firmy?",
+        answer:
+          "Áno — máme sady pre žiakov do 16 rokov (herné a školské scam-y), študentov (fake prenájmy, falošné štipendiá), seniorov (AI klonovanie hlasu, dverové podvody) a všeobecný test pre každého. Nájdeš ich v sekcii Sady testov.",
+      },
+    ],
   },
   {
-    id: "firmy",
-    question: "Čo sú testy pre firmy?",
-    answer:
-      "Predpripravené sady otázok prispôsobené konkrétnej branži. E-shop dostane otázky o falošných objednávkach, gastro o fake kontrolách, IT o BEC podvodoch. Stačí zdieľať link s tímom — výsledok dostane každý sám pre seba.",
+    title: "Školenia",
+    items: [
+      {
+        id: "skolenia-co",
+        question: "Čo sú bezplatné školenia?",
+        answer:
+          "Krátke texty so slovenskými scenármi pre každý typ podvodu — phishing, smishing, vishing, BEC, marketplace, investičné a romance scam-y, hygiena hesiel. Môžeš ich čítať v ľubovoľnom poradí, nie sú za paywall.",
+      },
+      {
+        id: "skolenia-odbornik",
+        question: "Musím byť IT odborník?",
+        answer:
+          "Nie. Školenia sú písané pre administrátorku, recepčnú, dôchodcu aj gymnazistu rovnako. Žiadny žargón bez výkladu.",
+      },
+    ],
   },
   {
-    id: "podvadzanie",
-    question: "Dá sa to podvádzať?",
-    answer:
-      "Skús. Časový limit beží, otázky sa miešajú, googliť asi nestihneš. Uvidíme, kto z nás je chytrejší.",
+    title: "Podpora projektu",
+    items: [
+      {
+        id: "zadarmo",
+        question: "Je to zadarmo?",
+        answer:
+          "Áno. Test, školenia, výsledok aj zdieľanie sú bezplatné. Žiadne reklamy, žiadna registrácia, žiadne paywally. Projekt funguje z dobrovoľných príspevkov.",
+      },
+      {
+        id: "podpora-preco",
+        question: "Prečo je to zadarmo a ako to udržiavate?",
+        answer:
+          "Projekt vznikol z presvedčenia, že digitálna bezpečnosť nesmie byť len pre tých, čo si môžu dovoliť školenia za stovky eur. Chod pokrývajú dobrovoľné príspevky od sponzorov. Ak chceš pomôcť, prejdi na stránku Podpora projektu.",
+      },
+    ],
   },
   {
-    id: "data",
-    question: "Aké údaje o mne ukladáte?",
-    answer:
-      "Iba tvoje odpovede a skóre — anonymne, bez mena, bez e-mailu, bez IP. Detaily v Zásadách ochrany súkromia v päte stránky.",
+    title: "Bezpečnosť a súkromie",
+    items: [
+      {
+        id: "data",
+        question: "Aké údaje o mne ukladáte?",
+        answer:
+          "Iba tvoje odpovede a skóre — anonymne, bez mena, bez e-mailu, bez IP adresy. Detaily nájdeš v Zásadách ochrany súkromia v päte stránky.",
+      },
+      {
+        id: "cookies",
+        question: "Používate cookies?",
+        answer:
+          "Používame len technicky nevyhnutné cookies (relácia, súhlas). Analytické alebo reklamné cookies nespúšťame bez tvojho výslovného súhlasu. Nastavenia kedykoľvek zmeníš alebo odvoláš cez banner \u201eSpravovať cookies\u201c v päte stránky.",
+      },
+      {
+        id: "zmazanie",
+        question: "Môžem si zmazať svoje dáta?",
+        answer:
+          "Áno. Anonymný výsledok je zviazaný len s ID relácii v tvojom prehliadači — nie s tvojou identitou. Stačí vymazať cookies a lokálne úložisko prehliadača (Nastavenia → Súkromie → Vymazať dáta prehliadania). Ak si použil zdieľateľný link, napíš nám na kontaktný e-mail v päte a konkrétny záznam odstránime.",
+      },
+    ],
   },
 ];
 
@@ -257,26 +327,35 @@ function Index() {
         {/* FAQ */}
         <section className="mt-20">
           <h2 className="text-2xl font-bold">Časté otázky</h2>
-          <Accordion
-            type="single"
-            collapsible
-            className="mt-6 rounded-2xl border border-border/60 bg-card/40 px-5"
-          >
-            {FAQ_ITEMS.map((item) => (
-              <AccordionItem
-                key={item.id}
-                value={item.id}
-                className="border-b border-border/40 last:border-b-0"
-              >
-                <AccordionTrigger className="text-left text-base font-semibold">
-                  {item.question}
-                </AccordionTrigger>
-                <AccordionContent className="text-sm leading-relaxed text-muted-foreground">
-                  {item.answer}
-                </AccordionContent>
-              </AccordionItem>
+          <div className="mt-6 flex flex-col gap-6">
+            {FAQ_SECTIONS.map((section) => (
+              <div key={section.title}>
+                <h3 className="mb-3 text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                  {section.title}
+                </h3>
+                <Accordion
+                  type="single"
+                  collapsible
+                  className="rounded-2xl border border-border/60 bg-card/40 px-5"
+                >
+                  {section.items.map((item) => (
+                    <AccordionItem
+                      key={item.id}
+                      value={item.id}
+                      className="border-b border-border/40 last:border-b-0"
+                    >
+                      <AccordionTrigger className="text-left text-base font-semibold">
+                        {item.question}
+                      </AccordionTrigger>
+                      <AccordionContent className="text-sm leading-relaxed text-muted-foreground">
+                        {item.answer}
+                      </AccordionContent>
+                    </AccordionItem>
+                  ))}
+                </Accordion>
+              </div>
             ))}
-          </Accordion>
+          </div>
         </section>
 
         <Footer />

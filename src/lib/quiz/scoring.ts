@@ -286,9 +286,14 @@ export interface PersonalityCopy {
   id: PersonalityId;
   name: string;
   emoji: string;
+  /** Expected finalScore range [min, max] for this personality bucket. */
+  scoreRange: [number, number];
+  /** Ordered harshest → gentlest: index 0 = lowest score, last = highest. */
   taglines: string[];
   descriptions: string[];
   advice: string[][];
+  /** Optional courses shown as links below the advice list. */
+  relatedCourses?: { label: string; slug: string }[];
 }
 
 export const PERSONALITIES: Record<PersonalityId, PersonalityCopy> = {
@@ -296,10 +301,14 @@ export const PERSONALITIES: Record<PersonalityId, PersonalityCopy> = {
     id: "scam_magnet",
     name: "Scam Magnet (Magnet na podvody)",
     emoji: "💀",
+    scoreRange: [0, 50] as [number, number],
     taglines: [
-      "Scammeri ti píšu sami od seba.",
+      "Si dôvod, prečo phishing stále funguje.",
+      "Zavolaj banke. Ešte dnes. Vážne.",
       "Nigerijský princ má tvoj kontakt na rýchlej voľbe.",
-      "Si ich obľúbený zákazník.",
+      "Scammeri ti píšu sami od seba.",
+      "Si ich obľúbený zákazník — zatiaľ.",
+      "Na každý link klikneš. Aspoň teraz vieš prečo.",
     ],
     descriptions: [
       'Klikol by si na „Slovenská pošta – zásielka čaká" bez premýšľania. Kdekoľvek sa na internete potkne podvodník, nájde teba. Prvé, čo ťa čaká po tomto teste, je zapnutie 2FA.',
@@ -323,10 +332,14 @@ export const PERSONALITIES: Record<PersonalityId, PersonalityCopy> = {
     id: "clickbait_zombie",
     name: "Clickbait Zombie (Otrok titulkov)",
     emoji: "🧨",
+    scoreRange: [25, 70] as [number, number],
     taglines: [
+      "Scam ťa nedostane. Čas si zobral dávno.",
       "Peniaze ti nevezmú. Klikneš ale na všetko.",
       "Tvoj browser history je horor.",
       'Zombie mód: aktivovaný titulkom „Neuveríš...".',
+      "Phishing nie. Algoritmický clickbait? Absolútne áno.",
+      "Follow grind. Scam ti nedá zabrať.",
     ],
     descriptions: [
       'Phishing rozoznáš, scammer zaplače. Ale ukáž ti titulok „Neuveríš, čo sa stalo potom…" a už si tam. Hodinu. Scrolluješ. Nepamätáš si, prečo si si zobral telefón.',
@@ -350,7 +363,15 @@ export const PERSONALITIES: Record<PersonalityId, PersonalityCopy> = {
     id: "cautious_but_vulnerable",
     name: "Opatrný, ale zraniteľný",
     emoji: "😬",
-    taglines: ["Tušíš podraz. Niekedy.", "70 % obrana, 30 % otvorené dvere.", "Skoro tam si."],
+    scoreRange: [35, 80] as [number, number],
+    taglines: [
+      "Tušíš podraz. Niekedy.",
+      "Jeden z desiatich scamov ťa stále dostane.",
+      "70 % obrana, 30 % otvorené dvere.",
+      "Zdravý inštinkt. Bez systému to nestačí.",
+      "Ku top 10 % chýba jeden overovací krok.",
+      "Skoro tam si.",
+    ],
     descriptions: [
       'Vieš, že internet je zradný. Email od „princa z Nigérie" ignoruješ. Ale niekedy sa necháš prekvapiť dobre spraveným scam-om. Si 70 % v bezpečí. 30 % žiješ v riziku.',
       "Bežné scamy ťa nedostanú. Ale tie nové, vyladené, s real logom a deepfake hlasom — pri tých sa zapotíš. Ešte trochu paranoje a si v top 10 %.",
@@ -373,10 +394,14 @@ export const PERSONALITIES: Record<PersonalityId, PersonalityCopy> = {
     id: "internet_ninja",
     name: "Internet Ninja (Pán internetu)",
     emoji: "🧠",
+    scoreRange: [81, 100] as [number, number],
     taglines: [
       "Scammeri ti radšej dajú pokoj.",
+      "Tvoj mozog má vstavaný BS detektor.",
       "URL si overuješ aj na rodinnom obede.",
       "Si tieň, ktorý phishing nikdy nedostane.",
+      "In a world of easy victims, you're work.",
+      "100 bodov by nebolo prekvapením. Ale bol by to ty.",
     ],
     descriptions: [
       "Si v top 10 %. Podvod cítiš z kilometra. Phishing email otvoríš iba zo zvedavosti, URL si overíš, na rodinných stretnutiach si IT support. Si unavený. Chápeme.",
@@ -395,15 +420,23 @@ export const PERSONALITIES: Record<PersonalityId, PersonalityCopy> = {
         "Buď ten otravný kamarát, čo všetkým hovorí o 2FA.",
       ],
     ],
+    relatedCourses: [
+      { label: "Fyzické podvody — offline scamy", slug: "fyzicke-podvody" },
+      { label: "Chráň svojich blízkych", slug: "chran-svojich-blizkych" },
+    ],
   },
   overconfident_victim: {
     id: "overconfident_victim",
     name: "Naivný Sebavedomec",
     emoji: "🤡",
+    scoreRange: [0, 59] as [number, number],
     taglines: [
-      "Sebavedomie vyššie než skill.",
-      'Myslíš si „mňa nie". Ich obľúbená veta.',
+      "Klikal si ako keby si vedel. Skóre hovorí inak.",
       "Rýchla ruka, prázdna peňaženka.",
+      "Rýchlosť ≠ presnosť. Dnes škola, zajtra kryptoburza.",
+      'Myslíš si „mňa nie". Ich obľúbená veta.',
+      "Scammerova obľúbená kategória: sebavedomý a v spěchu.",
+      "Sebavedomie vyššie než skill.",
     ],
     descriptions: [
       'Odpovedal si rýchlo. Sebaisto. Nesprávne. Kategória ľudí, ktorí si myslia „mňa by to nikdy nedostalo" — a potom dostanú. Scammeri ťa milujú. Si ich favourite type.',
@@ -426,14 +459,30 @@ export const PERSONALITIES: Record<PersonalityId, PersonalityCopy> = {
 };
 
 /** Pick a tagline / description / advice variant from a personality, deterministically per result. */
-export function pickPersonalityVariant(personality: PersonalityCopy, seed: number) {
+export function pickPersonalityVariant(
+  personality: PersonalityCopy,
+  seed: number,
+  finalScore?: number,
+) {
+  const taglineIdx =
+    finalScore !== undefined
+      ? scoreToTaglineIdx(finalScore, personality)
+      : seed % personality.taglines.length;
   return {
     name: personality.name,
     emoji: personality.emoji,
-    tagline: personality.taglines[seed % personality.taglines.length],
+    tagline: personality.taglines[taglineIdx],
     description: personality.descriptions[seed % personality.descriptions.length],
     advice: personality.advice[seed % personality.advice.length],
+    relatedCourses: personality.relatedCourses,
   };
+}
+
+function scoreToTaglineIdx(score: number, { scoreRange, taglines }: PersonalityCopy): number {
+  const [min, max] = scoreRange;
+  const clamped = Math.max(min, Math.min(max, score));
+  const normalized = (clamped - min) / Math.max(1, max - min);
+  return Math.min(taglines.length - 1, Math.floor(normalized * taglines.length));
 }
 
 export const CATEGORY_LABELS: Record<keyof ScoreResult["breakdown"], string> = {

@@ -120,6 +120,7 @@ export function SharePage({ shareId }: { shareId: string }) {
   const variant = pickPersonalityVariant(
     personality,
     attempt.final_score + (attempt.stats?.criticalMistakes ?? 0),
+    attempt.final_score,
   );
 
   const reviewCount = answers.length;
