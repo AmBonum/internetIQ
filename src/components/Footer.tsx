@@ -116,7 +116,7 @@ export function Footer() {
               v{CURRENT_VERSION}
             </Link>
           </p>
-          <br/>
+          <br />
           <p className="text-xs text-muted-foreground">
             powered by{" "}
             <a

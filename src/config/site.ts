@@ -1,2 +1,2 @@
-export const SITE_ORIGIN = "https://subenai.lvtesting.eu";
+export const SITE_ORIGIN = "https://subenai.sk";
 export const CONTACT_EMAIL = "subenai.podpora@gmail.com";

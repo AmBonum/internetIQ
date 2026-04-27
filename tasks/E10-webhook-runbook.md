@@ -6,7 +6,7 @@ rotating secrets.
 
 ## Endpoint
 
-- **URL (prod)**: `https://subenai.lvtesting.eu/api/stripe-webhook`
+- **URL (prod)**: `https://subenai.sk/api/stripe-webhook`
 - **URL (local dev)**: `http://localhost:8788/api/stripe-webhook` (via
   `wrangler pages dev` — Vite alone does NOT serve `functions/`)
 - **Method**: `POST` only

@@ -33,7 +33,7 @@ describe("buildCourseJsonLd", () => {
 
   it("URL points at the canonical /skolenia/<slug> path", () => {
     const json = buildCourseJsonLd(fixture);
-    expect(json.url).toBe("https://subenai.lvtesting.eu/skolenia/test-course");
+    expect(json.url).toBe("https://subenai.sk/skolenia/test-course");
   });
 
   it("provider is the site Organization", () => {

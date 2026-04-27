@@ -8,11 +8,11 @@ Stránka je v slovenčine a cieli na slovenských používateľov internetu od 1
 
 ## Hlavné stránky
 
-- [Domov a kvíz](https://subenai.lvtesting.eu/): Spustenie testu, krátky popis a "Časté otázky".
-- [Test](https://subenai.lvtesting.eu/test): Samotný 15-otázkový kvíz s časomierou a okamžitou recenziou.
-- [Kurzy](https://subenai.lvtesting.eu/kurzy): Krátke bezplatné kurzy podľa kategórie podvodu (smishing, phishing, vishing, marketplace, investičné, romance, BEC, data hygiene).
-- [Cookies](https://subenai.lvtesting.eu/cookies): Detailné zásady cookies (GDPR + ePrivacy + zákon č. 452/2021 Z. z.).
-- [Súkromie](https://subenai.lvtesting.eu/privacy): Privacy policy, dátové toky, retention.
+- [Domov a kvíz](https://subenai.sk/): Spustenie testu, krátky popis a "Časté otázky".
+- [Test](https://subenai.sk/test): Samotný 15-otázkový kvíz s časomierou a okamžitou recenziou.
+- [Školenia](https://subenai.sk/skolenia): Krátke bezplatné školenia podľa kategórie podvodu (smishing, phishing, vishing, marketplace, investičné, romance, BEC, data hygiene a ďalšie).
+- [Cookies](https://subenai.sk/cookies): Detailné zásady cookies (GDPR + ePrivacy + zákon č. 452/2021 Z. z.).
+- [Súkromie](https://subenai.sk/privacy): Privacy policy, dátové toky, retention.
 
 ## Princípy a obmedzenia
 

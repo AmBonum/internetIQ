@@ -46,7 +46,7 @@ PORTAL_LINK_PER_IP_PER_HOUR=10
 # Resend API key for transactional emails (magic link, refund alerts).
 # Get from https://resend.com/api-keys.
 RESEND_API_KEY=re_replace_me
-EMAIL_FROM=noreply@lvtesting.eu
+EMAIL_FROM=noreply@subenai.sk
 EMAIL_REPLY_TO=subenai.podpora@gmail.com
 OPS_EMAIL=subenai.podpora@gmail.com
 
@@ -56,4 +56,4 @@ OPS_EMAIL=subenai.podpora@gmail.com
 JWT_SECRET=replace_me_with_64_hex_chars
 
 # --- Site (informational; used in absolute URLs from server functions) ------
-SITE_ORIGIN=https://internetiq.lvtesting.eu
+SITE_ORIGIN=https://subenai.sk

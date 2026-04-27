@@ -180,10 +180,10 @@ V dashboardi: Cloudflare Pages → tvoj projekt → **Settings** →
 | `SUPABASE_SERVICE_ROLE_KEY` | **Secret** | service_role JWT |
 | `RESEND_API_KEY` | **Secret** | `re_...` (po DKIM verify) |
 | `JWT_SECRET` | **Secret** | 64-hex random (`node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`) |
-| `EMAIL_FROM` | Plain text | `noreply@lvtesting.eu` |
+| `EMAIL_FROM` | Plain text | `noreply@subenai.sk` |
 | `EMAIL_REPLY_TO` | Plain text | `subenai.podpora@gmail.com` |
 | `OPS_EMAIL` | Plain text | `subenai.podpora@gmail.com` |
-| `SITE_ORIGIN` | Plain text | `https://subenai.lvtesting.eu` |
+| `SITE_ORIGIN` | Plain text | `https://subenai.sk` |
 
 ⚠️ Mark **Secret** type (nie Plain) všetky `*_KEY` / `*_SECRET` polia,
 aby sa neobjavili v build logoch.
@@ -199,7 +199,7 @@ npx wrangler pages dev -- npm run dev
 ### Krok 4 — Stripe webhook endpoint
 
 V Stripe Dashboard → Developers → Webhooks → **Add endpoint**:
-- URL: `https://subenai.lvtesting.eu/api/stripe-webhook`
+- URL: `https://subenai.sk/api/stripe-webhook`
 - Events: `checkout.session.completed`, `invoice.paid`,
   `customer.subscription.{created,updated,deleted}`, `charge.refunded`
 - Skopíruj „Signing secret" (whsec_…) → vlož ako `STRIPE_WEBHOOK_SECRET`

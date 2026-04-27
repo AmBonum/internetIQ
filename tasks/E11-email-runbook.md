@@ -18,7 +18,7 @@ renewal notifications) — we do **not** duplicate those.
 | Name | Type | Source |
 |---|---|---|
 | `RESEND_API_KEY` | Secret | https://resend.com → API Keys → Create (start with `re_`) |
-| `EMAIL_FROM` | Plaintext | `subenai <noreply@lvtesting.eu>` |
+| `EMAIL_FROM` | Plaintext | `subenai <noreply@subenai.sk>` |
 | `EMAIL_REPLY_TO` | Plaintext | `subenai.podpora@gmail.com` (or future shared inbox) |
 | `OPS_EMAIL` | Plaintext | `subenai.podpora@gmail.com` (refund alerts) |
 
@@ -29,22 +29,22 @@ the magic-link endpoint returns 500 with `email_not_configured`, the refund
 alert silently skips (donation row still lands in DB; you'll see the refund
 in the Stripe dashboard regardless).
 
-## DNS setup for `lvtesting.eu` (one-time)
+## DNS setup for `subenai.sk` (one-time)
 
 Add these to Cloudflare DNS:
 
 | Type | Name | Value |
 |---|---|---|
-| TXT | `resend._domainkey.lvtesting.eu` | (long DKIM record from Resend dashboard) |
-| TXT | `lvtesting.eu` (root SPF) | `v=spf1 include:resend.com -all` (merge if SPF exists) |
-| TXT | `_dmarc.lvtesting.eu` | `v=DMARC1; p=quarantine; rua=mailto:subenai.podpora@gmail.com` |
+| TXT | `resend._domainkey.subenai.sk` | (long DKIM record from Resend dashboard) |
+| TXT | `subenai.sk` (root SPF) | `v=spf1 a mx include:_spf.m1.websupport.sk include:resend.com -all` (merged with existing WS mailbox SPF) |
+| TXT | `_dmarc.subenai.sk` | `v=DMARC1; p=quarantine; rua=mailto:subenai.podpora@gmail.com` (already exists at WS — môže byť, len upraviť rua) |
 
 Verify via https://www.mail-tester.com/ — target score ≥ 9/10.
 
 ## Resend account setup
 
 1. Sign up at https://resend.com (free tier: 3 000 emails/month, 100/day)
-2. Add domain `lvtesting.eu` → copy the DKIM TXT records → paste into Cloudflare DNS
+2. Add domain `subenai.sk` → copy the DKIM TXT records → paste into Cloudflare DNS
 3. Wait ~5 min → click "Verify" in Resend dashboard
 4. Create API key (Full access) → store as `RESEND_API_KEY`
 

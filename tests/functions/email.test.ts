@@ -5,7 +5,7 @@ import { CONTACT_EMAIL } from "@/config/site";
 
 const env: EmailEnv = {
   RESEND_API_KEY: "re_test_key",
-  EMAIL_FROM: "subenai <noreply@lvtesting.eu>",
+  EMAIL_FROM: "subenai <noreply@subenai.sk>",
   EMAIL_REPLY_TO: CONTACT_EMAIL,
 };
 
@@ -42,7 +42,7 @@ describe("sendEmail", () => {
 
     const body = JSON.parse((init as RequestInit).body as string);
     expect(body).toEqual({
-      from: "subenai <noreply@lvtesting.eu>",
+      from: "subenai <noreply@subenai.sk>",
       to: ["user@example.test"],
       subject: "Test",
       html: "<p>Hi</p>",

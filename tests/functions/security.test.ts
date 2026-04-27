@@ -28,7 +28,7 @@ describe("verifyTurnstile", () => {
 
   it("returns ok=true on Cloudflare success response", async () => {
     vi.spyOn(globalThis, "fetch").mockResolvedValue(
-      new Response(JSON.stringify({ success: true, hostname: "subenai.lvtesting.eu" }), {
+      new Response(JSON.stringify({ success: true, hostname: "subenai.sk" }), {
         status: 200,
       }),
     );
