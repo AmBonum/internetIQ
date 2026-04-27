@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/accordion";
 import { Footer } from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
+import { formatMonthYear } from "@/lib/sponsors";
 
 const SITE_ORIGIN = "https://subenai.lvtesting.eu";
 const SPONZORI_URL = `${SITE_ORIGIN}/sponzori`;
@@ -220,12 +221,6 @@ function SponsorsEmpty() {
       </div>
     </div>
   );
-}
-
-export function formatMonthYear(iso: string): string {
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return iso;
-  return d.toLocaleDateString("sk-SK", { month: "long", year: "numeric" });
 }
 
 async function fetchLatestSponsors(): Promise<PublicSponsor[]> {

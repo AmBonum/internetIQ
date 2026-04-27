@@ -2,7 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Footer } from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
-import { formatMonthYear, type PublicSponsor } from "./sponzori";
+import { formatMonthYear } from "@/lib/sponsors";
+import { type PublicSponsor } from "./sponzori";
 
 const SITE_ORIGIN = "https://subenai.lvtesting.eu";
 const PAGE_URL = `${SITE_ORIGIN}/sponzori/vsetci`;

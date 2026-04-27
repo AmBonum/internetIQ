@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import {
   Accordion,
   AccordionContent,
@@ -30,7 +30,7 @@ export const Route = createFileRoute("/")({
 
 const FAQ_SECTIONS: {
   title: string;
-  items: { id: string; question: string; answer: string }[];
+  items: { id: string; question: string; answer: ReactNode }[];
 }[] = [
   {
     title: "Rýchly test",
@@ -101,8 +101,20 @@ const FAQ_SECTIONS: {
       {
         id: "podpora-preco",
         question: "Prečo je to zadarmo a ako to udržiavate?",
-        answer:
-          "Projekt vznikol z presvedčenia, že digitálna bezpečnosť nesmie byť len pre tých, čo si môžu dovoliť školenia za stovky eur. Chod pokrývajú dobrovoľné príspevky od sponzorov. Ak chceš pomôcť, prejdi na stránku Podpora projektu.",
+        answer: (
+          <>
+            Projekt vznikol z presvedčenia, že digitálna bezpečnosť nesmie byť len pre tých, čo si
+            môžu dovoliť školenia za stovky eur. Chod pokrývajú dobrovoľné príspevky od sponzorov.
+            Ak chceš pomôcť, prejdi na stránku{" "}
+            <Link
+              to="/podpora"
+              className="font-medium text-primary underline underline-offset-2 hover:opacity-80"
+            >
+              Podpora projektu
+            </Link>
+            .
+          </>
+        ),
       },
     ],
   },
