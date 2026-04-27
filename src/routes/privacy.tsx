@@ -51,8 +51,8 @@ function PrivacyPage() {
               <li>Štatutár: Ľubomír Volčko, konateľ konajúci samostatne</li>
               <li>
                 Kontakt vo veciach ochrany osobných údajov:{" "}
-                <a href="mailto:segnities@gmail.com" className="underline underline-offset-2">
-                  segnities@gmail.com
+                <a href="mailto:subenai.podpora@gmail.com" className="underline underline-offset-2">
+                  subenai.podpora@gmail.com
                 </a>
               </li>
             </ul>
@@ -374,8 +374,8 @@ function PrivacyPage() {
               </Link>{" "}
               (default je vypnuté). Granularne — meno, voliteľný odkaz, voliteľná správa do 80
               znakov. Súhlas môžeš kedykoľvek odvolať e-mailom na{" "}
-              <a href="mailto:segnities@gmail.com" className="underline underline-offset-2">
-                segnities@gmail.com
+              <a href="mailto:subenai.podpora@gmail.com" className="underline underline-offset-2">
+                subenai.podpora@gmail.com
               </a>
               .
             </p>

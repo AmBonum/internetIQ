@@ -47,8 +47,8 @@ PORTAL_LINK_PER_IP_PER_HOUR=10
 # Get from https://resend.com/api-keys.
 RESEND_API_KEY=re_replace_me
 EMAIL_FROM=noreply@lvtesting.eu
-EMAIL_REPLY_TO=segnities@gmail.com
-OPS_EMAIL=segnities@gmail.com
+EMAIL_REPLY_TO=subenai.podpora@gmail.com
+OPS_EMAIL=subenai.podpora@gmail.com
 
 # --- JWT (E12 author auth + E12.3 respondent attempt token) -----------------
 # Random 32-byte hex string. Generate via:

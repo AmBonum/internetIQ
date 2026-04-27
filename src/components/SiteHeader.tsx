@@ -4,7 +4,7 @@ import { Menu, X } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/sheet";
 
 const NAV_ITEMS = [
-  { to: "/test/firma", label: "Testy" },
+  { to: "/testy", label: "Testy" },
   { to: "/skolenia", label: "Školenia" },
   { to: "/podpora", label: "Podporiť projekt" },
 ] as const;
@@ -24,7 +24,7 @@ export function SiteHeader() {
     setOpen(false);
   }, [pathname]);
 
-  // Most-specific match wins so nested routes (e.g. /test/firma/eshop)
+  // Most-specific match wins so nested routes (e.g. /testy/eshop)
   // highlight only the deepest registered nav entry instead of every prefix.
   const activeTo = NAV_ITEMS.reduce<string | null>((acc, item) => {
     const matches = pathname === item.to || pathname.startsWith(item.to + "/");

@@ -19,8 +19,8 @@ renewal notifications) — we do **not** duplicate those.
 |---|---|---|
 | `RESEND_API_KEY` | Secret | https://resend.com → API Keys → Create (start with `re_`) |
 | `EMAIL_FROM` | Plaintext | `subenai <noreply@lvtesting.eu>` |
-| `EMAIL_REPLY_TO` | Plaintext | `segnities@gmail.com` (or future shared inbox) |
-| `OPS_EMAIL` | Plaintext | `segnities@gmail.com` (refund alerts) |
+| `EMAIL_REPLY_TO` | Plaintext | `subenai.podpora@gmail.com` (or future shared inbox) |
+| `OPS_EMAIL` | Plaintext | `subenai.podpora@gmail.com` (refund alerts) |
 
 Local dev: `.dev.vars`. Production: CF Pages → Settings → Environment variables → Production.
 
@@ -37,7 +37,7 @@ Add these to Cloudflare DNS:
 |---|---|---|
 | TXT | `resend._domainkey.lvtesting.eu` | (long DKIM record from Resend dashboard) |
 | TXT | `lvtesting.eu` (root SPF) | `v=spf1 include:resend.com -all` (merge if SPF exists) |
-| TXT | `_dmarc.lvtesting.eu` | `v=DMARC1; p=quarantine; rua=mailto:segnities@gmail.com` |
+| TXT | `_dmarc.lvtesting.eu` | `v=DMARC1; p=quarantine; rua=mailto:subenai.podpora@gmail.com` |
 
 Verify via https://www.mail-tester.com/ — target score ≥ 9/10.
 

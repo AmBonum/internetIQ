@@ -5,7 +5,7 @@ import { INDUSTRY_LABEL } from "@/lib/seo/quiz-jsonld";
 export function TestPackCard({ pack }: { pack: TestPack }) {
   return (
     <Link
-      to="/test/firma/$slug"
+      to="/testy/$slug"
       params={{ slug: pack.slug }}
       className="group block rounded-2xl border border-border/60 bg-card/70 p-5 transition hover:border-primary/50 hover:bg-card focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
     >

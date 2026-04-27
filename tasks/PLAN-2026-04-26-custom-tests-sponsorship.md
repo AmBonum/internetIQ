@@ -37,7 +37,7 @@ owner, vývojára aj reviewera.
 | `TestFlow` + sessionStorage persistence + scrollRestoration | Hotové (cdd097e) | E7/E8 musia honoritovať že "/test" má vlastný session state |
 | Course system pod `/kurzy` + Zod schema + Schema.org JSON-LD | Hotové, 8 kurzov | E7 industry packs reusne ten istý content authoring pattern |
 | Supabase `attempts` tabuľka + RLS + 36-mesačná retencia (pg_cron) | Hotové | E10 pridá `sponsors` tabuľku v rovnakom RLS-strict štýle |
-| Privacy + cookies stránka, `CONSENT_VERSION 1.1.0` | Hotové, kontakt `segnities@gmail.com` | E10 vyžaduje bump na 1.2.0 (nový "payment" data category) |
+| Privacy + cookies stránka, `CONSENT_VERSION 1.1.0` | Hotové, kontakt `subenai.podpora@gmail.com` | E10 vyžaduje bump na 1.2.0 (nový "payment" data category) |
 | `public/_headers` CSP — `connect-src 'self' https://*.supabase.co` | Hotové | E10 rozšíri o `js.stripe.com` + `api.stripe.com` + `q.stripe.com` |
 | Hosting: Cloudflare Pages free tier | Hotové | Webhook musí ísť cez Cloudflare Pages Functions (rovnaký provider, žiadny ďalší vendor) |
 | `.dev.vars` pre lokálne env vars | Existuje | E10 pridá Stripe secret key + webhook secret |

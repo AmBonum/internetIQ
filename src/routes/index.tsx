@@ -59,16 +59,40 @@ const FAQ_SECTIONS: {
     title: "Testy",
     items: [
       {
-        id: "firmy",
+        id: "testy",
         question: "Čo sú testy pre firmy?",
-        answer:
-          "Predpripravené sady otázok prispôsobené konkrétnej branži. E-shop dostane otázky o falošných objednávkach, gastro o fake kontrolách, IT o BEC podvodoch. Stačí zdieľať link s tímom — výsledok dostane každý sám pre seba.",
+        answer: (
+          <>
+            Predpripravené sady otázok prispôsobené konkrétnej branži. E-shop dostane otázky o
+            falošných objednávkach, gastro o fake kontrolách, IT o BEC podvodoch. Stačí zdieľať link
+            s tímom — výsledok dostane každý sám pre seba.{" "}
+            <Link
+              to="/testy"
+              className="font-medium text-primary underline underline-offset-2 hover:opacity-80"
+            >
+              Pozrieť testy
+            </Link>
+            .
+          </>
+        ),
       },
       {
         id: "demograficke",
         question: "Existujú testy pre bežných ľudí, nie len firmy?",
-        answer:
-          "Áno — máme sady pre žiakov do 16 rokov (herné a školské scam-y), študentov (fake prenájmy, falošné štipendiá), seniorov (AI klonovanie hlasu, dverové podvody) a všeobecný test pre každého. Nájdeš ich v sekcii Sady testov.",
+        answer: (
+          <>
+            Áno — máme sady pre žiakov do 16 rokov (herné a školské scam-y), študentov (fake
+            prenájmy, falošné štipendiá), seniorov (AI klonovanie hlasu, dverové podvody) a
+            všeobecný test pre každého. Nájdeš ich vsekcii{" "}
+            <Link
+              to="/testy"
+              className="font-medium text-primary underline underline-offset-2 hover:opacity-80"
+            >
+              Testy
+            </Link>
+            .
+          </>
+        ),
       },
     ],
   },
@@ -78,8 +102,20 @@ const FAQ_SECTIONS: {
       {
         id: "skolenia-co",
         question: "Čo sú bezplatné školenia?",
-        answer:
-          "Krátke texty so slovenskými scenármi pre každý typ podvodu — phishing, smishing, vishing, BEC, marketplace, investičné a romance scam-y, hygiena hesiel. Môžeš ich čítať v ľubovoľnom poradí, nie sú za paywall.",
+        answer: (
+          <>
+            Krátke texty so slovenskými scenármi pre každý typ podvodu — phishing, smishing,
+            vishing, BEC, marketplace, investičné a romance scam-y, hygiena hesiel. Môžeš ich čítať
+            v ľubovoľnom poradí v{" "}
+            <Link
+              to="/skolenia"
+              className="font-medium text-primary underline underline-offset-2 hover:opacity-80"
+            >
+              bezplatných školeniach
+            </Link>
+            , nie sú za paywall.
+          </>
+        ),
       },
       {
         id: "skolenia-odbornik",
@@ -95,8 +131,33 @@ const FAQ_SECTIONS: {
       {
         id: "zadarmo",
         question: "Je to zadarmo?",
-        answer:
-          "Áno. Test, školenia, výsledok aj zdieľanie sú bezplatné. Žiadne reklamy, žiadna registrácia, žiadne paywally. Projekt funguje z dobrovoľných príspevkov.",
+        answer: (
+          <>
+            Áno.{" "}
+            <Link
+              to="/test"
+              className="font-medium text-primary underline underline-offset-2 hover:opacity-80"
+            >
+              Test
+            </Link>
+            ,{" "}
+            <Link
+              to="/testy"
+              className="font-medium text-primary underline underline-offset-2 hover:opacity-80"
+            >
+              testy
+            </Link>
+            ,{" "}
+            <Link
+              to="/skolenia"
+              className="font-medium text-primary underline underline-offset-2 hover:opacity-80"
+            >
+              školenia
+            </Link>
+            , výsledok aj zdieľanie sú bezplatné. Žiadne reklamy, žiadna registrácia, žiadne
+            paywally. Projekt funguje z dobrovoľných príspevkov.
+          </>
+        ),
       },
       {
         id: "podpora-preco",
@@ -124,14 +185,37 @@ const FAQ_SECTIONS: {
       {
         id: "data",
         question: "Aké údaje o mne ukladáte?",
-        answer:
-          "Iba tvoje odpovede a skóre — anonymne, bez mena, bez e-mailu, bez IP adresy. Detaily nájdeš v Zásadách ochrany súkromia v päte stránky.",
+        answer: (
+          <>
+            Iba tvoje odpovede a skóre — anonymne, bez mena, bez e-mailu, bez IP adresy. Detaily
+            nájdeš v{" "}
+            <Link
+              to="/privacy"
+              className="font-medium text-primary underline underline-offset-2 hover:opacity-80"
+            >
+              Zásadách ochrany súkromia
+            </Link>
+            .
+          </>
+        ),
       },
       {
         id: "cookies",
         question: "Používate cookies?",
-        answer:
-          "Používame len technicky nevyhnutné cookies (relácia, súhlas). Analytické alebo reklamné cookies nespúšťame bez tvojho výslovného súhlasu. Nastavenia kedykoľvek zmeníš alebo odvoláš cez banner \u201eSpravovať cookies\u201c v päte stránky.",
+        answer: (
+          <>
+            Používame len technicky nevyhnutné cookies (relácia, súhlas). Analytické alebo reklamné
+            cookies nespúšťame bez tvojho výslovného súhlasu. Nastavenia kedykoľvek zmeníš alebo
+            odvoláš cez banner „Spravovať cookies" v päte stránky alebo v{" "}
+            <Link
+              to="/cookies"
+              className="font-medium text-primary underline underline-offset-2 hover:opacity-80"
+            >
+              Zásadách cookies
+            </Link>
+            .
+          </>
+        ),
       },
       {
         id: "zmazanie",
@@ -246,7 +330,7 @@ function Index() {
             Čo všetko tu nájdeš
           </h2>
           <FeatureCard
-            to="/test/firma"
+            to="/testy"
             emoji="🏢"
             title="Sada testov"
             description="Predefinované sady podľa branže — e-shop, gastro, IT, autoservis, verejné služby. Otestuj celý tím naraz, každý dostane vlastný výsledok."

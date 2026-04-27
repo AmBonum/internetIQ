@@ -69,9 +69,10 @@ describe("SponzoriView (/sponzori)", () => {
 
     await waitFor(() => expect(screen.getByText("Anna")).toBeInTheDocument());
     expect(screen.getByText("Bob")).toBeInTheDocument();
-    // Radix renders accordion content in DOM regardless of collapsed/open
-    // visual state — message + link assertions fire without expanding.
-    expect(screen.getByText(/Vďaka za projekt/i)).toBeInTheDocument();
+    // Radix marks accordion content as hidden when collapsed — expand Bob's row first.
+    const bobTrigger = screen.getByRole("button", { name: /Bob/i });
+    bobTrigger.click();
+    expect(await screen.findByText(/Vďaka za projekt/i)).toBeInTheDocument();
 
     const bobLink = screen.getByRole("link", { name: /example\.test\/bob/i });
     expect(bobLink).toHaveAttribute("href", "https://example.test/bob");
@@ -111,6 +112,6 @@ describe("SponzoriView (/sponzori)", () => {
     render(<SponzoriView fetchSponsors={fetchSponsors} />);
     await waitFor(() => expect(screen.getByText(/Buď prvý/i)).toBeInTheDocument());
     expect(screen.getByText(/anonymitu/i)).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /segnities@gmail\.com/i })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /subenai\.podpora@gmail\.com/i })).toBeInTheDocument();
   });
 });

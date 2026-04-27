@@ -266,8 +266,8 @@ function ReadyState({
           {portalError ? (
             <p role="alert" className="text-sm text-foreground">
               Portál sa nepodarilo otvoriť: <code>{portalError}</code>. Napíš nám na{" "}
-              <a href="mailto:segnities@gmail.com" className="underline underline-offset-2">
-                segnities@gmail.com
+              <a href="mailto:subenai.podpora@gmail.com" className="underline underline-offset-2">
+                subenai.podpora@gmail.com
               </a>
               .
             </p>
@@ -295,8 +295,8 @@ function UnpaidState() {
       <h1 className="text-2xl font-bold tracking-tight text-foreground">Platba ešte neprešla</h1>
       <p className="text-sm leading-relaxed text-muted-foreground">
         Vyzerá to, že platba nebola dokončená. Skús to prosím znova alebo nás kontaktuj na{" "}
-        <a href="mailto:segnities@gmail.com" className="underline underline-offset-2">
-          segnities@gmail.com
+        <a href="mailto:subenai.podpora@gmail.com" className="underline underline-offset-2">
+          subenai.podpora@gmail.com
         </a>
         .
       </p>
@@ -318,8 +318,8 @@ function TimeoutState() {
         Stripe nám ešte neposlal potvrdenie. Tvoja platba je pravdepodobne v poriadku — Stripe ti
         pošle faktúru e-mailom hneď ako ju spracuje. Ak to bude trvať dlhšie ako 10 minút, napíš nám
         na{" "}
-        <a href="mailto:segnities@gmail.com" className="underline underline-offset-2">
-          segnities@gmail.com
+        <a href="mailto:subenai.podpora@gmail.com" className="underline underline-offset-2">
+          subenai.podpora@gmail.com
         </a>{" "}
         s ID platby z e-mailu od Stripe.
       </p>
@@ -334,8 +334,8 @@ function NotFoundState() {
       <p className="text-sm leading-relaxed text-muted-foreground">
         Tento odkaz nezodpovedá žiadnej platbe v našom systéme. Skontroluj URL alebo nás kontaktuj
         na{" "}
-        <a href="mailto:segnities@gmail.com" className="underline underline-offset-2">
-          segnities@gmail.com
+        <a href="mailto:subenai.podpora@gmail.com" className="underline underline-offset-2">
+          subenai.podpora@gmail.com
         </a>
         .
       </p>
@@ -349,8 +349,8 @@ function ErrorState() {
       <h1 className="text-2xl font-bold tracking-tight text-foreground">Niečo sa pokazilo</h1>
       <p className="text-sm leading-relaxed text-muted-foreground">
         Stránku obnov za chvíľu — ak sa chyba opakuje, daj nám vedieť na{" "}
-        <a href="mailto:segnities@gmail.com" className="underline underline-offset-2">
-          segnities@gmail.com
+        <a href="mailto:subenai.podpora@gmail.com" className="underline underline-offset-2">
+          subenai.podpora@gmail.com
         </a>
         .
       </p>

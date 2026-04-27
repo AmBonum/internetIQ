@@ -181,8 +181,8 @@ V dashboardi: Cloudflare Pages → tvoj projekt → **Settings** →
 | `RESEND_API_KEY` | **Secret** | `re_...` (po DKIM verify) |
 | `JWT_SECRET` | **Secret** | 64-hex random (`node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`) |
 | `EMAIL_FROM` | Plain text | `noreply@lvtesting.eu` |
-| `EMAIL_REPLY_TO` | Plain text | `segnities@gmail.com` |
-| `OPS_EMAIL` | Plain text | `segnities@gmail.com` |
+| `EMAIL_REPLY_TO` | Plain text | `subenai.podpora@gmail.com` |
+| `OPS_EMAIL` | Plain text | `subenai.podpora@gmail.com` |
 | `SITE_ORIGIN` | Plain text | `https://subenai.lvtesting.eu` |
 
 ⚠️ Mark **Secret** type (nie Plain) všetky `*_KEY` / `*_SECRET` polia,

@@ -28,7 +28,7 @@ const INDUSTRY_LABEL: Record<TestPack["industry"], string> = {
 /**
  * Schema.org Quiz JSON-LD for an industry test pack. Google supports
  * the Quiz type for educational quizzes; including it boosts rich
- * results eligibility for the `/test/firma/{slug}` flow.
+ * results eligibility for the `/testy/{slug}` flow.
  */
 export function buildPackQuizJsonLd(pack: TestPack): Record<string, unknown> {
   return {
@@ -41,7 +41,7 @@ export function buildPackQuizJsonLd(pack: TestPack): Record<string, unknown> {
     educationalLevel: "vocational",
     about: INDUSTRY_LABEL[pack.industry],
     numberOfQuestions: pack.questionIds.length,
-    url: `${SITE_ORIGIN}/test/firma/${pack.slug}`,
+    url: `${SITE_ORIGIN}/testy/${pack.slug}`,
     datePublished: pack.publishedAt,
     dateModified: pack.updatedAt,
     publisher: {

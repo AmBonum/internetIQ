@@ -144,8 +144,8 @@ export function AllSponsorsView({ fetchSponsors }: AllSponsorsViewProps) {
         <p className="mt-12 text-center text-xs text-muted-foreground">
           Zoznam je dobrovoľný — mnohí sponzori si zvolili anonymitu. Žiadne sumy ani počty platieb
           tu neukazujeme. Súhlas so zverejnením môžeš odvolať e-mailom na{" "}
-          <a href="mailto:segnities@gmail.com" className="underline underline-offset-2">
-            segnities@gmail.com
+          <a href="mailto:subenai.podpora@gmail.com" className="underline underline-offset-2">
+            subenai.podpora@gmail.com
           </a>
           .
         </p>

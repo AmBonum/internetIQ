@@ -210,8 +210,8 @@ export function ManageSupportForm() {
                 className="rounded-xl border border-destructive/60 bg-destructive/10 p-3 text-sm text-foreground"
               >
                 Niečo sa pokazilo: <code>{error}</code>. Skús to prosím znova alebo nám napíš na{" "}
-                <a href="mailto:segnities@gmail.com" className="underline underline-offset-2">
-                  segnities@gmail.com
+                <a href="mailto:subenai.podpora@gmail.com" className="underline underline-offset-2">
+                  subenai.podpora@gmail.com
                 </a>
                 .
               </div>
@@ -251,8 +251,8 @@ function SubmittedState({ email }: { email: string }) {
       <p className="text-xs leading-relaxed text-muted-foreground">
         Nedošiel ti e-mail? Skontroluj spam priečinok. Ak neprišiel ani po 5 minútach, daj nám
         vedieť na{" "}
-        <a href="mailto:segnities@gmail.com" className="underline underline-offset-2">
-          segnities@gmail.com
+        <a href="mailto:subenai.podpora@gmail.com" className="underline underline-offset-2">
+          subenai.podpora@gmail.com
         </a>
         .
       </p>

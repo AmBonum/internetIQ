@@ -17,14 +17,14 @@ import { Route as PodporaRouteImport } from './routes/podpora'
 import { Route as OProjekteRouteImport } from './routes/o-projekte'
 import { Route as CookiesRouteImport } from './routes/cookies'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as TestyIndexRouteImport } from './routes/testy.index'
 import { Route as TestIndexRouteImport } from './routes/test.index'
 import { Route as SkoleniaIndexRouteImport } from './routes/skolenia.index'
+import { Route as TestySlugRouteImport } from './routes/testy.$slug'
 import { Route as SponzoriVsetciRouteImport } from './routes/sponzori.vsetci'
 import { Route as SkoleniaSlugRouteImport } from './routes/skolenia.$slug'
 import { Route as RShareIdRouteImport } from './routes/r.$shareId'
 import { Route as PodakovanieSessionIdRouteImport } from './routes/podakovanie.$sessionId'
-import { Route as TestFirmaIndexRouteImport } from './routes/test.firma.index'
-import { Route as TestFirmaSlugRouteImport } from './routes/test.firma.$slug'
 
 const ZmenyRoute = ZmenyRouteImport.update({
   id: '/zmeny',
@@ -66,6 +66,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TestyIndexRoute = TestyIndexRouteImport.update({
+  id: '/testy/',
+  path: '/testy/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TestIndexRoute = TestIndexRouteImport.update({
   id: '/test/',
   path: '/test/',
@@ -74,6 +79,11 @@ const TestIndexRoute = TestIndexRouteImport.update({
 const SkoleniaIndexRoute = SkoleniaIndexRouteImport.update({
   id: '/skolenia/',
   path: '/skolenia/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TestySlugRoute = TestySlugRouteImport.update({
+  id: '/testy/$slug',
+  path: '/testy/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SponzoriVsetciRoute = SponzoriVsetciRouteImport.update({
@@ -96,16 +106,6 @@ const PodakovanieSessionIdRoute = PodakovanieSessionIdRouteImport.update({
   path: '/podakovanie/$sessionId',
   getParentRoute: () => rootRouteImport,
 } as any)
-const TestFirmaIndexRoute = TestFirmaIndexRouteImport.update({
-  id: '/test/firma/',
-  path: '/test/firma/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const TestFirmaSlugRoute = TestFirmaSlugRouteImport.update({
-  id: '/test/firma/$slug',
-  path: '/test/firma/$slug',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -120,10 +120,10 @@ export interface FileRoutesByFullPath {
   '/r/$shareId': typeof RShareIdRoute
   '/skolenia/$slug': typeof SkoleniaSlugRoute
   '/sponzori/vsetci': typeof SponzoriVsetciRoute
+  '/testy/$slug': typeof TestySlugRoute
   '/skolenia/': typeof SkoleniaIndexRoute
   '/test/': typeof TestIndexRoute
-  '/test/firma/$slug': typeof TestFirmaSlugRoute
-  '/test/firma/': typeof TestFirmaIndexRoute
+  '/testy/': typeof TestyIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -138,10 +138,10 @@ export interface FileRoutesByTo {
   '/r/$shareId': typeof RShareIdRoute
   '/skolenia/$slug': typeof SkoleniaSlugRoute
   '/sponzori/vsetci': typeof SponzoriVsetciRoute
+  '/testy/$slug': typeof TestySlugRoute
   '/skolenia': typeof SkoleniaIndexRoute
   '/test': typeof TestIndexRoute
-  '/test/firma/$slug': typeof TestFirmaSlugRoute
-  '/test/firma': typeof TestFirmaIndexRoute
+  '/testy': typeof TestyIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -157,10 +157,10 @@ export interface FileRoutesById {
   '/r/$shareId': typeof RShareIdRoute
   '/skolenia/$slug': typeof SkoleniaSlugRoute
   '/sponzori/vsetci': typeof SponzoriVsetciRoute
+  '/testy/$slug': typeof TestySlugRoute
   '/skolenia/': typeof SkoleniaIndexRoute
   '/test/': typeof TestIndexRoute
-  '/test/firma/$slug': typeof TestFirmaSlugRoute
-  '/test/firma/': typeof TestFirmaIndexRoute
+  '/testy/': typeof TestyIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -177,10 +177,10 @@ export interface FileRouteTypes {
     | '/r/$shareId'
     | '/skolenia/$slug'
     | '/sponzori/vsetci'
+    | '/testy/$slug'
     | '/skolenia/'
     | '/test/'
-    | '/test/firma/$slug'
-    | '/test/firma/'
+    | '/testy/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -195,10 +195,10 @@ export interface FileRouteTypes {
     | '/r/$shareId'
     | '/skolenia/$slug'
     | '/sponzori/vsetci'
+    | '/testy/$slug'
     | '/skolenia'
     | '/test'
-    | '/test/firma/$slug'
-    | '/test/firma'
+    | '/testy'
   id:
     | '__root__'
     | '/'
@@ -213,10 +213,10 @@ export interface FileRouteTypes {
     | '/r/$shareId'
     | '/skolenia/$slug'
     | '/sponzori/vsetci'
+    | '/testy/$slug'
     | '/skolenia/'
     | '/test/'
-    | '/test/firma/$slug'
-    | '/test/firma/'
+    | '/testy/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -231,10 +231,10 @@ export interface RootRouteChildren {
   PodakovanieSessionIdRoute: typeof PodakovanieSessionIdRoute
   RShareIdRoute: typeof RShareIdRoute
   SkoleniaSlugRoute: typeof SkoleniaSlugRoute
+  TestySlugRoute: typeof TestySlugRoute
   SkoleniaIndexRoute: typeof SkoleniaIndexRoute
   TestIndexRoute: typeof TestIndexRoute
-  TestFirmaSlugRoute: typeof TestFirmaSlugRoute
-  TestFirmaIndexRoute: typeof TestFirmaIndexRoute
+  TestyIndexRoute: typeof TestyIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -295,6 +295,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/testy/': {
+      id: '/testy/'
+      path: '/testy'
+      fullPath: '/testy/'
+      preLoaderRoute: typeof TestyIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/test/': {
       id: '/test/'
       path: '/test'
@@ -307,6 +314,13 @@ declare module '@tanstack/react-router' {
       path: '/skolenia'
       fullPath: '/skolenia/'
       preLoaderRoute: typeof SkoleniaIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/testy/$slug': {
+      id: '/testy/$slug'
+      path: '/testy/$slug'
+      fullPath: '/testy/$slug'
+      preLoaderRoute: typeof TestySlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/sponzori/vsetci': {
@@ -337,20 +351,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PodakovanieSessionIdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/test/firma/': {
-      id: '/test/firma/'
-      path: '/test/firma'
-      fullPath: '/test/firma/'
-      preLoaderRoute: typeof TestFirmaIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/test/firma/$slug': {
-      id: '/test/firma/$slug'
-      path: '/test/firma/$slug'
-      fullPath: '/test/firma/$slug'
-      preLoaderRoute: typeof TestFirmaSlugRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
@@ -378,10 +378,10 @@ const rootRouteChildren: RootRouteChildren = {
   PodakovanieSessionIdRoute: PodakovanieSessionIdRoute,
   RShareIdRoute: RShareIdRoute,
   SkoleniaSlugRoute: SkoleniaSlugRoute,
+  TestySlugRoute: TestySlugRoute,
   SkoleniaIndexRoute: SkoleniaIndexRoute,
   TestIndexRoute: TestIndexRoute,
-  TestFirmaSlugRoute: TestFirmaSlugRoute,
-  TestFirmaIndexRoute: TestFirmaIndexRoute,
+  TestyIndexRoute: TestyIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

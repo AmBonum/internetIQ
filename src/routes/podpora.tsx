@@ -409,8 +409,8 @@ export function DonateForm({ cancelled = false }: DonateFormProps) {
               className="rounded-xl border border-destructive/60 bg-destructive/10 p-3 text-sm text-foreground"
             >
               Niečo sa pokazilo: <code>{error}</code>. Skús to prosím znova alebo nás kontaktuj na{" "}
-              <a href="mailto:segnities@gmail.com" className="underline underline-offset-2">
-                segnities@gmail.com
+              <a href="mailto:subenai.podpora@gmail.com" className="underline underline-offset-2">
+                subenai.podpora@gmail.com
               </a>
               .
             </div>

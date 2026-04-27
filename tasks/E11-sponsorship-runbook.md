@@ -165,7 +165,7 @@ linked. What we CAN do is anonymize the public-facing fields.
 
 ### Step-by-step
 
-1. Sponsor e-mails `segnities@gmail.com` requesting erasure
+1. Sponsor e-mails `subenai.podpora@gmail.com` requesting erasure
 2. **Reply within 30 days** per čl. 12 ods. 3 GDPR (template **§G2**)
 3. Anonymize their public fields:
 
@@ -241,7 +241,7 @@ charges a 15 € dispute fee even if we win.
    - **Bounced** (invalid address) — ask sponsor to recheck the e-mail
    - **Marked as spam** — manually create a Stripe Customer Portal
      session via Dashboard, copy the URL, send via direct e-mail from
-     `segnities@gmail.com`:
+     `subenai.podpora@gmail.com`:
      ```
      Stripe Dashboard → Customers → search by e-mail → click → top-right
      "Open customer portal" → copy URL → paste into manual e-mail
@@ -260,7 +260,7 @@ Stripe Dashboard already shows the refund. Manual review:
 
 ## 8. E-mail templates (Slovak, copy-paste ready)
 
-> Send from `segnities@gmail.com`. Keep it brief, dignified, no
+> Send from `subenai.podpora@gmail.com`. Keep it brief, dignified, no
 > marketing flourish.
 
 ### §R1 — Refund granted (full)

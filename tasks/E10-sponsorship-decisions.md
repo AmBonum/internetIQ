@@ -169,7 +169,7 @@ authorization, žiadne charge. Užívateľ vidí v Stripe Checkout error.
 **Rozhodnutie**: pred Stripe Checkout musí `/podpora` form viditeľne
 zobraziť **„Aké údaje spracujeme"** panel:
 
-> **Aké údaje** *(spracúvateľ: am.bonum s. r. o., kontakt segnities@gmail.com)*:
+> **Aké údaje** *(spracúvateľ: am.bonum s. r. o., kontakt subenai.podpora@gmail.com)*:
 > - **E-mail** — pre faktúru a budúcu komunikáciu k odberu
 > - **Meno alebo názov firmy** — pre faktúru
 > - **DIČ** *(voliteľné)* — pre B2B faktúru s odpočtom

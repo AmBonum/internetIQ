@@ -8,9 +8,9 @@ import { Button } from "@/components/ui/button";
 
 const SITE_ORIGIN = "https://subenai.lvtesting.eu";
 
-export const Route = createFileRoute("/test/firma/")({
+export const Route = createFileRoute("/testy/")({
   head: () => {
-    const url = `${SITE_ORIGIN}/test/firma`;
+    const url = `${SITE_ORIGIN}/testy`;
     const packs = listPublishedPacks();
     return {
       meta: [
@@ -43,7 +43,7 @@ export const Route = createFileRoute("/test/firma/")({
             itemListElement: packs.map((p, i) => ({
               "@type": "ListItem",
               position: i + 1,
-              url: `${SITE_ORIGIN}/test/firma/${p.slug}`,
+              url: `${SITE_ORIGIN}/testy/${p.slug}`,
               name: p.title,
             })),
           }),

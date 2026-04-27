@@ -16,7 +16,7 @@ const COLUMNS: { title: string; links: FooterLink[] }[] = [
     title: "Obsah",
     links: [
       { to: "/test", label: "Spustiť test" },
-      { to: "/test/firma", label: "Sada testov" },
+      { to: "/testy", label: "Sada testov" },
       { to: "/skolenia", label: "Školenia" },
     ],
   },
@@ -97,7 +97,16 @@ export function Footer() {
             Bezplatný edukatívny nástroj pre slovenský digitálny svet.
           </p>
           <p className="text-xs text-muted-foreground">
-            spravené s 🍺 v Novejši ·{" "}
+            spravené s 🍺 v{" "}
+            <a
+              href="https://www.youtube.com/watch?v=dbuCSt_k5c8"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-foreground transition-colors"
+            >
+              Novejši
+            </a>{" "}
+            ·{" "}
             <Link
               to="/zmeny"
               className="font-mono hover:text-foreground transition-colors"

@@ -101,8 +101,8 @@ export function SponzoriView({ fetchSponsors }: SponzoriViewProps) {
           Zoznam je dobrovoľný — mnohí sponzori si zvolili anonymitu a v zozname sa nenachádzajú.
           Žiadne sumy ani počty platieb tu neukazujeme. Súhlas so zverejnením môžeš odvolať e-mailom
           na{" "}
-          <a href="mailto:segnities@gmail.com" className="underline underline-offset-2">
-            segnities@gmail.com
+          <a href="mailto:subenai.podpora@gmail.com" className="underline underline-offset-2">
+            subenai.podpora@gmail.com
           </a>
           .
         </p>

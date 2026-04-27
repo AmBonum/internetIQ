@@ -1,6 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useState, useMemo } from "react";
-import { getPackBySlug } from "@/content/test-packs";
+import { getPackBySlug, type TestPack } from "@/content/test-packs";
 import { getQuestionById, type Question } from "@/lib/quiz/questions";
 import { TestFlow } from "@/components/quiz/TestFlow";
 import { Button } from "@/components/ui/button";
@@ -10,7 +10,7 @@ import { buildPackQuizJsonLd, INDUSTRY_LABEL } from "@/lib/seo/quiz-jsonld";
 const SITE_ORIGIN = "https://subenai.lvtesting.eu";
 const COPYRIGHT_HOLDER = "am.bonum s. r. o.";
 
-export const Route = createFileRoute("/test/firma/$slug")({
+export const Route = createFileRoute("/testy/$slug")({
   loader: ({ params }) => {
     const pack = getPackBySlug(params.slug);
     if (!pack) throw notFound();
@@ -18,7 +18,7 @@ export const Route = createFileRoute("/test/firma/$slug")({
   },
   head: ({ loaderData: pack }) => {
     if (!pack) return { meta: [] };
-    const url = `${SITE_ORIGIN}/test/firma/${pack.slug}`;
+    const url = `${SITE_ORIGIN}/testy/${pack.slug}`;
     return {
       meta: [
         { title: `${pack.title} — subenai pre ${INDUSTRY_LABEL[pack.industry]}` },
@@ -49,13 +49,14 @@ export const Route = createFileRoute("/test/firma/$slug")({
 });
 
 function PackPage() {
-  const pack = Route.useLoaderData();
+  const pack = Route.useLoaderData() as TestPack;
   const [started, setStarted] = useState(false);
 
   // Resolve questionIds -> Question[] once. If any id is missing we
   // gracefully filter (silent during runtime; build-time test catches it).
   const questions = useMemo<Question[]>(
-    () => pack.questionIds.map((id) => getQuestionById(id)).filter((q): q is Question => !!q),
+    () =>
+      pack.questionIds.map((id) => getQuestionById(id)).filter((q): q is Question => q !== null),
     [pack.questionIds],
   );
 

@@ -5,7 +5,7 @@ import { sendEmail, isPlausibleEmail, type EmailEnv } from "../../functions/_lib
 const env: EmailEnv = {
   RESEND_API_KEY: "re_test_key",
   EMAIL_FROM: "subenai <noreply@lvtesting.eu>",
-  EMAIL_REPLY_TO: "segnities@gmail.com",
+  EMAIL_REPLY_TO: "subenai.podpora@gmail.com",
 };
 
 beforeEach(() => {
@@ -46,7 +46,7 @@ describe("sendEmail", () => {
       subject: "Test",
       html: "<p>Hi</p>",
       text: "Hi",
-      reply_to: "segnities@gmail.com",
+      reply_to: "subenai.podpora@gmail.com",
     });
   });
 
