@@ -111,6 +111,19 @@ To raise the limit (if obrat ever justifies KYC integration), update the
 constant in both [`functions/api/stripe-webhook.ts`](../functions/api/stripe-webhook.ts)
 and the `/podpora` UI cap in E11.1.
 
+## Sister endpoint — `/api/create-checkout-session`
+
+[`functions/api/create-checkout-session.ts`](../functions/api/create-checkout-session.ts) is
+the public POST endpoint backing the `/podpora` form (E11.1). It validates the
+form payload, creates (or reuses by e-mail) a Stripe Customer, and creates an
+hosted Checkout Session with inline `price_data` (no Dashboard Products needed).
+Sponsor display preferences (`display_name`, `display_link`, `display_message`,
+`show_in_footer`) are stamped into `session.metadata` so the webhook can apply
+them to the `sponsors` row when `checkout.session.completed` fires.
+
+Env vars: only `STRIPE_SECRET_KEY` (no Supabase access — all DB writes happen
+in the webhook on payment confirmation).
+
 ## Refund alerting (TODO when E11.8 ships)
 
 `charge.refunded` currently logs a `console.warn` with the original PI

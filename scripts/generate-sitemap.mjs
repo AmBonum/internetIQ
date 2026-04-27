@@ -23,6 +23,7 @@ const STATIC_ROUTES = [
   { loc: "/cookies", priority: "0.3", changefreq: "yearly" },
   { loc: "/privacy", priority: "0.3", changefreq: "yearly" },
   { loc: "/o-projekte", priority: "0.5", changefreq: "monthly" },
+  { loc: "/podpora", priority: "0.6", changefreq: "monthly" },
 ];
 
 async function loadSlugs(dirRel) {

@@ -17,6 +17,10 @@ export function Footer() {
           Školenia
         </Link>
         <span aria-hidden="true">·</span>
+        <Link to="/podpora" className="hover:text-foreground transition-colors">
+          Podpora
+        </Link>
+        <span aria-hidden="true">·</span>
         <Link to="/privacy" className="hover:text-foreground transition-colors">
           Súkromie
         </Link>

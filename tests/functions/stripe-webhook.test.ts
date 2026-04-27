@@ -33,6 +33,7 @@ interface MockState {
   insertedDonations: unknown[];
   insertedSubscriptions: unknown[];
   updatedSubscriptions: { id: string; patch: Record<string, unknown> }[];
+  updatedSponsors: { id: string; patch: Record<string, unknown> }[];
 }
 
 let state: MockState;
@@ -45,6 +46,7 @@ function makeMockSupabase() {
     insertedDonations: [],
     insertedSubscriptions: [],
     updatedSubscriptions: [],
+    updatedSponsors: [],
   };
   supabaseFromCalls = [];
 
@@ -67,6 +69,10 @@ function makeMockSupabase() {
         pendingFilter = { column, value };
         if (table === "subscriptions" && pendingUpdate) {
           state.updatedSubscriptions.push({ id: value, patch: pendingUpdate });
+          return Promise.resolve({ data: null, error: null });
+        }
+        if (table === "sponsors" && pendingUpdate) {
+          state.updatedSponsors.push({ id: value, patch: pendingUpdate });
           return Promise.resolve({ data: null, error: null });
         }
         return builder;
@@ -178,6 +184,7 @@ beforeEach(() => {
     insertedDonations: [],
     insertedSubscriptions: [],
     updatedSubscriptions: [],
+    updatedSponsors: [],
   };
 });
 
@@ -387,6 +394,87 @@ describe("processEvent — charge.refunded", () => {
     const result = await processEvent(refund, supabase as never);
     expect(result.status).toBe(200);
     expect(result.body).toMatchObject({ no_original: true });
+  });
+});
+
+describe("processEvent — checkout.session.completed metadata pass-through", () => {
+  it("applies display_name + show_in_footer from metadata to the sponsor row (oneoff)", async () => {
+    const supabase = makeMockSupabase();
+    const event = makeEvent("checkout.session.completed", {
+      mode: "payment",
+      customer: "cus_meta_oneoff",
+      payment_intent: "pi_meta_1",
+      amount_total: 5000,
+      currency: "eur",
+      metadata: {
+        display_name: "Anna Testovacia",
+        display_link: "https://example.test/anna",
+        display_message: "Vďaka!",
+        show_in_footer: "true",
+      },
+    });
+    const result = await processEvent(event, supabase as never);
+    expect(result.status).toBe(200);
+    const sponsorPatch = state.updatedSponsors[0];
+    expect(sponsorPatch?.patch).toEqual({
+      display_name: "Anna Testovacia",
+      display_link: "https://example.test/anna",
+      display_message: "Vďaka!",
+      show_in_footer: true,
+    });
+    expect(state.insertedDonations).toHaveLength(1);
+  });
+
+  it("upserts sponsor + applies metadata for subscription mode without inserting donation", async () => {
+    const supabase = makeMockSupabase();
+    const event = makeEvent("checkout.session.completed", {
+      mode: "subscription",
+      customer: "cus_meta_sub",
+      payment_intent: null,
+      amount_total: 0,
+      currency: "eur",
+      metadata: { display_name: "Bob", show_in_footer: "false" },
+    });
+    const result = await processEvent(event, supabase as never);
+    expect(result.status).toBe(200);
+    expect(result.body).toMatchObject({ mode: "subscription" });
+    expect(state.updatedSponsors[0]?.patch).toMatchObject({
+      display_name: "Bob",
+      show_in_footer: false,
+    });
+    expect(state.insertedDonations).toHaveLength(0);
+  });
+
+  it("clears empty-string display fields to NULL on the sponsor row", async () => {
+    const supabase = makeMockSupabase();
+    const event = makeEvent("checkout.session.completed", {
+      mode: "payment",
+      customer: "cus_meta_clear",
+      payment_intent: "pi_meta_clear",
+      amount_total: 1000,
+      currency: "eur",
+      metadata: { display_name: "", display_link: "", display_message: "" },
+    });
+    await processEvent(event, supabase as never);
+    expect(state.updatedSponsors[0]?.patch).toEqual({
+      display_name: null,
+      display_link: null,
+      display_message: null,
+    });
+  });
+
+  it("does not call sponsor UPDATE when no relevant metadata keys are present", async () => {
+    const supabase = makeMockSupabase();
+    const event = makeEvent("checkout.session.completed", {
+      mode: "payment",
+      customer: "cus_no_meta",
+      payment_intent: "pi_no_meta",
+      amount_total: 1000,
+      currency: "eur",
+      metadata: { unrelated: "noise" },
+    });
+    await processEvent(event, supabase as never);
+    expect(state.updatedSponsors).toHaveLength(0);
   });
 });
 

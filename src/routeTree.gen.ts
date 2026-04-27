@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as PodporaRouteImport } from './routes/podpora'
 import { Route as OProjekteRouteImport } from './routes/o-projekte'
 import { Route as CookiesRouteImport } from './routes/cookies'
 import { Route as IndexRouteImport } from './routes/index'
@@ -23,6 +24,11 @@ import { Route as TestFirmaSlugRouteImport } from './routes/test.firma.$slug'
 const PrivacyRoute = PrivacyRouteImport.update({
   id: '/privacy',
   path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PodporaRoute = PodporaRouteImport.update({
+  id: '/podpora',
+  path: '/podpora',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OProjekteRoute = OProjekteRouteImport.update({
@@ -75,6 +81,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/cookies': typeof CookiesRoute
   '/o-projekte': typeof OProjekteRoute
+  '/podpora': typeof PodporaRoute
   '/privacy': typeof PrivacyRoute
   '/r/$shareId': typeof RShareIdRoute
   '/skolenia/$slug': typeof SkoleniaSlugRoute
@@ -87,6 +94,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/cookies': typeof CookiesRoute
   '/o-projekte': typeof OProjekteRoute
+  '/podpora': typeof PodporaRoute
   '/privacy': typeof PrivacyRoute
   '/r/$shareId': typeof RShareIdRoute
   '/skolenia/$slug': typeof SkoleniaSlugRoute
@@ -100,6 +108,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/cookies': typeof CookiesRoute
   '/o-projekte': typeof OProjekteRoute
+  '/podpora': typeof PodporaRoute
   '/privacy': typeof PrivacyRoute
   '/r/$shareId': typeof RShareIdRoute
   '/skolenia/$slug': typeof SkoleniaSlugRoute
@@ -114,6 +123,7 @@ export interface FileRouteTypes {
     | '/'
     | '/cookies'
     | '/o-projekte'
+    | '/podpora'
     | '/privacy'
     | '/r/$shareId'
     | '/skolenia/$slug'
@@ -126,6 +136,7 @@ export interface FileRouteTypes {
     | '/'
     | '/cookies'
     | '/o-projekte'
+    | '/podpora'
     | '/privacy'
     | '/r/$shareId'
     | '/skolenia/$slug'
@@ -138,6 +149,7 @@ export interface FileRouteTypes {
     | '/'
     | '/cookies'
     | '/o-projekte'
+    | '/podpora'
     | '/privacy'
     | '/r/$shareId'
     | '/skolenia/$slug'
@@ -151,6 +163,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CookiesRoute: typeof CookiesRoute
   OProjekteRoute: typeof OProjekteRoute
+  PodporaRoute: typeof PodporaRoute
   PrivacyRoute: typeof PrivacyRoute
   RShareIdRoute: typeof RShareIdRoute
   SkoleniaSlugRoute: typeof SkoleniaSlugRoute
@@ -167,6 +180,13 @@ declare module '@tanstack/react-router' {
       path: '/privacy'
       fullPath: '/privacy'
       preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/podpora': {
+      id: '/podpora'
+      path: '/podpora'
+      fullPath: '/podpora'
+      preLoaderRoute: typeof PodporaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/o-projekte': {
@@ -239,6 +259,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CookiesRoute: CookiesRoute,
   OProjekteRoute: OProjekteRoute,
+  PodporaRoute: PodporaRoute,
   PrivacyRoute: PrivacyRoute,
   RShareIdRoute: RShareIdRoute,
   SkoleniaSlugRoute: SkoleniaSlugRoute,

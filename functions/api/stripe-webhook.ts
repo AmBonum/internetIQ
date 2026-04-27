@@ -88,23 +88,24 @@ async function handleCheckoutCompleted(
   supabase: SupabaseClient,
   session: Stripe.Checkout.Session,
 ): Promise<ProcessResult> {
-  if (session.mode !== "payment") {
-    return { status: 200, body: { received: true, mode: session.mode } };
-  }
-
   const customerId = readId(session.customer);
-  const paymentIntentId = readId(session.payment_intent);
-  const amountTotalCents = session.amount_total ?? 0;
-  const amountEur = centsToEur(amountTotalCents);
+  if (!customerId) return { status: 400, body: { error: "missing_customer" } };
 
-  if (!customerId || !paymentIntentId) {
-    return { status: 400, body: { error: "missing_customer_or_payment_intent" } };
+  const sponsorId = await upsertSponsor(supabase, customerId);
+  await applySponsorMetadata(supabase, sponsorId, session.metadata);
+
+  if (session.mode !== "payment") {
+    return { status: 200, body: { received: true, mode: session.mode, sponsor: sponsorId } };
   }
+
+  const paymentIntentId = readId(session.payment_intent);
+  const amountEur = centsToEur(session.amount_total ?? 0);
+
+  if (!paymentIntentId) return { status: 400, body: { error: "missing_payment_intent" } };
   if (amountEur > MAX_AML_AMOUNT_EUR) {
     return { status: 400, body: { error: "aml_limit_exceeded", limit: MAX_AML_AMOUNT_EUR } };
   }
 
-  const sponsorId = await upsertSponsor(supabase, customerId);
   const inserted = await insertDonation(supabase, {
     sponsorId,
     paymentIntentId,
@@ -113,6 +114,31 @@ async function handleCheckoutCompleted(
     kind: "oneoff",
   });
   return { status: 200, body: { received: true, donation: inserted } };
+}
+
+async function applySponsorMetadata(
+  supabase: SupabaseClient,
+  sponsorId: string,
+  metadata: Stripe.Metadata | null | undefined,
+): Promise<void> {
+  if (!metadata) return;
+  const patch: Record<string, string | boolean | null> = {};
+
+  if ("display_name" in metadata) patch.display_name = nullIfEmpty(metadata.display_name);
+  if ("display_link" in metadata) patch.display_link = nullIfEmpty(metadata.display_link);
+  if ("display_message" in metadata) patch.display_message = nullIfEmpty(metadata.display_message);
+  if ("show_in_footer" in metadata) patch.show_in_footer = metadata.show_in_footer === "true";
+
+  if (Object.keys(patch).length === 0) return;
+
+  const { error } = await supabase.from("sponsors").update(patch).eq("id", sponsorId);
+  if (error) throw new Error(`sponsor metadata apply failed: ${error.message}`);
+}
+
+function nullIfEmpty(value: string | undefined): string | null {
+  if (value === undefined || value === null) return null;
+  const trimmed = value.trim();
+  return trimmed.length === 0 ? null : trimmed;
 }
 
 async function handleInvoicePaid(
