@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SpravovatPodporuRouteImport } from './routes/spravovat-podporu'
 import { Route as SponzoriRouteImport } from './routes/sponzori'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as PodporaRouteImport } from './routes/podpora'
@@ -23,6 +24,11 @@ import { Route as PodakovanieSessionIdRouteImport } from './routes/podakovanie.$
 import { Route as TestFirmaIndexRouteImport } from './routes/test.firma.index'
 import { Route as TestFirmaSlugRouteImport } from './routes/test.firma.$slug'
 
+const SpravovatPodporuRoute = SpravovatPodporuRouteImport.update({
+  id: '/spravovat-podporu',
+  path: '/spravovat-podporu',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SponzoriRoute = SponzoriRouteImport.update({
   id: '/sponzori',
   path: '/sponzori',
@@ -96,6 +102,7 @@ export interface FileRoutesByFullPath {
   '/podpora': typeof PodporaRoute
   '/privacy': typeof PrivacyRoute
   '/sponzori': typeof SponzoriRoute
+  '/spravovat-podporu': typeof SpravovatPodporuRoute
   '/podakovanie/$sessionId': typeof PodakovanieSessionIdRoute
   '/r/$shareId': typeof RShareIdRoute
   '/skolenia/$slug': typeof SkoleniaSlugRoute
@@ -111,6 +118,7 @@ export interface FileRoutesByTo {
   '/podpora': typeof PodporaRoute
   '/privacy': typeof PrivacyRoute
   '/sponzori': typeof SponzoriRoute
+  '/spravovat-podporu': typeof SpravovatPodporuRoute
   '/podakovanie/$sessionId': typeof PodakovanieSessionIdRoute
   '/r/$shareId': typeof RShareIdRoute
   '/skolenia/$slug': typeof SkoleniaSlugRoute
@@ -127,6 +135,7 @@ export interface FileRoutesById {
   '/podpora': typeof PodporaRoute
   '/privacy': typeof PrivacyRoute
   '/sponzori': typeof SponzoriRoute
+  '/spravovat-podporu': typeof SpravovatPodporuRoute
   '/podakovanie/$sessionId': typeof PodakovanieSessionIdRoute
   '/r/$shareId': typeof RShareIdRoute
   '/skolenia/$slug': typeof SkoleniaSlugRoute
@@ -144,6 +153,7 @@ export interface FileRouteTypes {
     | '/podpora'
     | '/privacy'
     | '/sponzori'
+    | '/spravovat-podporu'
     | '/podakovanie/$sessionId'
     | '/r/$shareId'
     | '/skolenia/$slug'
@@ -159,6 +169,7 @@ export interface FileRouteTypes {
     | '/podpora'
     | '/privacy'
     | '/sponzori'
+    | '/spravovat-podporu'
     | '/podakovanie/$sessionId'
     | '/r/$shareId'
     | '/skolenia/$slug'
@@ -174,6 +185,7 @@ export interface FileRouteTypes {
     | '/podpora'
     | '/privacy'
     | '/sponzori'
+    | '/spravovat-podporu'
     | '/podakovanie/$sessionId'
     | '/r/$shareId'
     | '/skolenia/$slug'
@@ -190,6 +202,7 @@ export interface RootRouteChildren {
   PodporaRoute: typeof PodporaRoute
   PrivacyRoute: typeof PrivacyRoute
   SponzoriRoute: typeof SponzoriRoute
+  SpravovatPodporuRoute: typeof SpravovatPodporuRoute
   PodakovanieSessionIdRoute: typeof PodakovanieSessionIdRoute
   RShareIdRoute: typeof RShareIdRoute
   SkoleniaSlugRoute: typeof SkoleniaSlugRoute
@@ -201,6 +214,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/spravovat-podporu': {
+      id: '/spravovat-podporu'
+      path: '/spravovat-podporu'
+      fullPath: '/spravovat-podporu'
+      preLoaderRoute: typeof SpravovatPodporuRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sponzori': {
       id: '/sponzori'
       path: '/sponzori'
@@ -302,6 +322,7 @@ const rootRouteChildren: RootRouteChildren = {
   PodporaRoute: PodporaRoute,
   PrivacyRoute: PrivacyRoute,
   SponzoriRoute: SponzoriRoute,
+  SpravovatPodporuRoute: SpravovatPodporuRoute,
   PodakovanieSessionIdRoute: PodakovanieSessionIdRoute,
   RShareIdRoute: RShareIdRoute,
   SkoleniaSlugRoute: SkoleniaSlugRoute,

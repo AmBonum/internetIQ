@@ -1,11 +1,18 @@
 import Stripe from "stripe";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
+import { sendEmail } from "../_lib/email";
+import { refundAlertEmail } from "../_lib/email-templates";
+
 export interface Env {
   STRIPE_SECRET_KEY: string;
   STRIPE_WEBHOOK_SECRET: string;
   SUPABASE_URL: string;
   SUPABASE_SERVICE_ROLE_KEY: string;
+  RESEND_API_KEY?: string;
+  EMAIL_FROM?: string;
+  EMAIL_REPLY_TO?: string;
+  OPS_EMAIL?: string;
 }
 
 export const SIGNATURE_TOLERANCE_SECONDS = 300;
@@ -47,7 +54,7 @@ export async function onRequestPost(ctx: RequestContext): Promise<Response> {
   });
 
   try {
-    const result = await processEvent(event, supabase);
+    const result = await processEvent(event, supabase, env);
     logEvent(event, result.status);
     return jsonResponse(result.status, result.body);
   } catch (err) {
@@ -65,6 +72,7 @@ export type ProcessResult = { status: number; body: Record<string, unknown> };
 export async function processEvent(
   event: Stripe.Event,
   supabase: SupabaseClient,
+  env?: Env,
 ): Promise<ProcessResult> {
   switch (event.type) {
     case "checkout.session.completed":
@@ -78,7 +86,7 @@ export async function processEvent(
     case "customer.subscription.deleted":
       return handleSubscriptionDeleted(supabase, event.data.object as Stripe.Subscription);
     case "charge.refunded":
-      return handleChargeRefunded(supabase, event.data.object as Stripe.Charge);
+      return handleChargeRefunded(supabase, event.data.object as Stripe.Charge, env);
     default:
       return { status: 200, body: { received: true, ignored: event.type } };
   }
@@ -224,6 +232,7 @@ async function handleSubscriptionDeleted(
 async function handleChargeRefunded(
   supabase: SupabaseClient,
   charge: Stripe.Charge,
+  env?: Env,
 ): Promise<ProcessResult> {
   const paymentIntentId = readId(charge.payment_intent);
   if (!paymentIntentId) return { status: 400, body: { error: "missing_payment_intent" } };
@@ -239,13 +248,14 @@ async function handleChargeRefunded(
   const refundAmountEur = centsToEur(charge.amount_refunded ?? 0);
   if (refundAmountEur <= 0) return { status: 200, body: { received: true, zero_refund: true } };
 
+  const currency = (charge.currency ?? "eur").toUpperCase();
   const { error: insertErr } = await supabase
     .from("donations")
     .insert({
       sponsor_id: original.sponsor_id,
       stripe_payment_intent_id: null,
       amount_eur: -refundAmountEur,
-      currency: (charge.currency ?? "eur").toUpperCase(),
+      currency,
       kind: "refund",
       refund_of_donation_id: original.id,
     })
@@ -258,7 +268,47 @@ async function handleChargeRefunded(
     refundedEur: refundAmountEur,
     sponsorId: original.sponsor_id,
   });
+
+  await notifyOpsAboutRefund(env, {
+    paymentIntentId,
+    refundedEur: refundAmountEur,
+    sponsorId: original.sponsor_id as string,
+    currency,
+  });
+
   return { status: 200, body: { received: true, refunded_eur: refundAmountEur } };
+}
+
+async function notifyOpsAboutRefund(
+  env: Env | undefined,
+  input: {
+    paymentIntentId: string;
+    refundedEur: number;
+    sponsorId: string;
+    currency: string;
+  },
+): Promise<void> {
+  if (!env?.RESEND_API_KEY || !env.OPS_EMAIL || !env.EMAIL_FROM || !env.EMAIL_REPLY_TO) return;
+  if (env.RESEND_API_KEY.includes("replace_me")) return;
+
+  const { subject, html, text } = refundAlertEmail(input);
+  const result = await sendEmail(
+    {
+      RESEND_API_KEY: env.RESEND_API_KEY,
+      EMAIL_FROM: env.EMAIL_FROM,
+      EMAIL_REPLY_TO: env.EMAIL_REPLY_TO,
+    },
+    {
+      to: env.OPS_EMAIL,
+      subject,
+      html,
+      text,
+      idempotencyKey: `refund-${input.paymentIntentId}`,
+    },
+  );
+  if (!result.ok) {
+    console.error("refund email send failed", { error: result.error, sponsor: input.sponsorId });
+  }
 }
 
 async function upsertSponsor(supabase: SupabaseClient, stripeCustomerId: string): Promise<string> {
