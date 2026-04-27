@@ -1,11 +1,12 @@
 import { Link } from "@tanstack/react-router";
 import type { TestPack } from "@/content/test-packs";
 import { INDUSTRY_LABEL } from "@/lib/seo/quiz-jsonld";
+import { ROUTES } from "@/config/routes";
 
 export function TestPackCard({ pack }: { pack: TestPack }) {
   return (
     <Link
-      to="/testy/$slug"
+      to={ROUTES.testySlug}
       params={{ slug: pack.slug }}
       className="group block rounded-2xl border border-border/60 bg-card/70 p-5 transition hover:border-primary/50 hover:bg-card focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
     >

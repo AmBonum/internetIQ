@@ -2,15 +2,16 @@ import { useEffect, useState } from "react";
 import { Link, useLocation } from "@tanstack/react-router";
 import { Menu, X } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/sheet";
+import { ROUTES } from "@/config/routes";
 
 const NAV_ITEMS = [
-  { to: "/testy", label: "Testy" },
-  { to: "/skolenia", label: "Školenia" },
-  { to: "/podpora", label: "Podporiť projekt" },
+  { to: ROUTES.testy, label: "Testy" },
+  { to: ROUTES.skolenia, label: "Školenia" },
+  { to: ROUTES.podpora, label: "Podporiť projekt" },
 ] as const;
 
 const CTA_ITEM = {
-  to: "/test",
+  to: ROUTES.test,
   labelShort: "Spustiť test",
   labelLong: "Spustiť rýchly test",
 } as const;
@@ -39,7 +40,7 @@ export function SiteHeader() {
         aria-label="Hlavná navigácia"
         className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-3 sm:py-4"
       >
-        <Link to="/" className="flex items-center" aria-label="subenai — domov">
+        <Link to={ROUTES.home} className="flex items-center" aria-label="subenai — domov">
           <img src="/favicon.svg" alt="" aria-hidden="true" className="h-9 w-9 sm:hidden" />
           <img src="/logo.svg" alt="subenai" className="hidden sm:block h-9 w-auto md:h-10" />
         </Link>
@@ -70,7 +71,11 @@ export function SiteHeader() {
             className="flex w-screen max-w-full flex-col gap-0 border-l border-border/60 bg-background p-0 sm:max-w-md"
           >
             <div className="flex items-center justify-between border-b border-border/40 px-5 py-4">
-              <Link to="/" aria-label="subenai — domov" className="inline-flex items-center">
+              <Link
+                to={ROUTES.home}
+                aria-label="subenai — domov"
+                className="inline-flex items-center"
+              >
                 <img src="/logo.svg" alt="subenai" className="h-8 w-auto" />
               </Link>
               <SheetClose

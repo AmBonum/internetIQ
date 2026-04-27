@@ -1,6 +1,5 @@
 import type { Course } from "@/content/courses";
-
-const SITE_ORIGIN = "https://subenai.lvtesting.eu";
+import { SITE_ORIGIN } from "@/config/site";
 const PUBLISHER_NAME = "subenai";
 
 /**

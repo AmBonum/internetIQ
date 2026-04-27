@@ -5,8 +5,7 @@ import { INDUSTRY_LABEL } from "@/lib/seo/quiz-jsonld";
 import { TestPackCard } from "@/components/test-packs/TestPackCard";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-
-const SITE_ORIGIN = "https://subenai.lvtesting.eu";
+import { SITE_ORIGIN } from "@/config/site";
 
 export const Route = createFileRoute("/testy/")({
   head: () => {

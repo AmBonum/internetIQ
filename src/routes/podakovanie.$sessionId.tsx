@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { createFileRoute, Link, useParams } from "@tanstack/react-router";
 import { Footer } from "@/components/Footer";
+import { CONTACT_EMAIL } from "@/config/site";
+import { ROUTES } from "@/config/routes";
 
 const POLL_INTERVAL_MS = 3000;
 const POLL_MAX_MS = 30000;
@@ -133,7 +135,7 @@ export function ThankYouView({ sessionId }: ThankYouViewProps) {
     <div className="min-h-screen bg-background">
       <main className="mx-auto max-w-2xl px-4 py-12 sm:px-6 lg:py-16">
         <header className="mb-8">
-          <Link to="/" className="text-sm text-muted-foreground hover:text-foreground">
+          <Link to={ROUTES.home} className="text-sm text-muted-foreground hover:text-foreground">
             ← Späť na domov
           </Link>
         </header>
@@ -266,8 +268,8 @@ function ReadyState({
           {portalError ? (
             <p role="alert" className="text-sm text-foreground">
               Portál sa nepodarilo otvoriť: <code>{portalError}</code>. Napíš nám na{" "}
-              <a href="mailto:subenai.podpora@gmail.com" className="underline underline-offset-2">
-                subenai.podpora@gmail.com
+              <a href={`mailto:${CONTACT_EMAIL}`} className="underline underline-offset-2">
+                {CONTACT_EMAIL}
               </a>
               .
             </p>
@@ -279,7 +281,10 @@ function ReadyState({
         <p>
           Tvoje peniaze idú na hosting (Cloudflare ~5 €/mes), Supabase databázu (~25 €/mes), Stripe
           poplatky (~3 %) a tvorbu nového obsahu. Detailný breakdown v{" "}
-          <Link to="/o-projekte" className="underline underline-offset-2 hover:text-foreground">
+          <Link
+            to={ROUTES.oProjecte}
+            className="underline underline-offset-2 hover:text-foreground"
+          >
             O projekte
           </Link>
           .
@@ -295,13 +300,13 @@ function UnpaidState() {
       <h1 className="text-2xl font-bold tracking-tight text-foreground">Platba ešte neprešla</h1>
       <p className="text-sm leading-relaxed text-muted-foreground">
         Vyzerá to, že platba nebola dokončená. Skús to prosím znova alebo nás kontaktuj na{" "}
-        <a href="mailto:subenai.podpora@gmail.com" className="underline underline-offset-2">
-          subenai.podpora@gmail.com
+        <a href={`mailto:${CONTACT_EMAIL}`} className="underline underline-offset-2">
+          {CONTACT_EMAIL}
         </a>
         .
       </p>
       <Link
-        to="/podpora"
+        to={ROUTES.podpora}
         className="inline-flex items-center gap-2 rounded-2xl bg-accent-gradient px-6 py-3 text-sm font-bold text-primary-foreground"
       >
         Späť na /podpora
@@ -318,8 +323,8 @@ function TimeoutState() {
         Stripe nám ešte neposlal potvrdenie. Tvoja platba je pravdepodobne v poriadku — Stripe ti
         pošle faktúru e-mailom hneď ako ju spracuje. Ak to bude trvať dlhšie ako 10 minút, napíš nám
         na{" "}
-        <a href="mailto:subenai.podpora@gmail.com" className="underline underline-offset-2">
-          subenai.podpora@gmail.com
+        <a href={`mailto:${CONTACT_EMAIL}`} className="underline underline-offset-2">
+          {CONTACT_EMAIL}
         </a>{" "}
         s ID platby z e-mailu od Stripe.
       </p>
@@ -334,8 +339,8 @@ function NotFoundState() {
       <p className="text-sm leading-relaxed text-muted-foreground">
         Tento odkaz nezodpovedá žiadnej platbe v našom systéme. Skontroluj URL alebo nás kontaktuj
         na{" "}
-        <a href="mailto:subenai.podpora@gmail.com" className="underline underline-offset-2">
-          subenai.podpora@gmail.com
+        <a href={`mailto:${CONTACT_EMAIL}`} className="underline underline-offset-2">
+          {CONTACT_EMAIL}
         </a>
         .
       </p>
@@ -349,8 +354,8 @@ function ErrorState() {
       <h1 className="text-2xl font-bold tracking-tight text-foreground">Niečo sa pokazilo</h1>
       <p className="text-sm leading-relaxed text-muted-foreground">
         Stránku obnov za chvíľu — ak sa chyba opakuje, daj nám vedieť na{" "}
-        <a href="mailto:subenai.podpora@gmail.com" className="underline underline-offset-2">
-          subenai.podpora@gmail.com
+        <a href={`mailto:${CONTACT_EMAIL}`} className="underline underline-offset-2">
+          {CONTACT_EMAIL}
         </a>
         .
       </p>

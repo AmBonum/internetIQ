@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Footer } from "@/components/Footer";
-
-const SITE_ORIGIN = "https://subenai.lvtesting.eu";
+import { SITE_ORIGIN, CONTACT_EMAIL } from "@/config/site";
+import { ROUTES } from "@/config/routes";
 const PAGE_URL = `${SITE_ORIGIN}/spravovat-podporu`;
 const TURNSTILE_SCRIPT_SRC = "https://challenges.cloudflare.com/turnstile/v0/api.js";
 const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY ?? "";
@@ -155,7 +155,7 @@ export function ManageSupportForm() {
     <div className="min-h-screen bg-background">
       <main className="mx-auto max-w-xl px-4 py-12 sm:px-6 lg:py-16">
         <header className="mb-8">
-          <Link to="/" className="text-sm text-muted-foreground hover:text-foreground">
+          <Link to={ROUTES.home} className="text-sm text-muted-foreground hover:text-foreground">
             ← Späť na domov
           </Link>
           <h1 className="mt-4 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
@@ -163,7 +163,10 @@ export function ManageSupportForm() {
           </h1>
           <p className="mt-3 text-base text-muted-foreground sm:text-lg">
             Zadaj e-mail, ktorým si pri{" "}
-            <Link to="/podpora" className="underline underline-offset-2 hover:text-foreground">
+            <Link
+              to={ROUTES.podpora}
+              className="underline underline-offset-2 hover:text-foreground"
+            >
               podpore
             </Link>{" "}
             prispel/a. Pošleme ti naň odkaz na Stripe Customer Portal — môžeš tam{" "}
@@ -210,8 +213,8 @@ export function ManageSupportForm() {
                 className="rounded-xl border border-destructive/60 bg-destructive/10 p-3 text-sm text-foreground"
               >
                 Niečo sa pokazilo: <code>{error}</code>. Skús to prosím znova alebo nám napíš na{" "}
-                <a href="mailto:subenai.podpora@gmail.com" className="underline underline-offset-2">
-                  subenai.podpora@gmail.com
+                <a href={`mailto:${CONTACT_EMAIL}`} className="underline underline-offset-2">
+                  {CONTACT_EMAIL}
                 </a>
                 .
               </div>
@@ -251,8 +254,8 @@ function SubmittedState({ email }: { email: string }) {
       <p className="text-xs leading-relaxed text-muted-foreground">
         Nedošiel ti e-mail? Skontroluj spam priečinok. Ak neprišiel ani po 5 minútach, daj nám
         vedieť na{" "}
-        <a href="mailto:subenai.podpora@gmail.com" className="underline underline-offset-2">
-          subenai.podpora@gmail.com
+        <a href={`mailto:${CONTACT_EMAIL}`} className="underline underline-offset-2">
+          {CONTACT_EMAIL}
         </a>
         .
       </p>

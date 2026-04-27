@@ -6,8 +6,7 @@ import { TestFlow } from "@/components/quiz/TestFlow";
 import { Button } from "@/components/ui/button";
 import { Footer } from "@/components/Footer";
 import { buildPackQuizJsonLd, INDUSTRY_LABEL } from "@/lib/seo/quiz-jsonld";
-
-const SITE_ORIGIN = "https://subenai.lvtesting.eu";
+import { SITE_ORIGIN } from "@/config/site";
 const COPYRIGHT_HOLDER = "am.bonum s. r. o.";
 
 export const Route = createFileRoute("/testy/$slug")({

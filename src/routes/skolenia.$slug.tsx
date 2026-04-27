@@ -6,8 +6,7 @@ import { RelatedCourses } from "@/components/courses/RelatedCourses";
 import { Button } from "@/components/ui/button";
 import { Footer } from "@/components/Footer";
 import { buildCourseJsonLd } from "@/lib/seo/course-jsonld";
-
-const SITE_ORIGIN = "https://subenai.lvtesting.eu";
+import { SITE_ORIGIN } from "@/config/site";
 const COPYRIGHT_HOLDER = "subenai";
 
 export const Route = createFileRoute("/skolenia/$slug")({

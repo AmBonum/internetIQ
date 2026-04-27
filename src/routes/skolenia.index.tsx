@@ -5,6 +5,7 @@ import type { CourseCategory } from "@/content/courses";
 import { CourseCard } from "@/components/courses/CourseCard";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
+import { SITE_ORIGIN } from "@/config/site";
 
 const CATEGORY_LABEL: Record<CourseCategory, string> = {
   sms: "SMS",
@@ -16,8 +17,6 @@ const CATEGORY_LABEL: Record<CourseCategory, string> = {
   data: "Data hygiene",
   obecne: "Všeobecné",
 };
-
-const SITE_ORIGIN = "https://subenai.lvtesting.eu";
 
 export const Route = createFileRoute("/skolenia/")({
   head: () => {

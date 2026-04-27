@@ -4,8 +4,8 @@ import { Footer } from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
 import { formatMonthYear } from "@/lib/sponsors";
 import { type PublicSponsor } from "./sponzori";
-
-const SITE_ORIGIN = "https://subenai.lvtesting.eu";
+import { SITE_ORIGIN, CONTACT_EMAIL } from "@/config/site";
+import { ROUTES } from "@/config/routes";
 const PAGE_URL = `${SITE_ORIGIN}/sponzori/vsetci`;
 const FETCH_LIMIT = 500;
 
@@ -83,7 +83,10 @@ export function AllSponsorsView({ fetchSponsors }: AllSponsorsViewProps) {
     <div className="min-h-screen bg-background">
       <main className="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:py-16">
         <header className="mb-8">
-          <Link to="/sponzori" className="text-sm text-muted-foreground hover:text-foreground">
+          <Link
+            to={ROUTES.sponzori}
+            className="text-sm text-muted-foreground hover:text-foreground"
+          >
             ← Späť na najnovších sponzorov
           </Link>
           <h1 className="mt-4 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
@@ -144,8 +147,8 @@ export function AllSponsorsView({ fetchSponsors }: AllSponsorsViewProps) {
         <p className="mt-12 text-center text-xs text-muted-foreground">
           Zoznam je dobrovoľný — mnohí sponzori si zvolili anonymitu. Žiadne sumy ani počty platieb
           tu neukazujeme. Súhlas so zverejnením môžeš odvolať e-mailom na{" "}
-          <a href="mailto:subenai.podpora@gmail.com" className="underline underline-offset-2">
-            subenai.podpora@gmail.com
+          <a href={`mailto:${CONTACT_EMAIL}`} className="underline underline-offset-2">
+            {CONTACT_EMAIL}
           </a>
           .
         </p>

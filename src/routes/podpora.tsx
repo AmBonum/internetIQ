@@ -1,6 +1,8 @@
 import { useMemo, useState, type FormEvent } from "react";
 import { createFileRoute, Link, useSearch } from "@tanstack/react-router";
 import { Footer } from "@/components/Footer";
+import { CONTACT_EMAIL } from "@/config/site";
+import { ROUTES } from "@/config/routes";
 
 const ONEOFF_AMOUNTS = [5, 10, 25, 50, 100] as const;
 const MONTHLY_TIERS = [5, 10, 25] as const;
@@ -159,7 +161,7 @@ export function DonateForm({ cancelled = false }: DonateFormProps) {
     <div className="min-h-screen bg-background">
       <main className="mx-auto max-w-2xl px-4 py-12 sm:px-6 lg:py-16">
         <header className="mb-8">
-          <Link to="/" className="text-sm text-muted-foreground hover:text-foreground">
+          <Link to={ROUTES.home} className="text-sm text-muted-foreground hover:text-foreground">
             ← Späť na domov
           </Link>
           <h1 className="mt-4 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
@@ -169,7 +171,7 @@ export function DonateForm({ cancelled = false }: DonateFormProps) {
             Akúkoľvek čiastku použijeme na hosting, tvorbu obsahu a údržbu. Žiadne reklamy, žiadne
             platené výhody. Detail v{" "}
             <Link
-              to="/o-projekte"
+              to={ROUTES.oProjecte}
               className="text-primary underline underline-offset-2 hover:opacity-80"
             >
               O projekte
@@ -394,7 +396,7 @@ export function DonateForm({ cancelled = false }: DonateFormProps) {
               label={
                 <span>
                   Beriem na vedomie spracovanie mojich osobných údajov per{" "}
-                  <Link to="/privacy" className="underline underline-offset-2">
+                  <Link to={ROUTES.privacy} className="underline underline-offset-2">
                     Zásady ochrany súkromia
                   </Link>
                   .
@@ -409,8 +411,8 @@ export function DonateForm({ cancelled = false }: DonateFormProps) {
               className="rounded-xl border border-destructive/60 bg-destructive/10 p-3 text-sm text-foreground"
             >
               Niečo sa pokazilo: <code>{error}</code>. Skús to prosím znova alebo nás kontaktuj na{" "}
-              <a href="mailto:subenai.podpora@gmail.com" className="underline underline-offset-2">
-                subenai.podpora@gmail.com
+              <a href={`mailto:${CONTACT_EMAIL}`} className="underline underline-offset-2">
+                {CONTACT_EMAIL}
               </a>
               .
             </div>

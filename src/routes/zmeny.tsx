@@ -1,8 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Footer } from "@/components/Footer";
 import changelog from "@/content/changelog.generated.json";
-
-const SITE_ORIGIN = "https://subenai.lvtesting.eu";
+import { SITE_ORIGIN } from "@/config/site";
 const PAGE_URL = `${SITE_ORIGIN}/zmeny`;
 
 interface ChangelogEntry {

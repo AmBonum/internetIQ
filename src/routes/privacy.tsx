@@ -1,5 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Footer } from "@/components/Footer";
+import { CONTACT_EMAIL } from "@/config/site";
+import { ROUTES } from "@/config/routes";
 
 export const Route = createFileRoute("/privacy")({
   head: () => ({
@@ -21,7 +23,7 @@ function PrivacyPage() {
     <div className="min-h-screen bg-background">
       <main className="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:py-16">
         <header className="mb-10">
-          <Link to="/" className="text-sm text-muted-foreground hover:text-foreground">
+          <Link to={ROUTES.home} className="text-sm text-muted-foreground hover:text-foreground">
             ← Späť na domov
           </Link>
           <h1 className="mt-4 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
@@ -51,8 +53,8 @@ function PrivacyPage() {
               <li>Štatutár: Ľubomír Volčko, konateľ konajúci samostatne</li>
               <li>
                 Kontakt vo veciach ochrany osobných údajov:{" "}
-                <a href="mailto:subenai.podpora@gmail.com" className="underline underline-offset-2">
-                  subenai.podpora@gmail.com
+                <a href={`mailto:${CONTACT_EMAIL}`} className="underline underline-offset-2">
+                  {CONTACT_EMAIL}
                 </a>
               </li>
             </ul>
@@ -196,7 +198,7 @@ function PrivacyPage() {
                 <strong>Stripe, Inc.</strong> (USA) — platobný sprostredkovateľ pre dobrovoľné
                 podporné platby (zber kartových údajov, vystavenie faktúry, recurring odbery). SCC
                 pripojenie podľa čl. 46 GDPR. Aktivuje sa iba ak otvoríš stránku{" "}
-                <Link to="/podpora" className="underline underline-offset-2">
+                <Link to={ROUTES.podpora} className="underline underline-offset-2">
                   /podpora
                 </Link>
                 .
@@ -315,7 +317,7 @@ function PrivacyPage() {
             <h2 className="text-xl font-semibold">7. Sponzorovanie projektu</h2>
             <p className="text-sm leading-relaxed text-muted-foreground">
               Ak sa rozhodneš podporiť projekt cez stránku{" "}
-              <Link to="/podpora" className="underline underline-offset-2">
+              <Link to={ROUTES.podpora} className="underline underline-offset-2">
                 /podpora
               </Link>{" "}
               (jednorazovo alebo mesačne), spracujeme nasledujúce údaje výlučne pre účely vystavenia
@@ -361,7 +363,7 @@ function PrivacyPage() {
               zaniká podľa § 7 ods. 6 zákona č. 102/2014 Z. z. — pred platbou explicitne zaškrtneš
               súhlas). Mesačný odber môžeš <strong>kedykoľvek zrušiť jediným klikom</strong> cez
               Stripe Customer Portal, ktorého link ti pošleme po zadaní e-mailu na adrese{" "}
-              <Link to="/spravovat-podporu" className="underline underline-offset-2">
+              <Link to={ROUTES.spravovat} className="underline underline-offset-2">
                 /spravovat-podporu
               </Link>
               . Zrušenie sa vzťahuje na nasledujúce fakturačné obdobia, nie minulé.
@@ -369,13 +371,13 @@ function PrivacyPage() {
             <p className="pt-2 text-sm leading-relaxed text-muted-foreground">
               <strong>Dobrovoľné údaje pre verejné poďakovanie:</strong> pri checkoute si môžeš
               zvoliť, či ťa zobrazíme na stránke{" "}
-              <Link to="/sponzori" className="underline underline-offset-2">
+              <Link to={ROUTES.sponzori} className="underline underline-offset-2">
                 /sponzori
               </Link>{" "}
               (default je vypnuté). Granularne — meno, voliteľný odkaz, voliteľná správa do 80
               znakov. Súhlas môžeš kedykoľvek odvolať e-mailom na{" "}
-              <a href="mailto:subenai.podpora@gmail.com" className="underline underline-offset-2">
-                subenai.podpora@gmail.com
+              <a href={`mailto:${CONTACT_EMAIL}`} className="underline underline-offset-2">
+                {CONTACT_EMAIL}
               </a>
               .
             </p>
@@ -409,7 +411,7 @@ function PrivacyPage() {
             <h2 className="text-xl font-semibold">10. Súvisiace dokumenty</h2>
             <p className="text-sm leading-relaxed text-muted-foreground">
               Detailný zoznam cookies a úložiska je v{" "}
-              <Link to="/cookies" className="underline underline-offset-2">
+              <Link to={ROUTES.cookies} className="underline underline-offset-2">
                 zásadách používania cookies
               </Link>
               .

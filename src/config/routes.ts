@@ -1,0 +1,16 @@
+export const ROUTES = {
+  home: "/",
+  test: "/test",
+  testy: "/testy",
+  testySlug: "/testy/$slug",
+  skolenia: "/skolenia",
+  skoleniaSlug: "/skolenia/$slug",
+  podpora: "/podpora",
+  sponzori: "/sponzori",
+  sponzoriVsetci: "/sponzori/vsetci",
+  spravovat: "/spravovat-podporu",
+  privacy: "/privacy",
+  cookies: "/cookies",
+  oProjecte: "/o-projekte",
+  zmeny: "/zmeny",
+} as const;

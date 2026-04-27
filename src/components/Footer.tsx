@@ -3,6 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { useConsent } from "@/hooks/useConsent";
 import { supabase } from "@/integrations/supabase/client";
 import changelog from "@/content/changelog.generated.json";
+import { ROUTES } from "@/config/routes";
 
 const CURRENT_VERSION = (changelog as { version: string }[])[0]?.version ?? "—";
 
@@ -15,26 +16,26 @@ const COLUMNS: { title: string; links: FooterLink[] }[] = [
   {
     title: "Obsah",
     links: [
-      { to: "/test", label: "Spustiť test" },
-      { to: "/testy", label: "Sada testov" },
-      { to: "/skolenia", label: "Školenia" },
+      { to: ROUTES.test, label: "Spustiť test" },
+      { to: ROUTES.testy, label: "Sada testov" },
+      { to: ROUTES.skolenia, label: "Školenia" },
     ],
   },
   {
     title: "Projekt",
     links: [
-      { to: "/o-projekte", label: "O projekte" },
-      { to: "/podpora", label: "Podporiť projekt" },
-      { to: "/sponzori", label: "Sponzori" },
-      { to: "/zmeny", label: "Zmeny a verzie" },
+      { to: ROUTES.oProjecte, label: "O projekte" },
+      { to: ROUTES.podpora, label: "Podporiť projekt" },
+      { to: ROUTES.sponzori, label: "Sponzori" },
+      { to: ROUTES.zmeny, label: "Zmeny a verzie" },
     ],
   },
   {
     title: "Právne",
     links: [
-      { to: "/privacy", label: "Súkromie" },
-      { to: "/cookies", label: "Cookies" },
-      { to: "/spravovat-podporu", label: "Spravovať podporu (sponzori)" },
+      { to: ROUTES.privacy, label: "Súkromie" },
+      { to: ROUTES.cookies, label: "Cookies" },
+      { to: ROUTES.spravovat, label: "Spravovať podporu (sponzori)" },
     ],
   },
 ];
@@ -90,7 +91,7 @@ export function Footer() {
     <footer className="mx-auto mt-24 w-full max-w-5xl border-t border-border/60 pt-12 pb-8">
       <div className="grid gap-10 sm:grid-cols-2 md:grid-cols-4">
         <div className="space-y-3">
-          <Link to="/" className="inline-flex items-center" aria-label="subenai — domov">
+          <Link to={ROUTES.home} className="inline-flex items-center" aria-label="subenai — domov">
             <img src="/logo.svg" alt="subenai" className="h-8 w-auto" />
           </Link>
           <p className="text-xs leading-relaxed text-muted-foreground">
@@ -108,7 +109,7 @@ export function Footer() {
             </a>{" "}
             ·{" "}
             <Link
-              to="/zmeny"
+              to={ROUTES.zmeny}
               className="font-mono hover:text-foreground transition-colors"
               aria-label={`Aktuálna verzia v${CURRENT_VERSION} — zoznam zmien`}
             >
@@ -149,7 +150,7 @@ export function Footer() {
             ))}
             <li>
               <Link
-                to="/sponzori"
+                to={ROUTES.sponzori}
                 className="text-xs text-muted-foreground transition-colors hover:text-foreground"
               >
                 všetci sponzori →

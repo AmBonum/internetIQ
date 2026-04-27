@@ -9,8 +9,8 @@ import {
 import { Footer } from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
 import { formatMonthYear } from "@/lib/sponsors";
-
-const SITE_ORIGIN = "https://subenai.lvtesting.eu";
+import { SITE_ORIGIN, CONTACT_EMAIL } from "@/config/site";
+import { ROUTES } from "@/config/routes";
 const SPONZORI_URL = `${SITE_ORIGIN}/sponzori`;
 const HOMEPAGE_LIMIT = 5;
 
@@ -72,7 +72,7 @@ export function SponzoriView({ fetchSponsors }: SponzoriViewProps) {
     <div className="min-h-screen bg-background">
       <main className="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:py-16">
         <header className="mb-10">
-          <Link to="/" className="text-sm text-muted-foreground hover:text-foreground">
+          <Link to={ROUTES.home} className="text-sm text-muted-foreground hover:text-foreground">
             ← Späť na domov
           </Link>
           <h1 className="mt-4 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
@@ -80,7 +80,10 @@ export function SponzoriView({ fetchSponsors }: SponzoriViewProps) {
           </h1>
           <p className="mt-3 text-base text-muted-foreground sm:text-lg">
             Vďaka týmto ľuďom funguje subenai. Detail kam idú peniaze v{" "}
-            <Link to="/o-projekte" className="underline underline-offset-2 hover:text-foreground">
+            <Link
+              to={ROUTES.oProjecte}
+              className="underline underline-offset-2 hover:text-foreground"
+            >
               O projekte
             </Link>
             .
@@ -101,8 +104,8 @@ export function SponzoriView({ fetchSponsors }: SponzoriViewProps) {
           Zoznam je dobrovoľný — mnohí sponzori si zvolili anonymitu a v zozname sa nenachádzajú.
           Žiadne sumy ani počty platieb tu neukazujeme. Súhlas so zverejnením môžeš odvolať e-mailom
           na{" "}
-          <a href="mailto:subenai.podpora@gmail.com" className="underline underline-offset-2">
-            subenai.podpora@gmail.com
+          <a href={`mailto:${CONTACT_EMAIL}`} className="underline underline-offset-2">
+            {CONTACT_EMAIL}
           </a>
           .
         </p>
@@ -121,7 +124,7 @@ function LatestList({ sponsors }: { sponsors: PublicSponsor[] }) {
           {sponsors.length === 1 ? "Najnovší sponzor" : `Najnovších ${sponsors.length} sponzorov`}
         </h2>
         <Link
-          to="/sponzori/vsetci"
+          to={ROUTES.sponzoriVsetci}
           className="inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline underline-offset-2"
         >
           Celý zoznam s filtrami <span aria-hidden="true">→</span>
@@ -212,7 +215,7 @@ function SponsorsEmpty() {
       </p>
       <div className="mt-4">
         <Link
-          to="/podpora"
+          to={ROUTES.podpora}
           className="inline-flex items-center gap-2 rounded-2xl bg-accent-gradient px-6 py-3 text-sm font-bold text-primary-foreground shadow-glow"
         >
           Podporiť projekt

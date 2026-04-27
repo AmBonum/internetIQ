@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Footer } from "@/components/Footer";
-
-const SITE_ORIGIN = "https://subenai.lvtesting.eu";
+import { SITE_ORIGIN } from "@/config/site";
+import { ROUTES } from "@/config/routes";
 const ABOUT_URL = `${SITE_ORIGIN}/o-projekte`;
 
 const aboutJsonLd = {
@@ -60,7 +60,7 @@ export function AboutPage() {
     <div className="min-h-screen bg-background">
       <main className="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:py-16">
         <header className="mb-10">
-          <Link to="/" className="text-sm text-muted-foreground hover:text-foreground">
+          <Link to={ROUTES.home} className="text-sm text-muted-foreground hover:text-foreground">
             ← Späť na domov
           </Link>
           <h1 className="mt-4 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
@@ -225,7 +225,10 @@ export function AboutPage() {
                 marketingové nástroje sa nezapnú, kým ich nepovolíš v cookie banneri (kategórie
                 „analytika" / „marketing"). Bez súhlasu žiadne pixely, žiadne externé skripty,
                 žiadny remarketing. Súhlas môžeš kedykoľvek odvolať cez{" "}
-                <Link to="/cookies" className="underline underline-offset-2 hover:text-foreground">
+                <Link
+                  to={ROUTES.cookies}
+                  className="underline underline-offset-2 hover:text-foreground"
+                >
                   Nastavenia cookies
                 </Link>
                 .
@@ -246,14 +249,14 @@ export function AboutPage() {
             </p>
             <div className="flex flex-col items-center gap-3 pt-2 sm:flex-row sm:justify-center">
               <Link
-                to="/podpora"
+                to={ROUTES.podpora}
                 className="inline-flex items-center justify-center gap-2 rounded-2xl bg-accent-gradient px-6 py-3 text-base font-bold text-primary-foreground shadow-glow transition-transform hover:scale-[1.03] active:scale-[0.99]"
               >
                 Podporiť projekt
                 <span aria-hidden="true">→</span>
               </Link>
               <Link
-                to="/sponzori"
+                to={ROUTES.sponzori}
                 className="inline-flex items-center justify-center gap-2 rounded-2xl border border-border/60 bg-background/60 px-6 py-3 text-sm font-semibold text-foreground transition-colors hover:bg-background"
               >
                 Pozri sponzorov

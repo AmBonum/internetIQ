@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/accordion";
 import { Footer } from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
+import { ROUTES } from "@/config/routes";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -67,7 +68,7 @@ const FAQ_SECTIONS: {
             falošných objednávkach, gastro o fake kontrolách, IT o BEC podvodoch. Stačí zdieľať link
             s tímom — výsledok dostane každý sám pre seba.{" "}
             <Link
-              to="/testy"
+              to={ROUTES.testy}
               className="font-medium text-primary underline underline-offset-2 hover:opacity-80"
             >
               Pozrieť testy
@@ -85,7 +86,7 @@ const FAQ_SECTIONS: {
             prenájmy, falošné štipendiá), seniorov (AI klonovanie hlasu, dverové podvody) a
             všeobecný test pre každého. Nájdeš ich vsekcii{" "}
             <Link
-              to="/testy"
+              to={ROUTES.testy}
               className="font-medium text-primary underline underline-offset-2 hover:opacity-80"
             >
               Testy
@@ -108,7 +109,7 @@ const FAQ_SECTIONS: {
             vishing, BEC, marketplace, investičné a romance scam-y, hygiena hesiel. Môžeš ich čítať
             v ľubovoľnom poradí v{" "}
             <Link
-              to="/skolenia"
+              to={ROUTES.skolenia}
               className="font-medium text-primary underline underline-offset-2 hover:opacity-80"
             >
               bezplatných školeniach
@@ -135,21 +136,21 @@ const FAQ_SECTIONS: {
           <>
             Áno.{" "}
             <Link
-              to="/test"
+              to={ROUTES.test}
               className="font-medium text-primary underline underline-offset-2 hover:opacity-80"
             >
               Test
             </Link>
             ,{" "}
             <Link
-              to="/testy"
+              to={ROUTES.testy}
               className="font-medium text-primary underline underline-offset-2 hover:opacity-80"
             >
               testy
             </Link>
             ,{" "}
             <Link
-              to="/skolenia"
+              to={ROUTES.skolenia}
               className="font-medium text-primary underline underline-offset-2 hover:opacity-80"
             >
               školenia
@@ -168,7 +169,7 @@ const FAQ_SECTIONS: {
             môžu dovoliť školenia za stovky eur. Chod pokrývajú dobrovoľné príspevky od sponzorov.
             Ak chceš pomôcť, prejdi na stránku{" "}
             <Link
-              to="/podpora"
+              to={ROUTES.podpora}
               className="font-medium text-primary underline underline-offset-2 hover:opacity-80"
             >
               Podpora projektu
@@ -190,7 +191,7 @@ const FAQ_SECTIONS: {
             Iba tvoje odpovede a skóre — anonymne, bez mena, bez e-mailu, bez IP adresy. Detaily
             nájdeš v{" "}
             <Link
-              to="/privacy"
+              to={ROUTES.privacy}
               className="font-medium text-primary underline underline-offset-2 hover:opacity-80"
             >
               Zásadách ochrany súkromia
@@ -208,7 +209,7 @@ const FAQ_SECTIONS: {
             cookies nespúšťame bez tvojho výslovného súhlasu. Nastavenia kedykoľvek zmeníš alebo
             odvoláš cez banner „Spravovať cookies" v päte stránky alebo v{" "}
             <Link
-              to="/cookies"
+              to={ROUTES.cookies}
               className="font-medium text-primary underline underline-offset-2 hover:opacity-80"
             >
               Zásadách cookies
@@ -269,7 +270,7 @@ function Index() {
 
           <div className="mt-10 flex flex-col items-center gap-3">
             <Link
-              to="/test"
+              to={ROUTES.test}
               className="group inline-flex items-center gap-2 rounded-2xl bg-accent-gradient px-8 py-5 text-lg font-bold text-primary-foreground shadow-glow transition-transform hover:scale-[1.03] active:scale-[0.99]"
             >
               Spustiť test
@@ -330,21 +331,21 @@ function Index() {
             Čo všetko tu nájdeš
           </h2>
           <FeatureCard
-            to="/testy"
+            to={ROUTES.testy}
             emoji="🏢"
             title="Sada testov"
             description="Predefinované sady podľa branže — e-shop, gastro, IT, autoservis, verejné služby. Otestuj celý tím naraz, každý dostane vlastný výsledok."
             cta="Pozrieť sady testov"
           />
           <FeatureCard
-            to="/skolenia"
+            to={ROUTES.skolenia}
             emoji="📚"
             title="Bezplatné školenia"
             description="8 kurzov: phishing, smishing, vishing, BEC, marketplace, investičné a romance scams, hygiena údajov. Krátke, so slovenskými scenármi."
             cta="Prejsť do školení"
           />
           <FeatureCard
-            to="/o-projekte"
+            to={ROUTES.oProjecte}
             emoji="🛡️"
             title="O projekte"
             description="Prečo je to zadarmo, prečo bez reklám, kam idú peniaze. Transparentne — žiadny paywall, žiadne dark patterns, žiadne tracking bez súhlasu."
@@ -378,14 +379,14 @@ function Index() {
             </div>
             <div className="flex flex-col gap-3 sm:flex-row md:flex-col">
               <Link
-                to="/podpora"
+                to={ROUTES.podpora}
                 className="inline-flex items-center justify-center gap-2 rounded-2xl bg-accent-gradient px-6 py-3 text-base font-bold text-primary-foreground shadow-glow transition-transform hover:scale-[1.03] active:scale-[0.99]"
               >
                 Podporiť projekt
                 <span aria-hidden="true">→</span>
               </Link>
               <Link
-                to="/o-projekte"
+                to={ROUTES.oProjecte}
                 className="inline-flex items-center justify-center gap-2 rounded-2xl border border-border/60 bg-background/60 px-6 py-3 text-sm font-semibold text-foreground transition-colors hover:bg-background"
               >
                 Dozvedieť sa viac
@@ -412,7 +413,7 @@ function Index() {
             </p>
           </div>
           <Link
-            to="/sponzori"
+            to={ROUTES.sponzori}
             className="inline-flex shrink-0 items-center gap-2 rounded-xl border border-border bg-background px-5 py-2.5 text-sm font-semibold text-foreground transition-colors hover:border-primary/40"
           >
             Pozrieť zoznam
