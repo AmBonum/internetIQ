@@ -55,15 +55,6 @@ export async function drawIgStoryToCanvas(args: DrawArgs): Promise<Blob> {
   const blockX = (W - blockW) / 2;
   const blockY = 148;
 
-  // Blue rounded badge
-  roundedRect(ctx, blockX, blockY, badgeSize, badgeSize, 13);
-  ctx.fillStyle = "#3300ff";
-  ctx.fill();
-  ctx.fillStyle = "#ffffff";
-  ctx.font = "900 28px system-ui";
-  ctx.textAlign = "center";
-  ctx.fillText("sB", blockX + badgeSize / 2, blockY + 41);
-
   // "subenai" in brand lime-green
   ctx.fillStyle = "#c8f02b";
   ctx.font = labelFont;
