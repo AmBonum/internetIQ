@@ -29,6 +29,19 @@ STRIPE_WEBHOOK_SECRET=whsec_replace_me
 SUPABASE_URL=https://your-project.supabase.co
 SUPABASE_SERVICE_ROLE_KEY=eyJ_replace_me
 
+# --- Cloudflare Turnstile (E11.4 portal magic link verification) ------------
+# Server-side secret used to validate the token the browser submits with the
+# magic-link form. Public site key lives in .env (VITE_TURNSTILE_SITE_KEY).
+# Get from https://dash.cloudflare.com → Turnstile → site → "Secret Key".
+# Use the test secret "1x0000000000000000000000000000000AA" for local dev.
+TURNSTILE_SECRET_KEY=1x0000000000000000000000000000000AA
+
+# Per-email cooldown + global daily cap on portal magic-link sends.
+# Defaults are sane; override only when scaling up.
+PORTAL_LINK_DAILY_CAP=200
+PORTAL_LINK_COOLDOWN_SECONDS=900
+PORTAL_LINK_PER_IP_PER_HOUR=10
+
 # --- Email (E11.8) ----------------------------------------------------------
 # Resend API key for transactional emails (magic link, refund alerts).
 # Get from https://resend.com/api-keys.

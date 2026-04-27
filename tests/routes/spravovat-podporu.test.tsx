@@ -56,7 +56,10 @@ describe("ManageSupportForm (/spravovat-podporu)", () => {
     await waitFor(() => expect(fetchSpy).toHaveBeenCalledTimes(1));
     expect(fetchSpy.mock.calls[0][0]).toBe("/api/portal-magic-link");
     const body = JSON.parse((fetchSpy.mock.calls[0][1] as RequestInit).body as string);
-    expect(body).toEqual({ email: "anna@example.test" });
+    // VITE_TURNSTILE_SITE_KEY is unset in jsdom → token is the "disabled"
+    // sentinel so the form still submits and the misconfig stays visible.
+    expect(body).toMatchObject({ email: "anna@example.test" });
+    expect(body.turnstile_token).toBeDefined();
 
     await waitFor(() => expect(screen.getByText(/Skontroluj e-mail/i)).toBeInTheDocument());
     expect(screen.getByText(/anna@example\.test/i)).toBeInTheDocument();

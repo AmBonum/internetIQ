@@ -2,6 +2,14 @@ import Stripe from "stripe";
 
 import { sendEmail, isPlausibleEmail } from "../_lib/email";
 import { magicLinkPortalEmail } from "../_lib/email-templates";
+import {
+  consumeDailyQuota,
+  emailCooldown,
+  ipRateLimit,
+  parsePositiveInt,
+  readClientIp,
+  verifyTurnstile,
+} from "../_lib/security";
 import { STRIPE_API_VERSION } from "./stripe-webhook";
 
 interface Env {
@@ -9,6 +17,10 @@ interface Env {
   RESEND_API_KEY: string;
   EMAIL_FROM: string;
   EMAIL_REPLY_TO: string;
+  TURNSTILE_SECRET_KEY: string;
+  PORTAL_LINK_DAILY_CAP?: string;
+  PORTAL_LINK_COOLDOWN_SECONDS?: string;
+  PORTAL_LINK_PER_IP_PER_HOUR?: string;
 }
 
 interface RequestContext {
@@ -21,6 +33,8 @@ const SUCCESS_RESPONSE = {
   message: "Ak existuje podpora pre tento e-mail, poslali sme naň odkaz na Stripe Customer Portal.",
 };
 
+const DAILY_QUOTA_SCOPE = "portal_magic_link";
+
 function jsonResponse(status: number, body: Record<string, unknown>): Response {
   return new Response(JSON.stringify(body), {
     status,
@@ -31,15 +45,41 @@ function jsonResponse(status: number, body: Record<string, unknown>): Response {
 export async function onRequestPost(ctx: RequestContext): Promise<Response> {
   const { request, env } = ctx;
 
-  let payload: { email?: string };
+  let payload: { email?: string; turnstile_token?: string };
   try {
-    payload = (await request.json()) as { email?: string };
+    payload = (await request.json()) as { email?: string; turnstile_token?: string };
   } catch {
     return jsonResponse(400, { error: "invalid_json" });
   }
 
+  const ip = readClientIp(request);
+  const ipLimit = parsePositiveInt(env.PORTAL_LINK_PER_IP_PER_HOUR, 10);
+  if (!ipRateLimit.consume(`portal:${ip}`, ipLimit, 3600)) {
+    return jsonResponse(200, SUCCESS_RESPONSE);
+  }
+
+  const turnstileResult = await verifyTurnstile(
+    env.TURNSTILE_SECRET_KEY,
+    payload.turnstile_token ?? "",
+    ip,
+  );
+  if (!turnstileResult.ok) {
+    return jsonResponse(400, { error: "turnstile_failed", reason: turnstileResult.reason });
+  }
+
   const email = (payload.email ?? "").trim().toLowerCase();
   if (!isPlausibleEmail(email)) {
+    return jsonResponse(200, SUCCESS_RESPONSE);
+  }
+
+  const cooldownSeconds = parsePositiveInt(env.PORTAL_LINK_COOLDOWN_SECONDS, 900);
+  if (!emailCooldown.consume(`portal:${email}`, cooldownSeconds)) {
+    return jsonResponse(200, SUCCESS_RESPONSE);
+  }
+
+  const dailyCap = parsePositiveInt(env.PORTAL_LINK_DAILY_CAP, 200);
+  if (!consumeDailyQuota(DAILY_QUOTA_SCOPE, dailyCap)) {
+    console.warn("portal-magic-link daily cap reached", { ip });
     return jsonResponse(200, SUCCESS_RESPONSE);
   }
 
@@ -94,12 +134,7 @@ export async function onRequestPost(ctx: RequestContext): Promise<Response> {
       EMAIL_FROM: env.EMAIL_FROM,
       EMAIL_REPLY_TO: env.EMAIL_REPLY_TO,
     },
-    {
-      to: email,
-      subject,
-      html,
-      text,
-    },
+    { to: email, subject, html, text },
   );
 
   if (!result.ok) {

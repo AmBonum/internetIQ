@@ -109,9 +109,17 @@ function Index() {
               Spustiť test
               <span className="transition-transform group-hover:translate-x-1">→</span>
             </Link>
-            <span className="text-xs text-muted-foreground">
-              Bez registrácie · 90 sekúnd · Zadarmo
-            </span>
+            <p className="text-sm font-semibold text-foreground sm:text-base">
+              <span className="text-muted-foreground font-normal">Bez registrácie</span>{" "}
+              <span className="text-muted-foreground" aria-hidden="true">
+                ·
+              </span>{" "}
+              <span className="text-muted-foreground font-normal">90 sekúnd</span>{" "}
+              <span className="text-muted-foreground" aria-hidden="true">
+                ·
+              </span>{" "}
+              <span className="text-primary">Zadarmo</span>
+            </p>
           </div>
         </div>
 

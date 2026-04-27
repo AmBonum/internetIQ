@@ -1,9 +1,33 @@
-import { useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Footer } from "@/components/Footer";
 
 const SITE_ORIGIN = "https://subenai.lvtesting.eu";
 const PAGE_URL = `${SITE_ORIGIN}/spravovat-podporu`;
+const TURNSTILE_SCRIPT_SRC = "https://challenges.cloudflare.com/turnstile/v0/api.js";
+const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY ?? "";
+
+interface TurnstileApi {
+  render(
+    container: HTMLElement,
+    options: {
+      sitekey: string;
+      callback: (token: string) => void;
+      "error-callback"?: () => void;
+      "expired-callback"?: () => void;
+      "timeout-callback"?: () => void;
+      theme?: "light" | "dark" | "auto";
+    },
+  ): string;
+  reset(widgetId?: string): void;
+  remove(widgetId: string): void;
+}
+
+declare global {
+  interface Window {
+    turnstile?: TurnstileApi;
+  }
+}
 
 export const Route = createFileRoute("/spravovat-podporu")({
   head: () => ({
@@ -30,24 +54,93 @@ export function ManageSupportForm() {
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const turnstileContainerRef = useRef<HTMLDivElement | null>(null);
+  const widgetIdRef = useRef<string | null>(null);
 
   const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+  useEffect(() => {
+    if (submitted) return;
+    if (!TURNSTILE_SITE_KEY) {
+      // Fallback for misconfigured envs — accept submit without token. The
+      // server will reject with a clear error so the misconfig is visible.
+      setTurnstileToken("disabled");
+      return;
+    }
+    let cancelled = false;
+    let scriptEl: HTMLScriptElement | null = null;
+    function ensureScript(): Promise<void> {
+      if (window.turnstile) return Promise.resolve();
+      const existing = document.querySelector<HTMLScriptElement>(
+        `script[src="${TURNSTILE_SCRIPT_SRC}"]`,
+      );
+      if (existing) {
+        return new Promise((resolve) =>
+          existing.addEventListener("load", () => resolve(), { once: true }),
+        );
+      }
+      return new Promise((resolve, reject) => {
+        scriptEl = document.createElement("script");
+        scriptEl.src = TURNSTILE_SCRIPT_SRC;
+        scriptEl.async = true;
+        scriptEl.defer = true;
+        scriptEl.addEventListener("load", () => resolve());
+        scriptEl.addEventListener("error", () => reject(new Error("turnstile_script_failed")));
+        document.head.appendChild(scriptEl);
+      });
+    }
+
+    ensureScript()
+      .then(() => {
+        if (cancelled || !window.turnstile || !turnstileContainerRef.current) return;
+        widgetIdRef.current = window.turnstile.render(turnstileContainerRef.current, {
+          sitekey: TURNSTILE_SITE_KEY,
+          theme: "dark",
+          callback: (token) => setTurnstileToken(token),
+          "expired-callback": () => setTurnstileToken(null),
+          "timeout-callback": () => setTurnstileToken(null),
+          "error-callback": () => setTurnstileToken(null),
+        });
+      })
+      .catch(() => {
+        if (!cancelled) setError("turnstile_load_failed");
+      });
+
+    return () => {
+      cancelled = true;
+      if (widgetIdRef.current && window.turnstile) {
+        try {
+          window.turnstile.remove(widgetIdRef.current);
+        } catch {
+          // ignore — widget may already be gone
+        }
+        widgetIdRef.current = null;
+      }
+    };
+  }, [submitted]);
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!emailValid || submitting) return;
+    if (TURNSTILE_SITE_KEY && !turnstileToken) {
+      setError("turnstile_pending");
+      return;
+    }
     setSubmitting(true);
     setError(null);
     try {
       const response = await fetch("/api/portal-magic-link", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ email: email.trim() }),
+        body: JSON.stringify({ email: email.trim(), turnstile_token: turnstileToken }),
       });
       if (!response.ok && response.status !== 200) {
         const payload = (await response.json().catch(() => ({}))) as { error?: string };
         setError(payload.error ?? "send_failed");
         setSubmitting(false);
+        if (widgetIdRef.current && window.turnstile) window.turnstile.reset(widgetIdRef.current);
+        setTurnstileToken(null);
         return;
       }
       setSubmitted(true);
@@ -109,6 +202,8 @@ export function ManageSupportForm() {
               </p>
             </div>
 
+            <div ref={turnstileContainerRef} aria-label="Bot challenge" className="min-h-[65px]" />
+
             {error ? (
               <div
                 role="alert"
@@ -124,7 +219,9 @@ export function ManageSupportForm() {
 
             <button
               type="submit"
-              disabled={!emailValid || submitting}
+              disabled={
+                !emailValid || submitting || (Boolean(TURNSTILE_SITE_KEY) && !turnstileToken)
+              }
               className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-accent-gradient px-6 py-3 text-base font-bold text-primary-foreground shadow-glow disabled:cursor-not-allowed disabled:opacity-50"
             >
               {submitting ? "Posielam…" : "Poslať odkaz na e-mail"}

@@ -66,7 +66,7 @@ export function AboutPage() {
           <h1 className="mt-4 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
             Čo je subenai
           </h1>
-          <p className="mt-3 text-base text-muted-foreground sm:text-lg">
+          <p className="mt-4 text-lg font-semibold text-foreground sm:text-xl">
             Bezplatný edukatívny nástroj pre slovenský digitálny svet.
           </p>
         </header>
