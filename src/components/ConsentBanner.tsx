@@ -31,10 +31,14 @@ export function ConsentBanner() {
         <div className="flex-1 text-sm leading-relaxed">
           <p id="consent-banner-title" className="font-semibold text-foreground">
             🍪 Cookies a súkromie
+            <span className="ml-2 rounded-full bg-primary/15 px-2 py-0.5 text-[10px] font-normal text-primary">
+              aktualizované
+            </span>
           </p>
           <p id="consent-banner-description" className="mt-1 text-muted-foreground">
-            Používame nevyhnutné úložisko pre fungovanie testu. Voliteľné kategórie (analytika,
-            marketing) zapneme len s tvojím súhlasom.{" "}
+            Aktualizovali sme zásady o sponzorských platbách (Stripe). Používame nevyhnutné úložisko
+            pre fungovanie testu. Voliteľné kategórie (analytika, marketing) zapneme len s tvojím
+            súhlasom.{" "}
             <Link to="/cookies" className="underline underline-offset-2 hover:text-foreground">
               Cookies
             </Link>

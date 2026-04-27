@@ -101,13 +101,48 @@ function CookiesPage() {
                     <td className="py-2 pr-4">Anonymizované meranie miery dokončenia, A/B testy</td>
                     <td className="py-2">do 13 mesiacov</td>
                   </tr>
-                  <tr>
+                  <tr className="border-b border-border/60">
                     <td className="py-2 pr-4">Marketing</td>
                     <td className="py-2 pr-4">aktuálne žiadne</td>
                     <td className="py-2 pr-4">
                       Personalizovaná reklama, retargeting (zatiaľ nepoužívame)
                     </td>
                     <td className="py-2">—</td>
+                  </tr>
+                  <tr className="border-b border-border/60">
+                    <td className="py-2 pr-4" rowSpan={4}>
+                      Nevyhnutné pre platbu (iba na <code>/podpora</code>)
+                    </td>
+                    <td className="py-2 pr-4">
+                      <code>__stripe_mid</code>
+                    </td>
+                    <td className="py-2 pr-4">
+                      Stripe machine ID — fraud prevention, identifikácia zariadenia
+                    </td>
+                    <td className="py-2">1 rok</td>
+                  </tr>
+                  <tr className="border-b border-border/60">
+                    <td className="py-2 pr-4">
+                      <code>__stripe_sid</code>
+                    </td>
+                    <td className="py-2 pr-4">Stripe session ID — udržanie platobnej relácie</td>
+                    <td className="py-2">30 minút</td>
+                  </tr>
+                  <tr className="border-b border-border/60">
+                    <td className="py-2 pr-4">
+                      <code>m</code>
+                    </td>
+                    <td className="py-2 pr-4">Stripe Checkout — ochrana proti CSRF</td>
+                    <td className="py-2">relácia</td>
+                  </tr>
+                  <tr>
+                    <td className="py-2 pr-4">
+                      <code>cookie-test</code>
+                    </td>
+                    <td className="py-2 pr-4">
+                      Stripe test podpory cookies v prehliadači (žiadne osobné údaje)
+                    </td>
+                    <td className="py-2">relácia</td>
                   </tr>
                 </tbody>
               </table>
@@ -121,6 +156,13 @@ function CookiesPage() {
                 <strong>Supabase (Supabase Inc., USA — EU región Frankfurt):</strong> hosting
                 databázy a anonymná autentifikácia. Spracúva sa podľa SCC (štandardných zmluvných
                 doložiek).
+              </li>
+              <li>
+                <strong>Stripe (Stripe Payments Europe, Ltd., Írsko + Stripe, Inc., USA):</strong>{" "}
+                platobný sprostredkovateľ. Cookies (<code>__stripe_mid</code>,{" "}
+                <code>__stripe_sid</code>, <code>m</code>, <code>cookie-test</code>) sa nastavujú
+                výhradne keď navštíviš <code>/podpora</code> alebo Stripe Checkout. Sú nutné pre
+                fungovanie platby a fraud prevention. SCC pripojenie pre transfer do USA.
               </li>
               <li>
                 <strong>Cloudflare (Cloudflare Inc., USA):</strong> hosting statickej časti

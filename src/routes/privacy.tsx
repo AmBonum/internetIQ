@@ -28,7 +28,7 @@ function PrivacyPage() {
             Zásady ochrany súkromia
           </h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            Posledná aktualizácia: 26. apríla 2026
+            Posledná aktualizácia: 27. apríla 2026 (verzia 1.2.0)
           </p>
         </header>
 
@@ -146,12 +146,19 @@ function PrivacyPage() {
                     <td className="py-2 pr-4">Súhlas / čl. 6 ods. 1 písm. a GDPR</td>
                     <td className="py-2">do 13 mesiacov / odvolanie súhlasu</td>
                   </tr>
-                  <tr>
+                  <tr className="border-b border-border/60">
                     <td className="py-2 pr-4">Záznam súhlasu samotného</td>
                     <td className="py-2 pr-4">
                       Splnenie zákonnej povinnosti / čl. 6 ods. 1 písm. c GDPR
                     </td>
                     <td className="py-2">Po dobu platnosti súhlasu + 12 mesiacov</td>
+                  </tr>
+                  <tr>
+                    <td className="py-2 pr-4">Sponzorské platby (faktúra, AML, účtovníctvo)</td>
+                    <td className="py-2 pr-4">
+                      Plnenie zmluvy + zákon č. 431/2002 Z. z. / čl. 6 ods. 1 písm. b a c GDPR
+                    </td>
+                    <td className="py-2">10 rokov</td>
                   </tr>
                 </tbody>
               </table>
@@ -169,6 +176,21 @@ function PrivacyPage() {
               <li>
                 <strong>Cloudflare, Inc.</strong> (USA, EU PoP) — sprostredkovateľ pre hosting a
                 CDN, GDPR Data Processing Addendum + SCC.
+              </li>
+              <li>
+                <strong>Stripe Payments Europe, Ltd.</strong> (Írsko) so subprocesorom{" "}
+                <strong>Stripe, Inc.</strong> (USA) — platobný sprostredkovateľ pre dobrovoľné
+                podporné platby (zber kartových údajov, vystavenie faktúry, recurring odbery). SCC
+                pripojenie podľa čl. 46 GDPR. Aktivuje sa iba ak otvoríš stránku{" "}
+                <Link to="/podpora" className="underline underline-offset-2">
+                  /podpora
+                </Link>
+                .
+              </li>
+              <li>
+                <strong>Resend, Inc.</strong> (USA) — sprostredkovateľ pre transakčné e-maily
+                (potvrdenie podpory, magic link na správu odberu, varovanie pri refunde). SCC
+                pripojenie. Žiadne marketingové e-maily.
               </li>
             </ul>
             <p className="text-sm leading-relaxed text-muted-foreground">
@@ -275,15 +297,92 @@ function PrivacyPage() {
           </section>
 
           <section className="space-y-2">
-            <h2 className="text-xl font-semibold">7. Bezpečnosť</h2>
+            <h2 className="text-xl font-semibold">7. Sponzorovanie projektu</h2>
             <p className="text-sm leading-relaxed text-muted-foreground">
-              Komunikácia prebieha cez HTTPS (TLS 1.3), údaje v Supabase sú šifrované at-rest aj
-              in-transit, prístup k databáze je chránený Row Level Security politikami.
+              Ak sa rozhodneš podporiť projekt cez stránku{" "}
+              <Link to="/podpora" className="underline underline-offset-2">
+                /podpora
+              </Link>{" "}
+              (jednorazovo alebo mesačne), spracujeme nasledujúce údaje výlučne pre účely vystavenia
+              faktúry, AML compliance a vedenia účtovných záznamov:
+            </p>
+            <ul className="list-disc space-y-1 pl-5 text-sm leading-relaxed text-muted-foreground">
+              <li>
+                <strong>E-mail</strong> — pre faktúru a budúcu komunikáciu k odberu (napr. zmena
+                karty, zrušenie odberu)
+              </li>
+              <li>
+                <strong>Meno alebo názov firmy</strong> — povinný údaj na faktúre per § 74 zákona č.
+                222/2004 Z. z.
+              </li>
+              <li>
+                <strong>DIČ</strong> — voliteľne, pre B2B faktúru s nárokom na odpočet
+              </li>
+              <li>
+                <strong>Fakturačná adresa</strong> — vyžadovaná Stripe pri sumách ≥ 35 €
+              </li>
+              <li>
+                <strong>Údaje o platbe (kartové údaje, IBAN)</strong> — spracúva výlučne
+                <strong> Stripe Payments Europe, Ltd.</strong> (Írsko) ako náš platobný
+                sprostredkovateľ. My ich nikdy nevidíme ani neukladáme. Stripe je SCC-pripojený na
+                Stripe Inc. (USA) per čl. 46 GDPR.
+              </li>
+            </ul>
+            <p className="pt-2 text-sm leading-relaxed text-muted-foreground">
+              <strong>Právny základ:</strong> čl. 6 ods. 1 písm. b GDPR (zmluva o poskytovaní
+              digitálnej služby) v kombinácii s písm. c (právna povinnosť vedenia účtovných záznamov
+              per zákon č. 431/2002 Z. z.).
+            </p>
+            <p className="pt-2 text-sm leading-relaxed text-muted-foreground">
+              <strong>Doba uchovávania:</strong> <strong>10 rokov</strong> per § 35 zákona č.
+              431/2002 Z. z. o účtovníctve. Táto retencia má prednosť pred GDPR čl. 17 (právo na
+              vymazanie) — pri žiadosti o vymazanie anonymizujeme zobrazované polia (`display_name`,
+              `display_link`, `display_message`), ale samotný účtovný záznam o transakcii zostáva v
+              databáze pre prípadný daňový audit.
+            </p>
+            <p className="pt-2 text-sm leading-relaxed text-muted-foreground">
+              <strong>Refund a zrušenie odberu:</strong> dobrovoľný príspevok je{" "}
+              <strong>nevratný</strong> (digitálna služba poskytnutá okamžite, právo na odstúpenie
+              zaniká podľa § 7 ods. 6 zákona č. 102/2014 Z. z. — pred platbou explicitne zaškrtneš
+              súhlas). Mesačný odber môžeš <strong>kedykoľvek zrušiť jediným klikom</strong> cez
+              Stripe Customer Portal, ktorého link ti pošleme po zadaní e-mailu na adrese{" "}
+              <Link to="/spravovat-podporu" className="underline underline-offset-2">
+                /spravovat-podporu
+              </Link>
+              . Zrušenie sa vzťahuje na nasledujúce fakturačné obdobia, nie minulé.
+            </p>
+            <p className="pt-2 text-sm leading-relaxed text-muted-foreground">
+              <strong>Dobrovoľné údaje pre verejné poďakovanie:</strong> pri checkoute si môžeš
+              zvoliť, či ťa zobrazíme na stránke{" "}
+              <Link to="/sponzori" className="underline underline-offset-2">
+                /sponzori
+              </Link>{" "}
+              (default je vypnuté). Granularne — meno, voliteľný odkaz, voliteľná správa do 80
+              znakov. Súhlas môžeš kedykoľvek odvolať e-mailom na{" "}
+              <a href="mailto:segnities@gmail.com" className="underline underline-offset-2">
+                segnities@gmail.com
+              </a>
+              .
+            </p>
+            <p className="pt-2 text-sm leading-relaxed text-muted-foreground">
+              <strong>Maximálna jednorazová suma 500 €</strong> — držíme limit pod hranicou KYC
+              povinnosti per § 10 zákona č. 297/2008 Z. z. o ochrane pred legalizáciou príjmov z
+              trestnej činnosti. Nad túto sumu prijímame podporu len bankovým prevodom mimo Stripe.
             </p>
           </section>
 
           <section className="space-y-2">
-            <h2 className="text-xl font-semibold">8. Zmeny týchto zásad</h2>
+            <h2 className="text-xl font-semibold">8. Bezpečnosť</h2>
+            <p className="text-sm leading-relaxed text-muted-foreground">
+              Komunikácia prebieha cez HTTPS (TLS 1.3), údaje v Supabase sú šifrované at-rest aj
+              in-transit, prístup k databáze je chránený Row Level Security politikami.
+              Stripe-hostované formuláre kartových údajov sú PCI DSS Level 1 certifikované — naše
+              servery žiadne kartové údaje nikdy nevidia.
+            </p>
+          </section>
+
+          <section className="space-y-2">
+            <h2 className="text-xl font-semibold">9. Zmeny týchto zásad</h2>
             <p className="text-sm leading-relaxed text-muted-foreground">
               Pri podstatnej zmene zásad ti zobrazíme nový cookie banner so žiadosťou o nový súhlas
               (zvýšením verzie záznamu). Drobné jazykové úpravy zverejňujeme bez upozornenia.
@@ -292,7 +391,7 @@ function PrivacyPage() {
           </section>
 
           <section className="space-y-2">
-            <h2 className="text-xl font-semibold">9. Súvisiace dokumenty</h2>
+            <h2 className="text-xl font-semibold">10. Súvisiace dokumenty</h2>
             <p className="text-sm leading-relaxed text-muted-foreground">
               Detailný zoznam cookies a úložiska je v{" "}
               <Link to="/cookies" className="underline underline-offset-2">
