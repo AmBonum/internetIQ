@@ -19,6 +19,10 @@ const INDUSTRY_LABEL: Record<TestPack["industry"], string> = {
   sme_ucto: "SME účtovníctvo",
   horeca: "HORECA",
   servis: "Servis a opravy",
+  ziaci: "Žiaci (do 16 rokov)",
+  studenti: "Študenti (16+)",
+  seniori: "Seniori (55+)",
+  vseobecny: "Všeobecný test",
 };
 
 /**

@@ -8,6 +8,10 @@ import { gastroHorecaPack } from "./gastro-horeca";
 import { autoservisPack } from "./autoservis";
 import { itVyvojPack } from "./it-vyvoj";
 import { verejneSluzbyPack } from "./verejne-sluzby";
+import { ziaciDo16Pack } from "./ziaci-do-16";
+import { studentiPack } from "./studenti";
+import { senioriPack } from "./seniori";
+import { vseobecnyPack } from "./vseobecny";
 
 export type { TestPack, Industry } from "./_schema";
 export { testPackSchema } from "./_schema";
@@ -18,6 +22,10 @@ export const TEST_PACKS: TestPack[] = [
   autoservisPack,
   itVyvojPack,
   verejneSluzbyPack,
+  ziaciDo16Pack,
+  studentiPack,
+  senioriPack,
+  vseobecnyPack,
 ];
 
 const slugs = new Set<string>();

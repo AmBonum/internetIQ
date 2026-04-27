@@ -20,7 +20,11 @@ export type Industry =
   | "pneuservis"
   | "sme_ucto"
   | "horeca"
-  | "servis";
+  | "servis"
+  | "ziaci"
+  | "studenti"
+  | "seniori"
+  | "vseobecny";
 
 /**
  * One industry test pack. Loaded statically as a TS module per
@@ -68,6 +72,10 @@ const industrySchema = z.enum([
   "sme_ucto",
   "horeca",
   "servis",
+  "ziaci",
+  "studenti",
+  "seniori",
+  "vseobecny",
 ]);
 
 export const testPackSchema: z.ZodType<TestPack> = z.object({

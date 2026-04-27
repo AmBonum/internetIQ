@@ -2153,6 +2153,237 @@ export const QUESTIONS: Question[] = [
     explanation:
       "DataCentrum (DataCentrum elektronizácie územnej samosprávy Slovenska, DEUS) je príspevková organizácia MIRRI SR, .gov.sk doména im patrí. Skratka DEUS / dlhšie meno organizácie sa občas skracuje.",
   },
+
+  // ============ DEMOGRAFICKÉ DOPLNKY — žiaci, študenti, seniori ============
+
+  // --- Žiaci / gaming / škola ---
+  {
+    id: "f-discord-nitro-1",
+    category: "fake_vs_real",
+    difficulty: "easy",
+    prompt:
+      'Kamarát ti na Discorde posiela link: „Dostal som zadarmo Discord Nitro, klikni tu a vezmi si aj ty."',
+    visual: {
+      kind: "sms",
+      sender: "Kamarát (Discord)",
+      body: "yo mas nesto klukni hned a vezmi zadarmo Discord Nitro na mesiac",
+      link: "https://discord-nitro-gift.click/free",
+    },
+    options: [
+      bad("a", "Kliknem — Nitro zadarmo je super", "critical"),
+      ok("b", "Nespustím — kamaráta mohli hacknúť"),
+      bad("c", "Kliknem, ale len cez incognito", "medium"),
+    ],
+    explanation:
+      "Fake Nitro linky kradnú Discord token — scammer preberá tvoj účet a pošle rovnaký link tvojim kamarátom. Darované Nitro od Discordu príde vždy priamo v appke ako darček, nie cez externý link.",
+  },
+  {
+    id: "f-gaming-vbucks-1",
+    category: "fake_vs_real",
+    difficulty: "easy",
+    prompt: 'Stránka ponúka: „1 000 V-Bucks / Robux ZADARMO! Zadaj meno účtu a „overovací kód"."',
+    options: [
+      bad("a", "Vyskúšam — načo by to bolo fake", "critical"),
+      ok("b", "Ignorujem — generátor hernej meny neexistuje"),
+      bad("c", "Vyskúšam, ale dám falošné meno", "medium"),
+    ],
+    explanation:
+      "V-Bucks, Robux ani iná herná mena sa nedajú generovať z tretích stránok — sú uložené na serveroch Epic/Roblox. Tieto stránky kradnú prihlasovacie údaje alebo inštalujú malware.",
+  },
+  {
+    id: "p-email-school-ms-1",
+    category: "phishing",
+    difficulty: "medium",
+    prompt: "Škola ti vraj posiela link na obnovu hesla do Teams.",
+    visual: {
+      kind: "email",
+      from: "IT Podpora Škola",
+      fromEmail: "it-support@skola-portal-update.com",
+      subject: "Povinná obnova prístupu do Microsoft Teams — do 24 hodín",
+      body: "Platnosť vášho školského konta vyprší zajtra. Kliknite a aktualizujte heslo, inak stratíte prístup.",
+      cta: "Aktualizovať heslo",
+    },
+    options: [
+      bad("a", "Kliknem — nechcem prísť o prístup", "critical"),
+      ok("b", "Prihlásim sa ručne cez office.com a overím u správcu siete"),
+    ],
+    explanation:
+      "Škola spravuje heslá cez školský portál (office.com / outlook.com), nie cez externé domény. `skola-portal-update.com` je registrovaná cudzou osobou. Phishing takto kradne školský účet.",
+  },
+  {
+    id: "h-tiktok-giveaway-1",
+    category: "honeypot",
+    difficulty: "easy",
+    prompt: 'SMS: „Boli ste vybraní na odmenu 500€ od TikToku. Pre aktiváciu sa prihláste."',
+    visual: {
+      kind: "sms",
+      sender: "TikTok Promo SK",
+      body: "Gratulujeme! Ste jeden z 100 vybraných. Aktivujte odmenu 500€ tu:",
+      link: "https://tiktok-reward-sk.live/login",
+    },
+    options: [
+      bad("a", "Prihlásim sa — 500€ je 500€", "critical"),
+      ok("b", "Ignorujem — TikTok takto nič nerozdeľuje"),
+    ],
+    explanation:
+      "TikTok ani žiadna sociálna sieť nevyplácajú odmeny cez SMS link. Toto kradne prihlasovacie údaje do TikToku alebo iného konta.",
+  },
+  {
+    id: "f-teen-job-1",
+    category: "fake_vs_real",
+    difficulty: "medium",
+    prompt:
+      'Inzerát na Instagrame: „Pracuj z domu od 15 rokov, 20€/hod, stačí zdieľať príspevky. Registrácia 15€."',
+    options: [
+      bad("a", "Registrujem sa — 20€/hod je super", "critical"),
+      ok("b", "Ignorujem — práca, kde ty platíš vopred, nie je práca"),
+    ],
+    explanation:
+      "Advance fee scam: zaplatíš registráciu, dostaneš návod na ďalší nábor alebo nič. Žiadna seriózna brigáda nepýta poplatok vopred.",
+  },
+  {
+    id: "s-school-qr-1",
+    category: "scenario",
+    difficulty: "medium",
+    prompt:
+      'V školskej chodbe visí QR kód: „Nová app — objednaj obed rýchlejšie." Po naskenovaní stránka žiada školský email a heslo. Zadáš?',
+    options: [
+      bad("a", "Zadám — chcem rýchle objednanie", "critical"),
+      ok("b", "Nechám to — overím najprv u poverеného správcu IT školy"),
+    ],
+    explanation:
+      "QR kódy na verejných miestach môžu byť prekryté falošnými. Školský email a heslo zadávaj len na stránke, ktorú ti ukáže IT školský správca priamo.",
+  },
+  {
+    id: "h-free-spotify-1",
+    category: "honeypot",
+    difficulty: "easy",
+    prompt:
+      'Kamarát ti pošle link: „Mám aktivovaný Spotify Premium zadarmo, použi aj ty — zadaj tu email a heslo."',
+    options: [
+      bad("a", "Zadám — Spotify Premium zadarmo", "critical"),
+      ok("b", "Neprihlásim sa cez cudzí link"),
+    ],
+    explanation:
+      "Cez cudzí link odovzdáš heslo priamo scammerovi. Ak chceš Premium, Spotify ponúka 3-mesačnú skúšobnú verziu priamo na spotify.com.",
+  },
+
+  // --- Seniori ---
+  {
+    id: "s-vnuk-1",
+    category: "scenario",
+    difficulty: "hard",
+    prompt:
+      '"Ahoj babka/starko, som to ja, Dominik. Mal som nehodu, som v nemocnici a potrebujem 2 000€ hneď. Nehovor to mame." Hlas znie povedomо.',
+    options: [
+      bad("a", "Pošlem — je to vnuk", "critical"),
+      bad("b", "Pošlem polovicu — pre istotu", "critical"),
+      ok("c", "Zavesím a zavolám priamo vnukovi na jeho číslo"),
+    ],
+    explanation:
+      '„Ahoj babka scam" je najčastejší podvod cielený na seniorov v SR. AI klonovanie hlasu vie z krátkych klipov na sociálnych sieťach skopirovať hlas kohokoľvek. Vždy overenie priamo na pôvodnom čísle.',
+  },
+  {
+    id: "s-door-bank-1",
+    category: "scenario",
+    difficulty: "medium",
+    prompt:
+      'Niekto zazvoní a povie: „Dobré ráno, som z banky — kontrolujeme vklady v oblasti. Môžem vidieť vašu vkladnú knižku alebo kartu?"',
+    options: [
+      bad("a", "Ukážem — ide z banky", "critical"),
+      ok("b", "Nepustím dnu — banka nikdy nechodí po domácnostiach bez predošlej objednávky"),
+      bad("c", "Nechám ho čakať a zavolám banke na číslo, čo mi dal", "medium"),
+    ],
+    explanation:
+      'Banky nikdy neposielajú pracovníkov „kontrolovať vklady" bez vopred dohodnutého stretnutia. Číslo, ktoré ti dal, je jeho vlastné. Volaj na číslo zo zadnej strany karty.',
+  },
+  {
+    id: "f-pension-1",
+    category: "fake_vs_real",
+    difficulty: "medium",
+    prompt:
+      'List v schránke: „Sociálna poisťovňa SR: máte nárok na príplatok k dôchodku 128 €/mes. Zavolajte pre aktiváciu na 0900 XXX XXX."',
+    options: [
+      bad("a", "Zavolám — chcem príplatok", "critical"),
+      ok("b", "Overím priamo na pobočke Sociálnej poisťovne, nie na čísle z listu"),
+    ],
+    explanation:
+      "Príplatky k dôchodku prideľuje Sociálna poisťovňa automaticky — nezvoní sa na prémiové 0900 linky (tie môžu účtovať aj 4 €/min). Akékoľvek zmeny sa vybavujú osobne alebo cez overené eGov portály.",
+  },
+  {
+    id: "s-ai-voice-1",
+    category: "scenario",
+    difficulty: "hard",
+    prompt:
+      'Zavolá ti syn/dcéra, spoznáš jeho/jej hlas: „Mama, zadržali ma colníci na hranici, potrebujem 1 800€ v Bitcoine hneď." Hlas znie 100% ako on/ona.',
+    options: [
+      bad("a", "Idem k Bitcoinu — spoznávam hlas", "critical"),
+      ok("b", "Zavesím a zavolám dieťaťu priamo na jeho číslo"),
+    ],
+    explanation:
+      "AI voice cloning vie z niekoľkých sekúnd videa/audia skopirovať hlas kohokoľvek. V roku 2024 táto technika ukradla státisíce eur od seniorov v EÚ. Vždy overenie na pôvodnom čísle — scammer nezdvihne.",
+  },
+  {
+    id: "s-fake-charity-call-1",
+    category: "scenario",
+    difficulty: "easy",
+    prompt:
+      'Telefonista: „Zbierame na onkologicky choré deti, pošlite teraz 20€ — prečítajte mi číslo karty a CVV."',
+    options: [
+      bad("a", "Prečítam — chcem pomôcť", "critical"),
+      ok("b", "Odmietnem a darujem online cez overenú nadáciu"),
+    ],
+    explanation:
+      "Seriózne charity (Liga proti rakovine, Dobrý anjel) nikdy nepýtajú číslo karty po telefóne. Darujte priamo na ich overených weboch.",
+  },
+
+  // --- Študenti (16+) ---
+  {
+    id: "f-student-accom-1",
+    category: "fake_vs_real",
+    difficulty: "medium",
+    prompt:
+      'Inzerát: izba v Bratislave, 290€/mes, zariadená, pri metre. Prenajímateľ: „Pošlite zálohu 580€, kľúče pošlem poštou — sám som momentálne v zahraničí."',
+    options: [
+      bad("a", "Pošlem zálohu — cena je super", "critical"),
+      ok("b", "Odmietnem — záloha pred osobnou prehliadkou = scam"),
+    ],
+    explanation:
+      'Bývanie scam: prenajímateľ „v zahraničí" + záloha pred prehliadkou = nikdy neuvidíš ani byt, ani peniaze. Bez osobnej obhliadky vopred neplatiť nič.',
+  },
+  {
+    id: "p-email-uni-1",
+    category: "phishing",
+    difficulty: "medium",
+    prompt: 'Email: „UK Bratislava — váš prístup do AIS2 bude zablokovaný o 24 hodín."',
+    visual: {
+      kind: "email",
+      from: "IT UK Bratislava",
+      fromEmail: "it-support@uniba-portal-update.eu",
+      subject: "Povinná aktualizácia AIS2 — zablokujeme prístup k zápisom",
+      body: "Platnosť vášho prístupu vyprší. Kliknite a aktualizujte údaje do 24 hodín.",
+      cta: "Aktualizovať AIS2",
+    },
+    options: [
+      bad("a", "Kliknem — nechcem prísť o zápis predmetov", "critical"),
+      ok("b", "Prihlásim sa priamo na ais2.uniba.sk — nie cez link z emailu"),
+    ],
+    explanation:
+      "Univerzitné systémy (AIS2, MAIS) posielajú notifikácie z domény školy (`uniba.sk`, `stuba.sk`...). `uniba-portal-update.eu` je cudzí registrant. Phishing cieli na zápisové termíny, kedy sú študenti pod tlakom.",
+  },
+  {
+    id: "f-scholarship-fake-1",
+    category: "fake_vs_real",
+    difficulty: "medium",
+    prompt:
+      'Email: „Erasmus+ Slovensko: boli ste vybraní na štipendium 4 500€. Pre aktiváciu pošlite overovací poplatok 80€."',
+    options: [
+      bad("a", "Pošlem 80€ — 4 500€ za to stojí", "critical"),
+      ok("b", "Ignorujem — Erasmus+ nikdy nepýta poplatok vopred"),
+    ],
+    explanation:
+      "Erasmus+ granty sa prideľujú výhradne cez koordinátora na škole — bez pred-poplatkov, bez emailového výberu mimo prihlásenia. Falošné štipendiá fungujú na princípe advance fee fraud.",
+  },
 ];
 
 const TEST_SIZE = 15;
