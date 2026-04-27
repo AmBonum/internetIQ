@@ -178,7 +178,7 @@ export async function buildCheckoutSession(
     customer: customer.id,
     line_items: lineItems,
     locale: "sk",
-    success_url: `${origin}/o-projekte?donated=1&session={CHECKOUT_SESSION_ID}`,
+    success_url: `${origin}/podakovanie/{CHECKOUT_SESSION_ID}`,
     cancel_url: `${origin}/podpora?cancelled=1`,
     metadata: input.metadata,
     consent_collection: { terms_of_service: "none" },

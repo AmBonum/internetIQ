@@ -314,7 +314,7 @@ zlyhajú na nepriamych voľbách.
 | story | title | effort | priority | status | deps |
 |---|---|---|---|---|---|
 | [E11.1](./stories/E11.1-podpora-page.md) | `/podpora` donate page (oneoff + monthly + Stripe Checkout) | M | P1 | ✅ Done | E10.3, E10.5 |
-| [E11.2](./stories/E11.2-podakovanie-page.md) | `/podakovanie/$token` thank-you + invoice download | S | P2 | ⛔ Blocked | E11.1 |
+| [E11.2](./stories/E11.2-podakovanie-page.md) | `/podakovanie/$sessionId` thank-you + invoice + portal | S | P2 | ✅ Done | E11.1 |
 | [E11.3](./stories/E11.3-sponzori-list.md) | `/sponzori` public donor list (consent-gated) | S | P2 | ⛔ Blocked | E11.1 |
 | [E11.4](./stories/E11.4-footer-cancel-flow.md) | Footer link + Stripe Customer Portal cancel | XS | P2 | ⛔ Blocked | E11.1 |
 | [E11.5](./stories/E11.5-refund-aml-playbook.md) | Refund SOP + AML threshold playbook | S | P3 | ⛔ Blocked | E11.1 |

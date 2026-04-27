@@ -18,6 +18,7 @@ import { Route as TestIndexRouteImport } from './routes/test.index'
 import { Route as SkoleniaIndexRouteImport } from './routes/skolenia.index'
 import { Route as SkoleniaSlugRouteImport } from './routes/skolenia.$slug'
 import { Route as RShareIdRouteImport } from './routes/r.$shareId'
+import { Route as PodakovanieSessionIdRouteImport } from './routes/podakovanie.$sessionId'
 import { Route as TestFirmaIndexRouteImport } from './routes/test.firma.index'
 import { Route as TestFirmaSlugRouteImport } from './routes/test.firma.$slug'
 
@@ -66,6 +67,11 @@ const RShareIdRoute = RShareIdRouteImport.update({
   path: '/r/$shareId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PodakovanieSessionIdRoute = PodakovanieSessionIdRouteImport.update({
+  id: '/podakovanie/$sessionId',
+  path: '/podakovanie/$sessionId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TestFirmaIndexRoute = TestFirmaIndexRouteImport.update({
   id: '/test/firma/',
   path: '/test/firma/',
@@ -83,6 +89,7 @@ export interface FileRoutesByFullPath {
   '/o-projekte': typeof OProjekteRoute
   '/podpora': typeof PodporaRoute
   '/privacy': typeof PrivacyRoute
+  '/podakovanie/$sessionId': typeof PodakovanieSessionIdRoute
   '/r/$shareId': typeof RShareIdRoute
   '/skolenia/$slug': typeof SkoleniaSlugRoute
   '/skolenia/': typeof SkoleniaIndexRoute
@@ -96,6 +103,7 @@ export interface FileRoutesByTo {
   '/o-projekte': typeof OProjekteRoute
   '/podpora': typeof PodporaRoute
   '/privacy': typeof PrivacyRoute
+  '/podakovanie/$sessionId': typeof PodakovanieSessionIdRoute
   '/r/$shareId': typeof RShareIdRoute
   '/skolenia/$slug': typeof SkoleniaSlugRoute
   '/skolenia': typeof SkoleniaIndexRoute
@@ -110,6 +118,7 @@ export interface FileRoutesById {
   '/o-projekte': typeof OProjekteRoute
   '/podpora': typeof PodporaRoute
   '/privacy': typeof PrivacyRoute
+  '/podakovanie/$sessionId': typeof PodakovanieSessionIdRoute
   '/r/$shareId': typeof RShareIdRoute
   '/skolenia/$slug': typeof SkoleniaSlugRoute
   '/skolenia/': typeof SkoleniaIndexRoute
@@ -125,6 +134,7 @@ export interface FileRouteTypes {
     | '/o-projekte'
     | '/podpora'
     | '/privacy'
+    | '/podakovanie/$sessionId'
     | '/r/$shareId'
     | '/skolenia/$slug'
     | '/skolenia/'
@@ -138,6 +148,7 @@ export interface FileRouteTypes {
     | '/o-projekte'
     | '/podpora'
     | '/privacy'
+    | '/podakovanie/$sessionId'
     | '/r/$shareId'
     | '/skolenia/$slug'
     | '/skolenia'
@@ -151,6 +162,7 @@ export interface FileRouteTypes {
     | '/o-projekte'
     | '/podpora'
     | '/privacy'
+    | '/podakovanie/$sessionId'
     | '/r/$shareId'
     | '/skolenia/$slug'
     | '/skolenia/'
@@ -165,6 +177,7 @@ export interface RootRouteChildren {
   OProjekteRoute: typeof OProjekteRoute
   PodporaRoute: typeof PodporaRoute
   PrivacyRoute: typeof PrivacyRoute
+  PodakovanieSessionIdRoute: typeof PodakovanieSessionIdRoute
   RShareIdRoute: typeof RShareIdRoute
   SkoleniaSlugRoute: typeof SkoleniaSlugRoute
   SkoleniaIndexRoute: typeof SkoleniaIndexRoute
@@ -238,6 +251,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RShareIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/podakovanie/$sessionId': {
+      id: '/podakovanie/$sessionId'
+      path: '/podakovanie/$sessionId'
+      fullPath: '/podakovanie/$sessionId'
+      preLoaderRoute: typeof PodakovanieSessionIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/test/firma/': {
       id: '/test/firma/'
       path: '/test/firma'
@@ -261,6 +281,7 @@ const rootRouteChildren: RootRouteChildren = {
   OProjekteRoute: OProjekteRoute,
   PodporaRoute: PodporaRoute,
   PrivacyRoute: PrivacyRoute,
+  PodakovanieSessionIdRoute: PodakovanieSessionIdRoute,
   RShareIdRoute: RShareIdRoute,
   SkoleniaSlugRoute: SkoleniaSlugRoute,
   SkoleniaIndexRoute: SkoleniaIndexRoute,
