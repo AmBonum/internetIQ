@@ -33,6 +33,7 @@ vi.mock("@/integrations/supabase/client", () => {
 });
 
 import { SponzoriView, type PublicSponsor } from "@/routes/sponzori";
+import { ROUTES } from "@/config/routes";
 
 function makeSponsor(overrides: Partial<PublicSponsor> = {}): PublicSponsor {
   return {
@@ -52,7 +53,7 @@ describe("SponzoriView (/sponzori)", () => {
 
     await waitFor(() => expect(screen.getByText(/Buď prvý/i)).toBeInTheDocument());
     const ctas = screen.getAllByRole("link", { name: /Podporiť projekt/i });
-    expect(ctas.some((el) => el.getAttribute("data-to") === "/podpora")).toBe(true);
+    expect(ctas.some((el) => el.getAttribute("data-to") === ROUTES.podpora)).toBe(true);
   });
 
   it("renders accordion items per sponsor with link + message in expanded panel", async () => {
@@ -85,7 +86,7 @@ describe("SponzoriView (/sponzori)", () => {
     render(<SponzoriView fetchSponsors={fetchSponsors} />);
     await waitFor(() => expect(screen.getByText("Anna")).toBeInTheDocument());
     const all = screen.getByRole("link", { name: /Celý zoznam s filtrami/i });
-    expect(all).toHaveAttribute("data-to", "/sponzori/vsetci");
+    expect(all).toHaveAttribute("data-to", ROUTES.sponzoriVsetci);
   });
 
   it("never exposes total_eur, stripe_customer_id or any payment amount", async () => {

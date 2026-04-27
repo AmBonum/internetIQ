@@ -16,6 +16,7 @@ import {
   type SurveyOption,
   type TopFear,
 } from "@/lib/quiz/survey-options";
+import { ROUTES } from "@/config/routes";
 
 interface Props {
   shareId: string;
@@ -131,7 +132,7 @@ export function SurveyCard({ shareId, onDone }: Props) {
         </p>
         {wantsCourses === true && (
           <a
-            href="/skolenia"
+            href={ROUTES.skolenia}
             className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline"
           >
             Pozri si naše bezplatné školenia →

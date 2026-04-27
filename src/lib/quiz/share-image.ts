@@ -46,21 +46,14 @@ export async function drawIgStoryToCanvas(args: DrawArgs): Promise<Blob> {
   ctx.fillRect(0, 0, W, H);
 
   // ===== Brand header =====
-  const badgeSize = 60;
-  const badgePad = 20;
   const labelFont = "800 52px system-ui, -apple-system, Segoe UI, Roboto";
-  ctx.font = labelFont;
-  const labelW = ctx.measureText("subenai").width;
-  const blockW = badgePad + labelW;
-  const blockX = (W - blockW) / 2;
   const blockY = 148;
 
   // "subenai" in brand lime-green
   ctx.fillStyle = "#c8f02b";
   ctx.font = labelFont;
-  ctx.textAlign = "left";
-  ctx.fillText("subenai", blockX + badgeSize + badgePad, blockY + 44);
   ctx.textAlign = "center";
+  ctx.fillText("subenai", W / 2, blockY + 44);
 
   // ===== Score =====
   ctx.fillStyle = "rgba(255,255,255,0.55)";

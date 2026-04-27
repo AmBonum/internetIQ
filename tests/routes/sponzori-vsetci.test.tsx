@@ -30,6 +30,7 @@ vi.mock("@/integrations/supabase/client", () => {
 });
 
 import { AllSponsorsView } from "@/routes/sponzori.vsetci";
+import { ROUTES } from "@/config/routes";
 import type { PublicSponsor } from "@/routes/sponzori";
 
 function makeSponsor(overrides: Partial<PublicSponsor>): PublicSponsor {
@@ -98,6 +99,6 @@ describe("AllSponsorsView (/sponzori/vsetci)", () => {
     render(<AllSponsorsView fetchSponsors={async () => SAMPLE} />);
     await waitFor(() => expect(screen.getByText("Anna")).toBeInTheDocument());
     const back = screen.getByRole("link", { name: /Späť na najnovších sponzorov/i });
-    expect(back).toHaveAttribute("data-to", "/sponzori");
+    expect(back).toHaveAttribute("data-to", ROUTES.sponzori);
   });
 });
