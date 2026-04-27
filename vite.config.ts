@@ -18,20 +18,33 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: (id) => {
-          if (id.includes("node_modules")) {
-            if (id.includes("react-dom") || id.includes("/react/")) return "vendor-react";
-            if (id.includes("@tanstack/")) return "vendor-tanstack";
-            if (id.includes("@supabase/")) return "vendor-supabase";
-            if (id.includes("@radix-ui/")) return "vendor-radix";
-            if (id.includes("recharts") || id.includes("d3-")) return "vendor-charts";
-            if (id.includes("lucide-react")) return "vendor-icons";
-            if (id.includes("zod") || id.includes("react-hook-form") || id.includes("@hookform/"))
-              return "vendor-forms";
-            return "vendor-misc";
+          if (!id.includes("node_modules")) {
+            if (id.includes("/src/lib/quiz/questions")) return "quiz-questions";
+            if (id.includes("/src/content/courses/")) return "courses-content";
+            return undefined;
           }
-          if (id.includes("/src/lib/quiz/questions")) return "quiz-questions";
-          if (id.includes("/src/content/courses/")) return "courses-content";
-          return undefined;
+          // React ecosystem MUST stay together. `scheduler` and
+          // `use-sync-external-store` are internal deps that React
+          // touches at module init — if they end up in a different chunk
+          // (vendor-misc) the cross-chunk load order breaks
+          // (TypeError: Cannot set properties of undefined setting "Activity").
+          if (
+            id.includes("/react/") ||
+            id.includes("/react-dom/") ||
+            id.includes("/scheduler/") ||
+            id.includes("use-sync-external-store") ||
+            id.includes("/react-is/")
+          ) {
+            return "vendor-react";
+          }
+          if (id.includes("@tanstack/")) return "vendor-tanstack";
+          if (id.includes("@supabase/")) return "vendor-supabase";
+          if (id.includes("@radix-ui/")) return "vendor-radix";
+          if (id.includes("recharts") || id.includes("d3-")) return "vendor-charts";
+          if (id.includes("lucide-react")) return "vendor-icons";
+          if (id.includes("zod") || id.includes("react-hook-form") || id.includes("@hookform/"))
+            return "vendor-forms";
+          return "vendor-misc";
         },
       },
     },

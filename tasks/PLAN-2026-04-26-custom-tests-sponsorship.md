@@ -276,7 +276,7 @@ zlyhajú na nepriamych voľbách.
 | [E7.3](./stories/E7.3-industry-packs-batch-b.md) | Industry packs B: dispečing, doprava, marketing, zdravotnictvo, skoly | M | P2 | 🟡 Ready | E7.1 |
 | [E7.4](./stories/E7.4-industry-packs-batch-c.md) | Industry packs C: strojová výroba, pneuservis, SME účto, HORECA, servis | M | P3 | 🟡 Ready | E7.1 |
 | [E7.5](./stories/E7.5-firma-route.md) | `/test/firma/$slug` route + SEO + Quiz JSON-LD | M | P1 | ✅ Done | E7.1 |
-| [E7.6](./stories/E7.6-firma-index.md) | `/test/firma` discovery page | S | P2 | 🟡 Ready | E7.5 |
+| [E7.6](./stories/E7.6-firma-index.md) | `/test/firma` discovery page | S | P2 | ✅ Done | E7.5 |
 
 ### Epic 8 — Composer (firmy zostavujú vlastné testy)
 

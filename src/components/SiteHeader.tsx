@@ -1,21 +1,34 @@
 import { Link, useLocation } from "@tanstack/react-router";
 
+const NAV_ITEMS = [
+  { to: "/test", label: "Test" },
+  { to: "/test/firma", label: "Pre firmy" },
+  { to: "/kurzy", label: "Kurzy" },
+] as const;
+
 export function SiteHeader() {
   const { pathname } = useLocation();
 
-  const navItem = (to: string, label: string) => {
-    const active = pathname === to || (to !== "/" && pathname.startsWith(to));
-    return (
-      <Link
-        to={to}
-        className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors hover:text-foreground ${
-          active ? "text-foreground" : "text-muted-foreground"
-        }`}
-      >
-        {label}
-      </Link>
-    );
-  };
+  // The most-specific matching item wins — keeps nested routes
+  // (e.g. /test/firma/eshop) highlighting only the deepest registered
+  // nav entry instead of every prefix.
+  const activeTo = NAV_ITEMS.reduce<string | null>((acc, item) => {
+    const matches = pathname === item.to || (item.to !== "/" && pathname.startsWith(item.to + "/"));
+    if (!matches) return acc;
+    if (!acc || item.to.length > acc.length) return item.to;
+    return acc;
+  }, null);
+
+  const navItem = (to: string, label: string) => (
+    <Link
+      to={to}
+      className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors hover:text-foreground ${
+        activeTo === to ? "text-foreground" : "text-muted-foreground"
+      }`}
+    >
+      {label}
+    </Link>
+  );
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/40 bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -35,6 +48,7 @@ export function SiteHeader() {
         </Link>
         <div className="flex items-center gap-1">
           {navItem("/test", "Test")}
+          {navItem("/test/firma", "Pre firmy")}
           {navItem("/kurzy", "Kurzy")}
         </div>
       </nav>

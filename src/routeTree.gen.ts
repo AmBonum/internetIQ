@@ -9,20 +9,16 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as TestRouteImport } from './routes/test'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as CookiesRouteImport } from './routes/cookies'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as TestIndexRouteImport } from './routes/test.index'
 import { Route as KurzyIndexRouteImport } from './routes/kurzy.index'
 import { Route as RShareIdRouteImport } from './routes/r.$shareId'
 import { Route as KurzySlugRouteImport } from './routes/kurzy.$slug'
+import { Route as TestFirmaIndexRouteImport } from './routes/test.firma.index'
 import { Route as TestFirmaSlugRouteImport } from './routes/test.firma.$slug'
 
-const TestRoute = TestRouteImport.update({
-  id: '/test',
-  path: '/test',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const PrivacyRoute = PrivacyRouteImport.update({
   id: '/privacy',
   path: '/privacy',
@@ -36,6 +32,11 @@ const CookiesRoute = CookiesRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TestIndexRoute = TestIndexRouteImport.update({
+  id: '/test/',
+  path: '/test/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const KurzyIndexRoute = KurzyIndexRouteImport.update({
@@ -53,6 +54,11 @@ const KurzySlugRoute = KurzySlugRouteImport.update({
   path: '/kurzy/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TestFirmaIndexRoute = TestFirmaIndexRouteImport.update({
+  id: '/firma/',
+  path: '/firma/',
+  getParentRoute: () => TestRoute,
+} as any)
 const TestFirmaSlugRoute = TestFirmaSlugRouteImport.update({
   id: '/firma/$slug',
   path: '/firma/$slug',
@@ -63,32 +69,35 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/cookies': typeof CookiesRoute
   '/privacy': typeof PrivacyRoute
-  '/test': typeof TestRouteWithChildren
   '/kurzy/$slug': typeof KurzySlugRoute
   '/r/$shareId': typeof RShareIdRoute
   '/kurzy/': typeof KurzyIndexRoute
+  '/test/': typeof TestIndexRoute
   '/test/firma/$slug': typeof TestFirmaSlugRoute
+  '/test/firma/': typeof TestFirmaIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/cookies': typeof CookiesRoute
   '/privacy': typeof PrivacyRoute
-  '/test': typeof TestRouteWithChildren
   '/kurzy/$slug': typeof KurzySlugRoute
   '/r/$shareId': typeof RShareIdRoute
   '/kurzy': typeof KurzyIndexRoute
+  '/test': typeof TestIndexRoute
   '/test/firma/$slug': typeof TestFirmaSlugRoute
+  '/test/firma': typeof TestFirmaIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/cookies': typeof CookiesRoute
   '/privacy': typeof PrivacyRoute
-  '/test': typeof TestRouteWithChildren
   '/kurzy/$slug': typeof KurzySlugRoute
   '/r/$shareId': typeof RShareIdRoute
   '/kurzy/': typeof KurzyIndexRoute
+  '/test/': typeof TestIndexRoute
   '/test/firma/$slug': typeof TestFirmaSlugRoute
+  '/test/firma/': typeof TestFirmaIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -96,52 +105,48 @@ export interface FileRouteTypes {
     | '/'
     | '/cookies'
     | '/privacy'
-    | '/test'
     | '/kurzy/$slug'
     | '/r/$shareId'
     | '/kurzy/'
+    | '/test/'
     | '/test/firma/$slug'
+    | '/test/firma/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/cookies'
     | '/privacy'
-    | '/test'
     | '/kurzy/$slug'
     | '/r/$shareId'
     | '/kurzy'
+    | '/test'
     | '/test/firma/$slug'
+    | '/test/firma'
   id:
     | '__root__'
     | '/'
     | '/cookies'
     | '/privacy'
-    | '/test'
     | '/kurzy/$slug'
     | '/r/$shareId'
     | '/kurzy/'
+    | '/test/'
     | '/test/firma/$slug'
+    | '/test/firma/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CookiesRoute: typeof CookiesRoute
   PrivacyRoute: typeof PrivacyRoute
-  TestRoute: typeof TestRouteWithChildren
   KurzySlugRoute: typeof KurzySlugRoute
   RShareIdRoute: typeof RShareIdRoute
   KurzyIndexRoute: typeof KurzyIndexRoute
+  TestIndexRoute: typeof TestIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/test': {
-      id: '/test'
-      path: '/test'
-      fullPath: '/test'
-      preLoaderRoute: typeof TestRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/privacy': {
       id: '/privacy'
       path: '/privacy'
@@ -161,6 +166,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/test/': {
+      id: '/test/'
+      path: '/test'
+      fullPath: '/test/'
+      preLoaderRoute: typeof TestIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/kurzy/': {
@@ -184,6 +196,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof KurzySlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/test/firma/': {
+      id: '/test/firma/'
+      path: '/firma'
+      fullPath: '/test/firma/'
+      preLoaderRoute: typeof TestFirmaIndexRouteImport
+      parentRoute: typeof TestRoute
+    }
     '/test/firma/$slug': {
       id: '/test/firma/$slug'
       path: '/firma/$slug'
@@ -194,24 +213,14 @@ declare module '@tanstack/react-router' {
   }
 }
 
-interface TestRouteChildren {
-  TestFirmaSlugRoute: typeof TestFirmaSlugRoute
-}
-
-const TestRouteChildren: TestRouteChildren = {
-  TestFirmaSlugRoute: TestFirmaSlugRoute,
-}
-
-const TestRouteWithChildren = TestRoute._addFileChildren(TestRouteChildren)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CookiesRoute: CookiesRoute,
   PrivacyRoute: PrivacyRoute,
-  TestRoute: TestRouteWithChildren,
   KurzySlugRoute: KurzySlugRoute,
   RShareIdRoute: RShareIdRoute,
   KurzyIndexRoute: KurzyIndexRoute,
+  TestIndexRoute: TestIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

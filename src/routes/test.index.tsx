@@ -5,7 +5,7 @@ const TestFlow = lazy(() =>
   import("@/components/quiz/TestFlow").then((m) => ({ default: m.TestFlow })),
 );
 
-export const Route = createFileRoute("/test")({
+export const Route = createFileRoute("/test/")({
   head: () => ({
     meta: [
       { title: "Test prebieha · Internet IQ Test" },
