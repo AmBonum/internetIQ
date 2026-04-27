@@ -18,8 +18,9 @@ const TODAY = new Date().toISOString().slice(0, 10);
 
 const STATIC_ROUTES = [
   { loc: "/", priority: "1.0", changefreq: "weekly" },
-  { loc: ROUTES.test, priority: "0.9", changefreq: "monthly" },
-  { loc: ROUTES.skolenia, priority: "0.9", changefreq: "weekly" },
+  { loc: "/test", priority: "0.9", changefreq: "monthly" },
+  { loc: "/testy", priority: "0.9", changefreq: "weekly" },
+  { loc: "/skolenia", priority: "0.9", changefreq: "weekly" },
   { loc: "/cookies", priority: "0.3", changefreq: "yearly" },
   { loc: "/privacy", priority: "0.3", changefreq: "yearly" },
   { loc: "/o-projekte", priority: "0.5", changefreq: "monthly" },
@@ -65,7 +66,7 @@ const urls = [
     lastmod: c.lastmod,
   })),
   ...packs.map((p) => ({
-    loc: `/test/firma/${p.slug}`,
+    loc: `/testy/${p.slug}`,
     priority: "0.85",
     changefreq: "monthly",
     lastmod: p.lastmod,

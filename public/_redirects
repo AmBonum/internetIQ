@@ -1,2 +1,4 @@
 /kurzy /skolenia 301
 /kurzy/* /skolenia/:splat 301
+/test/firma /testy 301
+/test/firma/* /testy/:splat 301
