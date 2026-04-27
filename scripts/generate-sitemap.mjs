@@ -25,6 +25,7 @@ const STATIC_ROUTES = [
   { loc: "/o-projekte", priority: "0.5", changefreq: "monthly" },
   { loc: "/podpora", priority: "0.6", changefreq: "monthly" },
   { loc: "/sponzori", priority: "0.4", changefreq: "weekly" },
+  { loc: "/sponzori/vsetci", priority: "0.3", changefreq: "weekly" },
   { loc: "/spravovat-podporu", priority: "0.3", changefreq: "yearly" },
   { loc: "/zmeny", priority: "0.4", changefreq: "weekly" },
 ];

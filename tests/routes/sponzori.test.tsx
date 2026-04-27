@@ -18,9 +18,19 @@ vi.mock("@/hooks/useConsent", () => ({
   useConsent: () => ({ openPreferences: vi.fn(), record: null }),
 }));
 
-vi.mock("@/integrations/supabase/client", () => ({
-  supabase: { from: vi.fn() },
-}));
+// Footer (rendered inside SponzoriView) fetches footer_sponsors from Supabase
+// on mount. Provide a chainable mock that resolves to an empty list so the
+// component tests can focus on the sponzori list logic.
+vi.mock("@/integrations/supabase/client", () => {
+  const makeBuilder = () => {
+    const builder: Record<string, unknown> = {};
+    builder.select = vi.fn(() => builder);
+    builder.order = vi.fn(() => builder);
+    builder.limit = vi.fn(() => Promise.resolve({ data: [], error: null }));
+    return builder;
+  };
+  return { supabase: { from: vi.fn(() => makeBuilder()) } };
+});
 
 import { SponzoriView, type PublicSponsor } from "@/routes/sponzori";
 
@@ -45,7 +55,7 @@ describe("SponzoriView (/sponzori)", () => {
     expect(ctas.some((el) => el.getAttribute("data-to") === "/podpora")).toBe(true);
   });
 
-  it("renders sponsor cards with name + optional link + optional message", async () => {
+  it("renders accordion items per sponsor with link + message in expanded panel", async () => {
     const fetchSponsors = vi.fn(async () => [
       makeSponsor({ display_name: "Anna" }),
       makeSponsor({
@@ -59,12 +69,22 @@ describe("SponzoriView (/sponzori)", () => {
 
     await waitFor(() => expect(screen.getByText("Anna")).toBeInTheDocument());
     expect(screen.getByText("Bob")).toBeInTheDocument();
-    expect(screen.getByText("Vďaka za projekt!")).toBeInTheDocument();
+    // Radix renders accordion content in DOM regardless of collapsed/open
+    // visual state — message + link assertions fire without expanding.
+    expect(screen.getByText(/Vďaka za projekt/i)).toBeInTheDocument();
 
-    const bobLink = screen.getByRole("link", { name: "Bob" });
+    const bobLink = screen.getByRole("link", { name: /example\.test\/bob/i });
     expect(bobLink).toHaveAttribute("href", "https://example.test/bob");
     expect(bobLink).toHaveAttribute("target", "_blank");
     expect(bobLink).toHaveAttribute("rel", "noopener noreferrer");
+  });
+
+  it("links to /sponzori/vsetci so the user can reach the filterable full list", async () => {
+    const fetchSponsors = vi.fn(async () => [makeSponsor({ display_name: "Anna" })]);
+    render(<SponzoriView fetchSponsors={fetchSponsors} />);
+    await waitFor(() => expect(screen.getByText("Anna")).toBeInTheDocument());
+    const all = screen.getByRole("link", { name: /Celý zoznam s filtrami/i });
+    expect(all).toHaveAttribute("data-to", "/sponzori/vsetci");
   });
 
   it("never exposes total_eur, stripe_customer_id or any payment amount", async () => {

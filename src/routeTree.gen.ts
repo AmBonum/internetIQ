@@ -19,6 +19,7 @@ import { Route as CookiesRouteImport } from './routes/cookies'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TestIndexRouteImport } from './routes/test.index'
 import { Route as SkoleniaIndexRouteImport } from './routes/skolenia.index'
+import { Route as SponzoriVsetciRouteImport } from './routes/sponzori.vsetci'
 import { Route as SkoleniaSlugRouteImport } from './routes/skolenia.$slug'
 import { Route as RShareIdRouteImport } from './routes/r.$shareId'
 import { Route as PodakovanieSessionIdRouteImport } from './routes/podakovanie.$sessionId'
@@ -75,6 +76,11 @@ const SkoleniaIndexRoute = SkoleniaIndexRouteImport.update({
   path: '/skolenia/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SponzoriVsetciRoute = SponzoriVsetciRouteImport.update({
+  id: '/vsetci',
+  path: '/vsetci',
+  getParentRoute: () => SponzoriRoute,
+} as any)
 const SkoleniaSlugRoute = SkoleniaSlugRouteImport.update({
   id: '/skolenia/$slug',
   path: '/skolenia/$slug',
@@ -107,12 +113,13 @@ export interface FileRoutesByFullPath {
   '/o-projekte': typeof OProjekteRoute
   '/podpora': typeof PodporaRoute
   '/privacy': typeof PrivacyRoute
-  '/sponzori': typeof SponzoriRoute
+  '/sponzori': typeof SponzoriRouteWithChildren
   '/spravovat-podporu': typeof SpravovatPodporuRoute
   '/zmeny': typeof ZmenyRoute
   '/podakovanie/$sessionId': typeof PodakovanieSessionIdRoute
   '/r/$shareId': typeof RShareIdRoute
   '/skolenia/$slug': typeof SkoleniaSlugRoute
+  '/sponzori/vsetci': typeof SponzoriVsetciRoute
   '/skolenia/': typeof SkoleniaIndexRoute
   '/test/': typeof TestIndexRoute
   '/test/firma/$slug': typeof TestFirmaSlugRoute
@@ -124,12 +131,13 @@ export interface FileRoutesByTo {
   '/o-projekte': typeof OProjekteRoute
   '/podpora': typeof PodporaRoute
   '/privacy': typeof PrivacyRoute
-  '/sponzori': typeof SponzoriRoute
+  '/sponzori': typeof SponzoriRouteWithChildren
   '/spravovat-podporu': typeof SpravovatPodporuRoute
   '/zmeny': typeof ZmenyRoute
   '/podakovanie/$sessionId': typeof PodakovanieSessionIdRoute
   '/r/$shareId': typeof RShareIdRoute
   '/skolenia/$slug': typeof SkoleniaSlugRoute
+  '/sponzori/vsetci': typeof SponzoriVsetciRoute
   '/skolenia': typeof SkoleniaIndexRoute
   '/test': typeof TestIndexRoute
   '/test/firma/$slug': typeof TestFirmaSlugRoute
@@ -142,12 +150,13 @@ export interface FileRoutesById {
   '/o-projekte': typeof OProjekteRoute
   '/podpora': typeof PodporaRoute
   '/privacy': typeof PrivacyRoute
-  '/sponzori': typeof SponzoriRoute
+  '/sponzori': typeof SponzoriRouteWithChildren
   '/spravovat-podporu': typeof SpravovatPodporuRoute
   '/zmeny': typeof ZmenyRoute
   '/podakovanie/$sessionId': typeof PodakovanieSessionIdRoute
   '/r/$shareId': typeof RShareIdRoute
   '/skolenia/$slug': typeof SkoleniaSlugRoute
+  '/sponzori/vsetci': typeof SponzoriVsetciRoute
   '/skolenia/': typeof SkoleniaIndexRoute
   '/test/': typeof TestIndexRoute
   '/test/firma/$slug': typeof TestFirmaSlugRoute
@@ -167,6 +176,7 @@ export interface FileRouteTypes {
     | '/podakovanie/$sessionId'
     | '/r/$shareId'
     | '/skolenia/$slug'
+    | '/sponzori/vsetci'
     | '/skolenia/'
     | '/test/'
     | '/test/firma/$slug'
@@ -184,6 +194,7 @@ export interface FileRouteTypes {
     | '/podakovanie/$sessionId'
     | '/r/$shareId'
     | '/skolenia/$slug'
+    | '/sponzori/vsetci'
     | '/skolenia'
     | '/test'
     | '/test/firma/$slug'
@@ -201,6 +212,7 @@ export interface FileRouteTypes {
     | '/podakovanie/$sessionId'
     | '/r/$shareId'
     | '/skolenia/$slug'
+    | '/sponzori/vsetci'
     | '/skolenia/'
     | '/test/'
     | '/test/firma/$slug'
@@ -213,7 +225,7 @@ export interface RootRouteChildren {
   OProjekteRoute: typeof OProjekteRoute
   PodporaRoute: typeof PodporaRoute
   PrivacyRoute: typeof PrivacyRoute
-  SponzoriRoute: typeof SponzoriRoute
+  SponzoriRoute: typeof SponzoriRouteWithChildren
   SpravovatPodporuRoute: typeof SpravovatPodporuRoute
   ZmenyRoute: typeof ZmenyRoute
   PodakovanieSessionIdRoute: typeof PodakovanieSessionIdRoute
@@ -297,6 +309,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SkoleniaIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/sponzori/vsetci': {
+      id: '/sponzori/vsetci'
+      path: '/vsetci'
+      fullPath: '/sponzori/vsetci'
+      preLoaderRoute: typeof SponzoriVsetciRouteImport
+      parentRoute: typeof SponzoriRoute
+    }
     '/skolenia/$slug': {
       id: '/skolenia/$slug'
       path: '/skolenia/$slug'
@@ -335,13 +354,25 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface SponzoriRouteChildren {
+  SponzoriVsetciRoute: typeof SponzoriVsetciRoute
+}
+
+const SponzoriRouteChildren: SponzoriRouteChildren = {
+  SponzoriVsetciRoute: SponzoriVsetciRoute,
+}
+
+const SponzoriRouteWithChildren = SponzoriRoute._addFileChildren(
+  SponzoriRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CookiesRoute: CookiesRoute,
   OProjekteRoute: OProjekteRoute,
   PodporaRoute: PodporaRoute,
   PrivacyRoute: PrivacyRoute,
-  SponzoriRoute: SponzoriRoute,
+  SponzoriRoute: SponzoriRouteWithChildren,
   SpravovatPodporuRoute: SpravovatPodporuRoute,
   ZmenyRoute: ZmenyRoute,
   PodakovanieSessionIdRoute: PodakovanieSessionIdRoute,

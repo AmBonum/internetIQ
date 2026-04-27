@@ -1,5 +1,7 @@
+import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useConsent } from "@/hooks/useConsent";
+import { supabase } from "@/integrations/supabase/client";
 import changelog from "@/content/changelog.generated.json";
 
 const CURRENT_VERSION = (changelog as { version: string }[])[0]?.version ?? "—";
@@ -14,7 +16,7 @@ const COLUMNS: { title: string; links: FooterLink[] }[] = [
     title: "Obsah",
     links: [
       { to: "/test", label: "Spustiť test" },
-      { to: "/test/firma", label: "Testy pre firmy" },
+      { to: "/test/firma", label: "Sada testov" },
       { to: "/skolenia", label: "Školenia" },
     ],
   },
@@ -37,11 +39,51 @@ const COLUMNS: { title: string; links: FooterLink[] }[] = [
   },
 ];
 
+interface FooterSponsor {
+  id: string;
+  display_name: string;
+  display_link: string | null;
+}
+
+// Module-level cache: footer_sponsors changes infrequently (only on new
+// tier-qualifying donations) so multiple Footer mounts share one fetch.
+let cachedSponsorsPromise: Promise<FooterSponsor[]> | null = null;
+
+function loadFooterSponsors(): Promise<FooterSponsor[]> {
+  if (!cachedSponsorsPromise) {
+    cachedSponsorsPromise = supabase
+      .from("footer_sponsors")
+      .select("id, display_name, display_link")
+      .order("created_at", { ascending: false })
+      .limit(50)
+      .then(({ data, error }) => {
+        if (error) {
+          // Reset cache on error so next render retries.
+          cachedSponsorsPromise = null;
+          return [];
+        }
+        return (data ?? []) as FooterSponsor[];
+      });
+  }
+  return cachedSponsorsPromise;
+}
+
 export function Footer() {
   const { openPreferences } = useConsent();
+  const [sponsors, setSponsors] = useState<FooterSponsor[]>([]);
+
+  useEffect(() => {
+    let cancelled = false;
+    loadFooterSponsors().then((rows) => {
+      if (!cancelled) setSponsors(rows);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   return (
-    <footer className="mt-24 border-t border-border/60 pt-12 pb-8">
+    <footer className="mx-auto mt-24 w-full max-w-5xl border-t border-border/60 pt-12 pb-8">
       <div className="grid gap-10 sm:grid-cols-2 md:grid-cols-4">
         <div className="space-y-3">
           <Link to="/" className="inline-flex items-center" aria-label="subenai — domov">
@@ -66,6 +108,43 @@ export function Footer() {
           <FooterColumn key={col.title} title={col.title} links={col.links} />
         ))}
       </div>
+
+      {sponsors.length > 0 ? (
+        <div className="mt-10 border-t border-border/40 pt-6">
+          <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+            Vďaka top sponzorom
+          </h3>
+          <ul className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
+            {sponsors.map((s) => (
+              <li key={s.id}>
+                {s.display_link ? (
+                  <a
+                    href={s.display_link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-foreground hover:text-primary transition-colors"
+                  >
+                    {s.display_name}
+                    <span aria-hidden="true" className="ml-1 text-muted-foreground">
+                      ↗
+                    </span>
+                  </a>
+                ) : (
+                  <span className="text-foreground">{s.display_name}</span>
+                )}
+              </li>
+            ))}
+            <li>
+              <Link
+                to="/sponzori"
+                className="text-xs text-muted-foreground transition-colors hover:text-foreground"
+              >
+                všetci sponzori →
+              </Link>
+            </li>
+          </ul>
+        </div>
+      ) : null}
 
       <div className="mt-10 flex flex-col items-start justify-between gap-3 border-t border-border/40 pt-6 sm:flex-row sm:items-center">
         <p className="text-xs text-muted-foreground">

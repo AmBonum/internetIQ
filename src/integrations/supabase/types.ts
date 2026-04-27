@@ -230,6 +230,7 @@ export type Database = {
           id: string;
           display_name: string;
           display_link: string | null;
+          created_at: string;
         };
         Relationships: [];
       };

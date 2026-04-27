@@ -167,7 +167,7 @@ export function DonateForm({ cancelled = false }: DonateFormProps) {
           </h1>
           <p className="mt-3 text-base text-muted-foreground sm:text-lg">
             Akúkoľvek čiastku použijeme na hosting, tvorbu obsahu a údržbu. Žiadne reklamy, žiadne
-            paid perks. Detail v{" "}
+            platené výhody. Detail v{" "}
             <Link to="/o-projekte" className="underline underline-offset-2 hover:text-foreground">
               O projekte
             </Link>

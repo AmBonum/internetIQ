@@ -174,7 +174,8 @@ export function AboutPage() {
               5. Čo sponzori dostanú
             </h2>
             <p className="text-sm leading-relaxed text-muted-foreground">
-              Žiadne paid perks. Sponzorstvo je dobrovoľný príspevok, nie nákup balíčka. Voliteľne:
+              Žiadne platené výhody ani prémiové funkcie. Sponzorstvo je dobrovoľný príspevok, nie
+              nákup balíčka. Voliteľne:
             </p>
             <ul className="list-disc space-y-1.5 pl-5 text-sm leading-relaxed text-muted-foreground">
               <li>
@@ -210,7 +211,10 @@ export function AboutPage() {
                 patternov, žiadne menené klasifikácie, žiadne sponsored kurzy
               </li>
               <li>
-                <strong>Žiadny paywall</strong> — ani na otázky, ani na kurzy, ani na výsledok testu
+                <strong>Žiadny paywall na bežné použitie</strong> — test, kurzy a výsledok sú
+                zadarmo pre každého. Pri rastúcej prevádzke môžeme zaviesť mäkké limity na nadmerné
+                používanie (napr. veľa testov denne z jednej IP) aby sme udržali náklady na hosting
+                a databázu udržateľné. Bežný návštevník to nikdy nepocíti.
               </li>
               <li>
                 <strong>Žiadne dark patterns</strong> — cancel mesačného odberu je jeden klik,
@@ -231,18 +235,30 @@ export function AboutPage() {
 
           <section
             aria-labelledby="podporit"
-            className="space-y-3 rounded-2xl border border-primary/40 bg-card p-6 text-center"
+            className="space-y-4 rounded-2xl border border-primary/40 bg-card p-6 text-center sm:p-8"
           >
             <h2 id="podporit" className="text-xl font-semibold">
               Chceš projekt podporiť?
             </h2>
             <p className="text-sm leading-relaxed text-muted-foreground">
-              Akákoľvek čiastka pomáha pokryť hosting a tvorbu nového obsahu.
+              Akákoľvek čiastka pomáha pokryť hosting, tvorbu nového obsahu a údržbu. Mesačná
+              podpora od 5 € alebo jednorazovo. Faktúru dostaneš e-mailom.
             </p>
-            <p className="pt-2 text-sm text-muted-foreground">
-              Stránka <code className="rounded bg-muted px-1 py-0.5 text-xs">/podpora</code> sa
-              pripravuje — pridáme sem priamy odkaz hneď ako bude live. Ďakujeme za trpezlivosť.
-            </p>
+            <div className="flex flex-col items-center gap-3 pt-2 sm:flex-row sm:justify-center">
+              <Link
+                to="/podpora"
+                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-accent-gradient px-6 py-3 text-base font-bold text-primary-foreground shadow-glow transition-transform hover:scale-[1.03] active:scale-[0.99]"
+              >
+                Podporiť projekt
+                <span aria-hidden="true">→</span>
+              </Link>
+              <Link
+                to="/sponzori"
+                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-border/60 bg-background/60 px-6 py-3 text-sm font-semibold text-foreground transition-colors hover:bg-background"
+              >
+                Pozri sponzorov
+              </Link>
+            </div>
           </section>
         </article>
 

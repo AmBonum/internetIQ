@@ -49,6 +49,12 @@
     <priority>0.4</priority>
   </url>
   <url>
+    <loc>https://subenai.lvtesting.eu/sponzori/vsetci</loc>
+    <lastmod>2026-04-27</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
     <loc>https://subenai.lvtesting.eu/spravovat-podporu</loc>
     <lastmod>2026-04-27</lastmod>
     <changefreq>yearly</changefreq>

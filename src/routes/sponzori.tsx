@@ -1,10 +1,17 @@
 import { useEffect, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { Footer } from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
 
 const SITE_ORIGIN = "https://subenai.lvtesting.eu";
 const SPONZORI_URL = `${SITE_ORIGIN}/sponzori`;
+const HOMEPAGE_LIMIT = 5;
 
 export interface PublicSponsor {
   id: string;
@@ -34,7 +41,7 @@ export const Route = createFileRoute("/sponzori")({
 });
 
 function SponzoriPage() {
-  return <SponzoriView fetchSponsors={fetchPublicSponsors} />;
+  return <SponzoriView fetchSponsors={fetchLatestSponsors} />;
 }
 
 interface SponzoriViewProps {
@@ -62,7 +69,7 @@ export function SponzoriView({ fetchSponsors }: SponzoriViewProps) {
 
   return (
     <div className="min-h-screen bg-background">
-      <main className="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:py-16">
+      <main className="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:py-16">
         <header className="mb-10">
           <Link to="/" className="text-sm text-muted-foreground hover:text-foreground">
             ← Späť na domov
@@ -86,7 +93,7 @@ export function SponzoriView({ fetchSponsors }: SponzoriViewProps) {
         ) : state.sponsors.length === 0 ? (
           <SponsorsEmpty />
         ) : (
-          <SponsorsGrid sponsors={state.sponsors} />
+          <LatestList sponsors={state.sponsors} />
         )}
 
         <p className="mt-12 text-center text-xs text-muted-foreground">
@@ -105,19 +112,81 @@ export function SponzoriView({ fetchSponsors }: SponzoriViewProps) {
   );
 }
 
+function LatestList({ sponsors }: { sponsors: PublicSponsor[] }) {
+  return (
+    <section aria-labelledby="latest-h" className="space-y-6">
+      <div className="flex items-baseline justify-between gap-4">
+        <h2 id="latest-h" className="text-base font-semibold text-foreground">
+          {sponsors.length === 1 ? "Najnovší sponzor" : `Najnovších ${sponsors.length} sponzorov`}
+        </h2>
+        <Link
+          to="/sponzori/vsetci"
+          className="inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline underline-offset-2"
+        >
+          Celý zoznam s filtrami <span aria-hidden="true">→</span>
+        </Link>
+      </div>
+
+      <Accordion
+        type="multiple"
+        className="overflow-hidden rounded-2xl border border-border/60 bg-card/40 px-5"
+        aria-label="Najnovší sponzori"
+      >
+        {sponsors.map((s) => (
+          <AccordionItem
+            key={s.id}
+            value={s.id}
+            className="border-b border-border/40 last:border-b-0"
+          >
+            <AccordionTrigger className="flex-wrap text-left">
+              <div className="flex flex-1 items-baseline justify-between gap-4 pr-3">
+                <span className="text-base font-semibold text-foreground">{s.display_name}</span>
+                <time
+                  dateTime={s.created_at}
+                  className="shrink-0 text-xs font-normal text-muted-foreground"
+                >
+                  {formatMonthYear(s.created_at)}
+                </time>
+              </div>
+            </AccordionTrigger>
+            <AccordionContent className="pb-4 text-sm leading-relaxed text-muted-foreground">
+              {s.display_message ? (
+                <p className="mb-2">„{s.display_message}"</p>
+              ) : (
+                <p className="mb-2 italic text-muted-foreground/70">
+                  Sponzor neuviedol verejnú správu.
+                </p>
+              )}
+              {s.display_link ? (
+                <a
+                  href={s.display_link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-primary hover:underline underline-offset-2"
+                >
+                  {s.display_link.replace(/^https?:\/\//, "")}
+                  <span aria-hidden="true">↗</span>
+                </a>
+              ) : null}
+            </AccordionContent>
+          </AccordionItem>
+        ))}
+      </Accordion>
+    </section>
+  );
+}
+
 function SponsorsLoading() {
   return (
-    <div role="status" aria-live="polite" className="space-y-4">
+    <div role="status" aria-live="polite" className="space-y-3">
       <p className="text-sm text-muted-foreground">Načítavam zoznam…</p>
-      <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
-        {[0, 1, 2].map((i) => (
-          <div
-            key={i}
-            className="h-32 animate-pulse rounded-2xl border border-border/40 bg-card/40"
-            aria-hidden="true"
-          />
-        ))}
-      </div>
+      {[0, 1, 2].map((i) => (
+        <div
+          key={i}
+          className="h-14 animate-pulse rounded-xl border border-border/40 bg-card/40"
+          aria-hidden="true"
+        />
+      ))}
     </div>
   );
 }
@@ -153,54 +222,18 @@ function SponsorsEmpty() {
   );
 }
 
-function SponsorsGrid({ sponsors }: { sponsors: PublicSponsor[] }) {
-  return (
-    <ul className="grid gap-4 sm:grid-cols-2 md:grid-cols-3" aria-label="Sponzori">
-      {sponsors.map((s) => (
-        <SponsorCard key={s.id} sponsor={s} />
-      ))}
-    </ul>
-  );
+export function formatMonthYear(iso: string): string {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return iso;
+  return d.toLocaleDateString("sk-SK", { month: "long", year: "numeric" });
 }
 
-function SponsorCard({ sponsor }: { sponsor: PublicSponsor }) {
-  const dateLabel = new Date(sponsor.created_at).toLocaleDateString("sk-SK", {
-    month: "long",
-    year: "numeric",
-  });
-
-  return (
-    <li className="flex flex-col gap-2 rounded-2xl border border-border/60 bg-card p-5">
-      <div className="flex items-start justify-between gap-2">
-        <h3 className="text-base font-semibold text-foreground">
-          {sponsor.display_link ? (
-            <a
-              href={sponsor.display_link}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:underline underline-offset-2"
-            >
-              {sponsor.display_name}
-            </a>
-          ) : (
-            sponsor.display_name
-          )}
-        </h3>
-      </div>
-      {sponsor.display_message ? (
-        <p className="text-sm leading-relaxed text-muted-foreground">{sponsor.display_message}</p>
-      ) : null}
-      <p className="mt-auto text-xs text-muted-foreground">{dateLabel}</p>
-    </li>
-  );
-}
-
-async function fetchPublicSponsors(): Promise<PublicSponsor[]> {
+async function fetchLatestSponsors(): Promise<PublicSponsor[]> {
   const { data, error } = await supabase
     .from("public_sponsors")
     .select("id, display_name, display_link, display_message, created_at")
     .order("created_at", { ascending: false })
-    .limit(200);
+    .limit(HOMEPAGE_LIMIT);
 
   if (error) throw new Error(`public_sponsors fetch failed: ${error.message}`);
   return (data ?? []) as PublicSponsor[];

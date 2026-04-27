@@ -166,9 +166,9 @@ function Index() {
           <FeatureCard
             to="/test/firma"
             emoji="🏢"
-            title="Testy pre firmy"
+            title="Sada testov"
             description="Predefinované sady podľa branže — e-shop, gastro, IT, autoservis, verejné služby. Otestuj celý tím naraz, každý dostane vlastný výsledok."
-            cta="Pozrieť firemné testy"
+            cta="Pozrieť sady testov"
           />
           <FeatureCard
             to="/skolenia"
