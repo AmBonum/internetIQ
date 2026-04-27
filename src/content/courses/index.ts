@@ -10,6 +10,12 @@ import { dataHygieneCourse } from "./data-hygiene";
 import { investmentScamsCourse } from "./investicne-podvody";
 import { romanceScamsCourse } from "./romance-scams";
 import { becWorkplaceCourse } from "./bec-pracovisko";
+import { fyzickePodvodyCourse } from "./fyzicke-podvody";
+import { ochranaBlizkychCourse } from "./chran-svojich-blizkych";
+import { qrQuishingCourse } from "./qr-quishing";
+import { aiDeepfakeCourse } from "./ai-deepfake-podvody";
+import { kradezKontCourse } from "./kradez-kont-socialnych-sieti";
+import { naborPraceScamCourse } from "./nabor-prace-podvody";
 
 export type { Course, CourseCategory, CourseSection, CourseDifficulty } from "./_schema";
 export { courseSchema } from "./_schema";
@@ -23,6 +29,12 @@ export const COURSES: Course[] = [
   investmentScamsCourse,
   romanceScamsCourse,
   becWorkplaceCourse,
+  fyzickePodvodyCourse,
+  ochranaBlizkychCourse,
+  qrQuishingCourse,
+  aiDeepfakeCourse,
+  kradezKontCourse,
+  naborPraceScamCourse,
 ];
 
 const slugs = new Set<string>();
