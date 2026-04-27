@@ -237,12 +237,12 @@ zlyhajú na nepriamych voľbách.
 
 | story | title | effort | priority | status | deps |
 |---|---|---|---|---|---|
-| [E7.1](./stories/E7.1-test-pack-schema.md) | Test pack content schema + registry | S | P1 | 🟡 Ready | E9.1 (banky musia obsahovať priemyselné otázky) |
-| [E7.2](./stories/E7.2-industry-packs-batch-a.md) | Industry packs A: e-shop, gastro, autoservis, IT, vereje sluzby | M | P1 | ⛔ Blocked | E7.1 |
-| [E7.3](./stories/E7.3-industry-packs-batch-b.md) | Industry packs B: dispečing, doprava, marketing, zdravotnictvo, skoly | M | P2 | ⛔ Blocked | E7.1 |
-| [E7.4](./stories/E7.4-industry-packs-batch-c.md) | Industry packs C: strojová výroba, pneuservis, SME účto, HORECA, servis | M | P3 | ⛔ Blocked | E7.1 |
-| [E7.5](./stories/E7.5-firma-route.md) | `/test/firma/$slug` route + SEO + Quiz JSON-LD | M | P1 | ⛔ Blocked | E7.1 |
-| [E7.6](./stories/E7.6-firma-index.md) | `/test/firma` discovery page | S | P2 | ⛔ Blocked | E7.5 |
+| [E7.1](./stories/E7.1-test-pack-schema.md) | Test pack content schema + registry | S | P1 | ✅ Done | E9.1 (banky musia obsahovať priemyselné otázky) |
+| [E7.2](./stories/E7.2-industry-packs-batch-a.md) | Industry packs A: e-shop, gastro, autoservis, IT, vereje sluzby | M | P1 | 🟡 Ready | E7.1 |
+| [E7.3](./stories/E7.3-industry-packs-batch-b.md) | Industry packs B: dispečing, doprava, marketing, zdravotnictvo, skoly | M | P2 | 🟡 Ready | E7.1 |
+| [E7.4](./stories/E7.4-industry-packs-batch-c.md) | Industry packs C: strojová výroba, pneuservis, SME účto, HORECA, servis | M | P3 | 🟡 Ready | E7.1 |
+| [E7.5](./stories/E7.5-firma-route.md) | `/test/firma/$slug` route + SEO + Quiz JSON-LD | M | P1 | 🟡 Ready | E7.1 |
+| [E7.6](./stories/E7.6-firma-index.md) | `/test/firma` discovery page | S | P2 | 🟡 Ready | E7.5 |
 
 ### Epic 8 — Composer (firmy zostavujú vlastné testy)
 
