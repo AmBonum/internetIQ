@@ -1,11 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
 import { sendEmail, isPlausibleEmail, type EmailEnv } from "../../functions/_lib/email";
+import { CONTACT_EMAIL } from "@/config/site";
 
 const env: EmailEnv = {
   RESEND_API_KEY: "re_test_key",
   EMAIL_FROM: "subenai <noreply@lvtesting.eu>",
-  EMAIL_REPLY_TO: "subenai.podpora@gmail.com",
+  EMAIL_REPLY_TO: CONTACT_EMAIL,
 };
 
 beforeEach(() => {
@@ -46,7 +47,7 @@ describe("sendEmail", () => {
       subject: "Test",
       html: "<p>Hi</p>",
       text: "Hi",
-      reply_to: "subenai.podpora@gmail.com",
+      reply_to: CONTACT_EMAIL,
     });
   });
 

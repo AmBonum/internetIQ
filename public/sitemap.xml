@@ -67,8 +67,20 @@
     <priority>0.4</priority>
   </url>
   <url>
+    <loc>https://subenai.lvtesting.eu/skolenia/ai-hlasove-a-deepfake-podvody</loc>
+    <lastmod>2026-04-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://subenai.lvtesting.eu/skolenia/bec-pracovisko-fake-ceo</loc>
     <lastmod>2026-04-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://subenai.lvtesting.eu/skolenia/chran-svojich-blizkych</loc>
+    <lastmod>2026-04-30</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -85,14 +97,38 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://subenai.lvtesting.eu/skolenia/fyzicke-podvody</loc>
+    <lastmod>2026-04-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://subenai.lvtesting.eu/skolenia/investicne-podvody-krypto-ai</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://subenai.lvtesting.eu/skolenia/kradez-kont-socialnych-sieti</loc>
+    <lastmod>2026-04-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://subenai.lvtesting.eu/skolenia/marketplace-bazos-podvody</loc>
     <lastmod>2026-04-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://subenai.lvtesting.eu/skolenia/brigady-a-pracovne-podvody</loc>
+    <lastmod>2026-04-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://subenai.lvtesting.eu/skolenia/qr-quishing</loc>
+    <lastmod>2026-04-30</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -139,8 +175,32 @@
     <priority>0.85</priority>
   </url>
   <url>
+    <loc>https://subenai.lvtesting.eu/test/firma/seniori</loc>
+    <lastmod>2026-05-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://subenai.lvtesting.eu/test/firma/studenti</loc>
+    <lastmod>2026-05-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
     <loc>https://subenai.lvtesting.eu/test/firma/verejne-sluzby</loc>
     <lastmod>2026-04-27</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://subenai.lvtesting.eu/test/firma/vseobecny</loc>
+    <lastmod>2026-05-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://subenai.lvtesting.eu/test/firma/ziaci-do-16</loc>
+    <lastmod>2026-05-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.85</priority>
   </url>
