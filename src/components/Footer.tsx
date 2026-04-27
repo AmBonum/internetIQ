@@ -21,6 +21,10 @@ export function Footer() {
           Podporiť projekt
         </Link>
         <span aria-hidden="true">·</span>
+        <Link to="/sponzori" className="hover:text-foreground transition-colors">
+          Sponzori
+        </Link>
+        <span aria-hidden="true">·</span>
         <Link to="/privacy" className="hover:text-foreground transition-colors">
           Súkromie
         </Link>

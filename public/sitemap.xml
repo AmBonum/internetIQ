@@ -43,6 +43,12 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://subenai.lvtesting.eu/sponzori</loc>
+    <lastmod>2026-04-27</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
     <loc>https://subenai.lvtesting.eu/skolenia/bec-pracovisko-fake-ceo</loc>
     <lastmod>2026-04-26</lastmod>
     <changefreq>monthly</changefreq>

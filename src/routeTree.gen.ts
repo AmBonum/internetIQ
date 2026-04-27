@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SponzoriRouteImport } from './routes/sponzori'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as PodporaRouteImport } from './routes/podpora'
 import { Route as OProjekteRouteImport } from './routes/o-projekte'
@@ -22,6 +23,11 @@ import { Route as PodakovanieSessionIdRouteImport } from './routes/podakovanie.$
 import { Route as TestFirmaIndexRouteImport } from './routes/test.firma.index'
 import { Route as TestFirmaSlugRouteImport } from './routes/test.firma.$slug'
 
+const SponzoriRoute = SponzoriRouteImport.update({
+  id: '/sponzori',
+  path: '/sponzori',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PrivacyRoute = PrivacyRouteImport.update({
   id: '/privacy',
   path: '/privacy',
@@ -89,6 +95,7 @@ export interface FileRoutesByFullPath {
   '/o-projekte': typeof OProjekteRoute
   '/podpora': typeof PodporaRoute
   '/privacy': typeof PrivacyRoute
+  '/sponzori': typeof SponzoriRoute
   '/podakovanie/$sessionId': typeof PodakovanieSessionIdRoute
   '/r/$shareId': typeof RShareIdRoute
   '/skolenia/$slug': typeof SkoleniaSlugRoute
@@ -103,6 +110,7 @@ export interface FileRoutesByTo {
   '/o-projekte': typeof OProjekteRoute
   '/podpora': typeof PodporaRoute
   '/privacy': typeof PrivacyRoute
+  '/sponzori': typeof SponzoriRoute
   '/podakovanie/$sessionId': typeof PodakovanieSessionIdRoute
   '/r/$shareId': typeof RShareIdRoute
   '/skolenia/$slug': typeof SkoleniaSlugRoute
@@ -118,6 +126,7 @@ export interface FileRoutesById {
   '/o-projekte': typeof OProjekteRoute
   '/podpora': typeof PodporaRoute
   '/privacy': typeof PrivacyRoute
+  '/sponzori': typeof SponzoriRoute
   '/podakovanie/$sessionId': typeof PodakovanieSessionIdRoute
   '/r/$shareId': typeof RShareIdRoute
   '/skolenia/$slug': typeof SkoleniaSlugRoute
@@ -134,6 +143,7 @@ export interface FileRouteTypes {
     | '/o-projekte'
     | '/podpora'
     | '/privacy'
+    | '/sponzori'
     | '/podakovanie/$sessionId'
     | '/r/$shareId'
     | '/skolenia/$slug'
@@ -148,6 +158,7 @@ export interface FileRouteTypes {
     | '/o-projekte'
     | '/podpora'
     | '/privacy'
+    | '/sponzori'
     | '/podakovanie/$sessionId'
     | '/r/$shareId'
     | '/skolenia/$slug'
@@ -162,6 +173,7 @@ export interface FileRouteTypes {
     | '/o-projekte'
     | '/podpora'
     | '/privacy'
+    | '/sponzori'
     | '/podakovanie/$sessionId'
     | '/r/$shareId'
     | '/skolenia/$slug'
@@ -177,6 +189,7 @@ export interface RootRouteChildren {
   OProjekteRoute: typeof OProjekteRoute
   PodporaRoute: typeof PodporaRoute
   PrivacyRoute: typeof PrivacyRoute
+  SponzoriRoute: typeof SponzoriRoute
   PodakovanieSessionIdRoute: typeof PodakovanieSessionIdRoute
   RShareIdRoute: typeof RShareIdRoute
   SkoleniaSlugRoute: typeof SkoleniaSlugRoute
@@ -188,6 +201,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/sponzori': {
+      id: '/sponzori'
+      path: '/sponzori'
+      fullPath: '/sponzori'
+      preLoaderRoute: typeof SponzoriRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/privacy': {
       id: '/privacy'
       path: '/privacy'
@@ -281,6 +301,7 @@ const rootRouteChildren: RootRouteChildren = {
   OProjekteRoute: OProjekteRoute,
   PodporaRoute: PodporaRoute,
   PrivacyRoute: PrivacyRoute,
+  SponzoriRoute: SponzoriRoute,
   PodakovanieSessionIdRoute: PodakovanieSessionIdRoute,
   RShareIdRoute: RShareIdRoute,
   SkoleniaSlugRoute: SkoleniaSlugRoute,
