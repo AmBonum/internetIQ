@@ -1,8 +1,14 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 96">
+  <defs>
+    <linearGradient id="subenaiBrand" gradientUnits="objectBoundingBox" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="oklch(0.88 0.22 130)"/>
+      <stop offset="100%" stop-color="oklch(0.78 0.18 165)"/>
+    </linearGradient>
+  </defs>
   <text x="0" y="72"
         font-family="ui-rounded, 'Nunito', 'Varela Round', system-ui, sans-serif"
-        font-weight="900" font-size="80" fill="#3300ff">subenai</text>
+        font-weight="900" font-size="80" fill="url(#subenaiBrand)">subenai</text>
   <text x="3" y="92"
         font-family="ui-rounded, 'Nunito', 'Varela Round', system-ui, sans-serif"
-        font-weight="600" font-size="18" fill="#6633ff">Be online, but safe.</text>
+        font-weight="600" font-size="18" fill="oklch(0.78 0.18 165)">Be online, but safe.</text>
 </svg>
