@@ -1,6 +1,6 @@
 # Tasks
 
-Tento adresár obsahuje **plánovací backlog** pre Internet IQ Test —
+Tento adresár obsahuje **plánovací backlog** pre subenai —
 epicy, user stories, ich rozpad na implementačné, testovacie,
 dokumentačné a review úlohy.
 

@@ -9,8 +9,8 @@ import {
 } from "@/lib/share/intents";
 import type { ConsentRecord } from "@/lib/consent";
 
-const url = "https://internetiq.sk/r/ABC12345";
-const text = "Mám Internet IQ 75/100. Lepší než 70% ľudí. Som Internet Ninja. Skús aj ty:";
+const url = "https://subenai.eu/r/ABC12345";
+const text = "Mám subenai 75/100. Lepší než 70% ľudí. Som Internet Ninja. Skús aj ty:";
 
 const allConsent: ConsentRecord = {
   version: "1.1.0",
@@ -31,20 +31,20 @@ const noAnalytics: ConsentRecord = {
 describe("withUtm", () => {
   it("appends utm params with `?` when base URL has no query string", () => {
     expect(withUtm(url, "facebook")).toBe(
-      "https://internetiq.sk/r/ABC12345?utm_source=facebook&utm_medium=share&utm_campaign=results",
+      "https://subenai.eu/r/ABC12345?utm_source=facebook&utm_medium=share&utm_campaign=results",
     );
   });
 
   it("appends utm params with `&` when base URL already has a query string", () => {
-    const result = withUtm("https://internetiq.sk/r/ABC?ref=foo", "x");
+    const result = withUtm("https://subenai.eu/r/ABC?ref=foo", "x");
     expect(result).toBe(
-      "https://internetiq.sk/r/ABC?ref=foo&utm_source=x&utm_medium=share&utm_campaign=results",
+      "https://subenai.eu/r/ABC?ref=foo&utm_source=x&utm_medium=share&utm_campaign=results",
     );
   });
 
   it("supports custom medium and campaign overrides", () => {
     expect(withUtm(url, "linkedin", "post", "course-complete")).toBe(
-      "https://internetiq.sk/r/ABC12345?utm_source=linkedin&utm_medium=post&utm_campaign=course-complete",
+      "https://subenai.eu/r/ABC12345?utm_source=linkedin&utm_medium=post&utm_campaign=course-complete",
     );
   });
 });
@@ -108,7 +108,7 @@ describe("buildShareIntentUrl", () => {
 describe("buildShareCaption", () => {
   it("formats the canonical CTR-driven share caption (slovak)", () => {
     expect(buildShareCaption({ score: 75, personalityName: "Internet Ninja" })).toBe(
-      "Som Internet Ninja v Internet IQ teste — 75/100. Zvládneš to lepšie? 👇",
+      "Som Internet Ninja na subenai — 75/100. Zvládneš to lepšie? 👇",
     );
   });
 
@@ -132,7 +132,7 @@ describe("buildShareCaption", () => {
 
 describe("readUtmFromUrl (consent-gated)", () => {
   const utmUrl =
-    "https://internetiq.sk/r/ABC?utm_source=facebook&utm_medium=share&utm_campaign=results";
+    "https://subenai.eu/r/ABC?utm_source=facebook&utm_medium=share&utm_campaign=results";
 
   it("returns null when analytics consent is denied", () => {
     expect(readUtmFromUrl(utmUrl, noAnalytics)).toBeNull();
@@ -151,7 +151,7 @@ describe("readUtmFromUrl (consent-gated)", () => {
   });
 
   it("returns null when the URL has no UTM params at all", () => {
-    expect(readUtmFromUrl("https://internetiq.sk/r/ABC", allConsent)).toBeNull();
+    expect(readUtmFromUrl("https://subenai.eu/r/ABC", allConsent)).toBeNull();
   });
 
   it("returns null for malformed URLs (does not throw)", () => {

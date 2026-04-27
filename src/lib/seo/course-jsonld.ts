@@ -1,7 +1,7 @@
 import type { Course } from "@/content/courses";
 
-const SITE_ORIGIN = "https://internetiq.lvtesting.eu";
-const PUBLISHER_NAME = "Internet IQ Test";
+const SITE_ORIGIN = "https://subenai.lvtesting.eu";
+const PUBLISHER_NAME = "subenai";
 
 /**
  * Build a Schema.org Course JSON-LD object suitable for stringifying

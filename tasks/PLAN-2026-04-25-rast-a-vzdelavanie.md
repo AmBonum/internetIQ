@@ -158,7 +158,7 @@ Treba zatvoriť pred štartom epicu (alebo na hranici):
    gated cez prejdený test? Návrh: **verejný**, žiadne gates,
    matchne hodnotu "free knowledge".
 8. **E6** — primárny share text. Návrh:
-   `"Mám Internet IQ {score}/100. Lepší než {pct}% ľudí. Som {personality}. Skús aj ty:"`.
+   `"Mám subenai {score}/100. Lepší než {pct}% ľudí. Som {personality}. Skús aj ty:"`.
    Konzistentný naprieč Web Share API, share grid (E6.1) aj
    IG/TikTok caption (E6.2). Final wording: schválené tu.
 9. **E6** — UTM `campaign` value. Návrh: **`results`** —

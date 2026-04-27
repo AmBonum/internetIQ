@@ -2,8 +2,8 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { SocialShareGrid } from "@/components/quiz/SocialShareGrid";
 
-const url = "https://internetiq.sk/r/ABC12345";
-const text = "Som Internet Ninja v Internet IQ teste — 75/100. Zvládneš to lepšie? 👇";
+const url = "https://subenai.eu/r/ABC12345";
+const text = "Som Internet Ninja na subenai — 75/100. Zvládneš to lepšie? 👇";
 
 let openSpy: ReturnType<typeof vi.fn>;
 let writeTextSpy: ReturnType<typeof vi.fn>;

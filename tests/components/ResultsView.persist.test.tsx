@@ -98,6 +98,6 @@ describe("ResultsView.persistResult — answers payload (E3.1)", () => {
 
   it("renders the score reveal even before the insert resolves", async () => {
     renderResults(baseResult, [makeAnswer(0)]);
-    expect(screen.getByText(/Tvoj Internet IQ/i)).toBeInTheDocument();
+    expect(screen.getByText(/Tvoje skóre/i)).toBeInTheDocument();
   });
 });

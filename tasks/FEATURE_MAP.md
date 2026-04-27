@@ -1,4 +1,4 @@
-# FEATURE MAP – Internet IQ Test Platform
+# FEATURE MAP – subenai Platform
 
 > **Živý dokument.** Aktualizuj pri každom novom merge do `main`.
 > Posledná aktualizácia: 2026-04

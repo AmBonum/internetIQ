@@ -1,7 +1,7 @@
 # E10 — Sponsorship: Legal + Stripe architecture decisions
 
 **Status:** ✅ Sign-off pending PO confirmation (2026-04-27)
-**Author:** Internet IQ Test team / am.bonum s. r. o.
+**Author:** subenai team / am.bonum s. r. o.
 **Reviewer:** PO + voliteľne externý účtovník
 
 > Tento dokument zaznamenáva rozhodnutia urobené **pred** prvou riadkou
@@ -59,7 +59,7 @@ podstata zostáva paid service.
 - „Členský príspevok" by vyžadoval členské stanovy a register členov —
   out of scope pre MVP.
 
-**Dôsledok**: faktúrna položka znie **„Podpora rozvoja Internet IQ Test —
+**Dôsledok**: faktúrna položka znie **„Podpora rozvoja subenai —
 {oneoff|monthly}"**. Žiadne perks (Discord, early access) ktoré by
 posúvali interpretáciu na *spotrebiteľskú zmluvu o digitálnom obsahu*.
 
@@ -100,7 +100,7 @@ môže vynechať časť polí, ale ideme s plnou variantou):
   § 4 zákona č. 222/2004 Z. z."**
 - **Odberateľ**: meno, adresa, DIČ ak ho zákazník zadá (pre B2B)
 - **Dátum dodania, dátum vystavenia, číslo faktúry** (Stripe sequenčné)
-- **Položka**: „Podpora rozvoja Internet IQ Test — Jednorazová" / „Mesačná
+- **Položka**: „Podpora rozvoja subenai — Jednorazová" / „Mesačná
   X. v poradí (mes. obdobie {date_start}–{date_end})"
 - **Suma bez DPH = celková suma** (lebo nie sme platcom)
 - **Spôsob platby**: Karta / SEPA / Apple Pay (Stripe doplní)

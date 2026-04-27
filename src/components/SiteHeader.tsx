@@ -13,7 +13,7 @@ export function SiteHeader() {
   // (e.g. /test/firma/eshop) highlighting only the deepest registered
   // nav entry instead of every prefix.
   const activeTo = NAV_ITEMS.reduce<string | null>((acc, item) => {
-    const matches = pathname === item.to || (item.to !== "/" && pathname.startsWith(item.to + "/"));
+    const matches = pathname === item.to || pathname.startsWith(item.to + "/");
     if (!matches) return acc;
     if (!acc || item.to.length > acc.length) return item.to;
     return acc;
@@ -36,15 +36,9 @@ export function SiteHeader() {
         aria-label="Hlavná navigácia"
         className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-3"
       >
-        <Link
-          to="/"
-          className="flex items-center gap-2 text-sm font-bold tracking-tight text-foreground"
-          aria-label="Internet IQ Test — domov"
-        >
-          <span className="grid h-7 w-7 place-items-center rounded-md bg-primary text-primary-foreground">
-            iQ
-          </span>
-          <span className="hidden sm:inline">Internet IQ Test</span>
+        <Link to="/" className="flex items-center" aria-label="subenai — domov">
+          <img src="/favicon.svg" alt="" aria-hidden="true" className="h-7 w-7 sm:hidden" />
+          <img src="/logo.svg" alt="subenai" className="hidden sm:block h-7 w-auto" />
         </Link>
         <div className="flex items-center gap-1">
           {navItem("/test", "Test")}

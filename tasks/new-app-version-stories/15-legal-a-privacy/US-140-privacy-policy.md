@@ -22,7 +22,7 @@
 
 Privacy Policy je kľúčový právny dokument, ktorý musí byť dostupný pred akýmkoľvek
 zbieraním osobných dát. Vzťahuje sa na dvoch správcov dát: (1) prevádzkovateľ
-platformy (Internet IQ / koniec vlastníka) a (2) autor testu (spracovanie dát
+platformy (subenai / koniec vlastníka) a (2) autor testu (spracovanie dát
 respondentov). Dokument musí pokryť obe role (joint-controller alebo sub-processor
 vzťah musí byť explicitne riešený).
 

@@ -1,7 +1,7 @@
 import type { TestPack } from "@/content/test-packs";
 
-const SITE_ORIGIN = "https://internetiq.lvtesting.eu";
-const PUBLISHER_NAME = "Internet IQ Test";
+const SITE_ORIGIN = "https://subenai.lvtesting.eu";
+const PUBLISHER_NAME = "subenai";
 
 const INDUSTRY_LABEL: Record<TestPack["industry"], string> = {
   eshop: "E-shop",

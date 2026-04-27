@@ -4,21 +4,21 @@ import { CourseCard } from "@/components/courses/CourseCard";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 
-const SITE_ORIGIN = "https://internetiq.lvtesting.eu";
+const SITE_ORIGIN = "https://subenai.lvtesting.eu";
 
 export const Route = createFileRoute("/skolenia/")({
   head: () => {
     const url = `${SITE_ORIGIN}/kurzy`;
     return {
       meta: [
-        { title: "Bezplatné kurzy — Internet IQ Test" },
+        { title: "Bezplatné školenia — subenai" },
         {
           name: "description",
           content:
             "Krátke bezplatné kurzy o phishingu, scam SMS, telefónnych podvodoch a ochrane osobných údajov. Praktické príklady zo slovenského prostredia.",
         },
         { name: "robots", content: "index, follow, max-image-preview:large" },
-        { property: "og:title", content: "Bezplatné kurzy — Internet IQ Test" },
+        { property: "og:title", content: "Bezplatné školenia — subenai" },
         {
           property: "og:description",
           content: "Krátke bezplatné kurzy o digitálnej obozretnosti — slovenský kontext.",

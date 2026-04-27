@@ -399,7 +399,7 @@ zlyhajú na nepriamych voľbách.
 ### ✅ All decisions confirmed by PO (2026-04-27 follow-up)
 
 3. ~~**IBAN Tatra Banky**~~ ✅ **POTVRDENÝ** — zaznamenané pre Stripe registráciu, **nezapísané v repe** (Stripe dashboard / CF env vars iba)
-6. ~~**Označenie transakcie**~~ ✅ **„Podpora rozvoja Internet IQ Test"** (donation-style copy v UI; faktúrna položka „Podpora rozvoja Internet IQ Test — {oneoff|monthly}")
+6. ~~**Označenie transakcie**~~ ✅ **„Podpora rozvoja subenai"** (donation-style copy v UI; faktúrna položka „Podpora rozvoja subenai — {oneoff|monthly}")
 8. ~~**Mesačné levels**~~ ✅ **5 / 10 / 25 EUR/mes**
 10. ~~**Verejný `/sponzori` zoznam v MVP**~~ ✅ **ÁNO** + **každý sponzor si zvolí čo zobraziť** — granularne:
     - `display_name` (povinné ak chce byť na liste)

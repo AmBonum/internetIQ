@@ -52,7 +52,7 @@ export function withUtm(
  *
  * - `shareUrl` is the canonical link being shared (typically `/r/$shareId`).
  *   UTM params are attached automatically.
- * - `text` is the human-readable message ("Mám Internet IQ 75/100…"), shown
+ * - `text` is the human-readable message ("Som Internet Ninja na subenai — 75/100…"), shown
  *   pre-filled in the platform's compose UI where supported.
  */
 export function buildShareIntentUrl(
@@ -96,7 +96,7 @@ export function buildShareIntentUrl(
  */
 export function buildShareCaption(args: { score: number; personalityName: string }): string {
   const { score, personalityName } = args;
-  return `Som ${personalityName} v Internet IQ teste — ${score}/100. Zvládneš to lepšie? 👇`;
+  return `Som ${personalityName} na subenai — ${score}/100. Zvládneš to lepšie? 👇`;
 }
 
 /**

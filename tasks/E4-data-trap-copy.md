@@ -151,7 +151,7 @@ warning, kvôli false-positive prevention).
 | **Label v UI** | dve polia: "E-mail" + "Heslo" |
 | **Input type** | dual: `email` + `password` |
 | **Pattern** | oba filled v rámci rovnakého submitu / TrapDialogu |
-| **Trigger condition** | E-mail validný formát **AND** password non-empty **AND** field labels nereferujú "vlastný účet na internetiq.sk" (ktorý nemáme) |
+| **Trigger condition** | E-mail validný formát **AND** password non-empty **AND** field labels nereferujú "vlastný účet na subenai.eu" (ktorý nemáme) |
 | **Negative tests** | iba email bez hesla (single field), iba heslo bez emailu, dvojica vyplnená v reálnom auth dialógu | 
 | **Title** | ⚡ E-mail + heslo = kompletný login balíček |
 | **Body** | Dvojica e-mail + heslo je hlavný cieľ podvodov. Útočník ju otestuje na 50 najpopulárnejších službách (Google, Office 365, Netflix, Facebook, banka) a tam kde používaš rovnaké heslo, sa prihlási. Tomuto sa hovorí **credential stuffing** a 0,5–2 % pokusov vyjde. Riešenie: každá služba vlastné heslo (cez password manager) + 2FA na email a banku. |

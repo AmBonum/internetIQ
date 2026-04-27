@@ -4,7 +4,7 @@ import { Footer } from "@/components/Footer";
 export const Route = createFileRoute("/privacy")({
   head: () => ({
     meta: [
-      { title: "Zásady ochrany súkromia — Internet IQ Test" },
+      { title: "Zásady ochrany súkromia — subenai" },
       {
         name: "description",
         content:

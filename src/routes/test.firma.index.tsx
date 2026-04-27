@@ -6,7 +6,7 @@ import { TestPackCard } from "@/components/test-packs/TestPackCard";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 
-const SITE_ORIGIN = "https://internetiq.lvtesting.eu";
+const SITE_ORIGIN = "https://subenai.lvtesting.eu";
 
 export const Route = createFileRoute("/test/firma/")({
   head: () => {
@@ -14,7 +14,7 @@ export const Route = createFileRoute("/test/firma/")({
     const packs = listPublishedPacks();
     return {
       meta: [
-        { title: "Otestuj svoju branžu — Internet IQ Test" },
+        { title: "Otestuj svoju branžu — subenai" },
         {
           name: "description",
           content:
@@ -22,7 +22,7 @@ export const Route = createFileRoute("/test/firma/")({
         },
         { name: "robots", content: "index, follow, max-image-preview:large" },
         { name: "language", content: "sk-SK" },
-        { property: "og:title", content: "Otestuj svoju branžu — Internet IQ Test" },
+        { property: "og:title", content: "Otestuj svoju branžu — subenai" },
         {
           property: "og:description",
           content: "Predefinované testy digitálnej obozretnosti pre slovenské firmy podľa branže.",

@@ -13,7 +13,7 @@ import { dirname, resolve } from "node:path";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dirname, "..");
-const ORIGIN = "https://internetiq.lvtesting.eu";
+const ORIGIN = "https://subenai.lvtesting.eu";
 const TODAY = new Date().toISOString().slice(0, 10);
 
 const STATIC_ROUTES = [

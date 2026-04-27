@@ -8,7 +8,7 @@ const TestFlow = lazy(() =>
 export const Route = createFileRoute("/test/")({
   head: () => ({
     meta: [
-      { title: "Test prebieha · Internet IQ Test" },
+      { title: "Test prebieha · subenai" },
       {
         name: "description",
         content: "Odpovedaj rýchlo. Čas beží. 10 otázok. 90 sekúnd.",

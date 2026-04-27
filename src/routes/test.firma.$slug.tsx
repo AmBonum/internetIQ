@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Footer } from "@/components/Footer";
 import { buildPackQuizJsonLd, INDUSTRY_LABEL } from "@/lib/seo/quiz-jsonld";
 
-const SITE_ORIGIN = "https://internetiq.lvtesting.eu";
+const SITE_ORIGIN = "https://subenai.lvtesting.eu";
 const COPYRIGHT_HOLDER = "am.bonum s. r. o.";
 
 export const Route = createFileRoute("/test/firma/$slug")({
@@ -21,7 +21,7 @@ export const Route = createFileRoute("/test/firma/$slug")({
     const url = `${SITE_ORIGIN}/test/firma/${pack.slug}`;
     return {
       meta: [
-        { title: `${pack.title} — Internet IQ Test pre ${INDUSTRY_LABEL[pack.industry]}` },
+        { title: `${pack.title} — subenai pre ${INDUSTRY_LABEL[pack.industry]}` },
         { name: "description", content: pack.tagline },
         { name: "author", content: COPYRIGHT_HOLDER },
         { name: "robots", content: "index, follow, max-image-preview:large" },
@@ -31,7 +31,7 @@ export const Route = createFileRoute("/test/firma/$slug")({
         { property: "og:type", content: "website" },
         { property: "og:url", content: url },
         { property: "og:locale", content: "sk_SK" },
-        { property: "og:site_name", content: "Internet IQ Test" },
+        { property: "og:site_name", content: "subenai" },
         { name: "twitter:card", content: "summary_large_image" },
         { name: "twitter:title", content: pack.title },
         { name: "twitter:description", content: pack.tagline },

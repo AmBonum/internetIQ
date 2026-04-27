@@ -179,7 +179,7 @@ export function ResultsView({ result, answers, onRestart, passingThreshold, pass
     const url = shareUrl ?? window.location.origin;
     if (navigator.share) {
       try {
-        await navigator.share({ title: "Internet IQ Test", text, url });
+        await navigator.share({ title: "subenai", text, url });
       } catch {
         /* user cancelled */
       }
@@ -205,7 +205,7 @@ export function ResultsView({ result, answers, onRestart, passingThreshold, pass
       });
       const link = document.createElement("a");
       link.href = URL.createObjectURL(blob);
-      link.download = `internet-iq-${result.finalScore}.png`;
+      link.download = `subenai-${result.finalScore}.png`;
       link.click();
       setTimeout(() => URL.revokeObjectURL(link.href), 5000);
     } finally {
@@ -238,9 +238,7 @@ export function ResultsView({ result, answers, onRestart, passingThreshold, pass
     <div className="mx-auto max-w-2xl px-4 py-10">
       {/* Score reveal */}
       <div className="text-center">
-        <div className="text-xs uppercase tracking-wider text-muted-foreground">
-          Tvoj Internet IQ
-        </div>
+        <div className="text-xs uppercase tracking-wider text-muted-foreground">Tvoje skóre</div>
         <div className="mt-2 inline-flex items-baseline gap-2 font-display">
           <span className="text-7xl font-black sm:text-8xl tabular-nums">{animatedScore}</span>
           <span className="text-2xl text-muted-foreground">/ 100</span>

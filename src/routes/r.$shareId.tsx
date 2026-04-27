@@ -17,12 +17,12 @@ const AnswerReviewSection = lazy(() => import("@/components/quiz/AnswerReviewSec
 export const Route = createFileRoute("/r/$shareId")({
   head: ({ params }) => ({
     meta: [
-      { title: `Výsledok ${params.shareId} · Internet IQ Test` },
+      { title: `Výsledok ${params.shareId} · subenai` },
       {
         name: "description",
         content: "Pozri sa, ako dopadol — a otestuj sa aj ty.",
       },
-      { property: "og:title", content: "Internet IQ Test — výsledok" },
+      { property: "og:title", content: "subenai — výsledok" },
       {
         property: "og:description",
         content: "Pozri si výsledok a otestuj sa aj ty. 15 otázok, čas beží.",
@@ -157,6 +157,7 @@ export function SharePage({ shareId }: { shareId: string }) {
   }
 
   async function handleDownloadStory() {
+    if (!attempt) return;
     setDownloadingImg(true);
     try {
       const { drawIgStoryToCanvas } = await import("@/lib/quiz/share-image");
@@ -171,7 +172,7 @@ export function SharePage({ shareId }: { shareId: string }) {
       });
       const link = document.createElement("a");
       link.href = URL.createObjectURL(blob);
-      link.download = `internet-iq-${attempt.final_score}.png`;
+      link.download = `subenai-${attempt.final_score}.png`;
       link.click();
       window.setTimeout(() => URL.revokeObjectURL(link.href), 5000);
     } finally {

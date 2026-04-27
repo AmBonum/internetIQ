@@ -1,18 +1,18 @@
-# Internet IQ Test
+# subenai
 
 > 90-sekundový test slovenskej digitálnej obozretnosti. Reálne scam SMS, emaily, fake e-shopy a telefonické podvody. Ukáže ti, ktoré z nich by ťa dostali — a ako sa proti nim brániť.
 
-Internet IQ Test je bezplatný edukačný nástroj postavený ako rýchly kvíz: 15 otázok, 90 sekúnd, žiadna registrácia. Cieľ je dať návštevníkovi okamžitú spätnú väzbu o jeho schopnosti rozpoznať podvody, ktoré reálne kolujú na Slovensku — a nasmerovať ho ku konkrétnym návykom (2FA, password manager, overovanie URL).
+subenai je bezplatný edukačný nástroj postavený ako rýchly kvíz: 15 otázok, 90 sekúnd, žiadna registrácia. Cieľ je dať návštevníkovi okamžitú spätnú väzbu o jeho schopnosti rozpoznať podvody, ktoré reálne kolujú na Slovensku — a nasmerovať ho ku konkrétnym návykom (2FA, password manager, overovanie URL).
 
 Stránka je v slovenčine a cieli na slovenských používateľov internetu od 14 do 80+ rokov. Obsah pripravujeme z verejných zdrojov NBÚ, NCKB a polícia.sk.
 
 ## Hlavné stránky
 
-- [Domov a kvíz](https://internetiq.lvtesting.eu/): Spustenie testu, krátky popis a "Časté otázky".
-- [Test](https://internetiq.lvtesting.eu/test): Samotný 15-otázkový kvíz s časomierou a okamžitou recenziou.
-- [Kurzy](https://internetiq.lvtesting.eu/kurzy): Krátke bezplatné kurzy podľa kategórie podvodu (smishing, phishing, vishing, marketplace, investičné, romance, BEC, data hygiene).
-- [Cookies](https://internetiq.lvtesting.eu/cookies): Detailné zásady cookies (GDPR + ePrivacy + zákon č. 452/2021 Z. z.).
-- [Súkromie](https://internetiq.lvtesting.eu/privacy): Privacy policy, dátové toky, retention.
+- [Domov a kvíz](https://subenai.lvtesting.eu/): Spustenie testu, krátky popis a "Časté otázky".
+- [Test](https://subenai.lvtesting.eu/test): Samotný 15-otázkový kvíz s časomierou a okamžitou recenziou.
+- [Kurzy](https://subenai.lvtesting.eu/kurzy): Krátke bezplatné kurzy podľa kategórie podvodu (smishing, phishing, vishing, marketplace, investičné, romance, BEC, data hygiene).
+- [Cookies](https://subenai.lvtesting.eu/cookies): Detailné zásady cookies (GDPR + ePrivacy + zákon č. 452/2021 Z. z.).
+- [Súkromie](https://subenai.lvtesting.eu/privacy): Privacy policy, dátové toky, retention.
 
 ## Princípy a obmedzenia
 

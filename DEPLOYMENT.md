@@ -22,7 +22,7 @@ Ako rozbehať túto appku na **vlastnom hostingu zadarmo** (Cloudflare Pages + S
 1. V Lovable klikni vľavo na **Connectors** → **GitHub** → **Connect project**
 2. Autorizuj Lovable GitHub App
 3. Vyber účet/organizáciu
-4. Klikni **Create Repository** → vyber názov (napr. `internet-iq-test`)
+4. Klikni **Create Repository** → vyber názov (napr. `subenai`)
 
 ✅ Hotovo. Tvoj kód je teraz na GitHub a synchronizuje sa obojsmerne.
 
@@ -33,7 +33,7 @@ Ako rozbehať túto appku na **vlastnom hostingu zadarmo** (Cloudflare Pages + S
 1. Choď na **https://supabase.com** a klikni **Start your project**
 2. Sign up cez GitHub (najrýchlejšie)
 3. **New project**:
-   - Name: `internet-iq-test`
+   - Name: `subenai`
    - Database password: **vygeneruj silné heslo a ulož si ho**
    - Region: **Frankfurt (eu-central-1)** ← najbližšie k SK
    - Plan: **Free**
@@ -59,7 +59,7 @@ Ako rozbehať túto appku na **vlastnom hostingu zadarmo** (Cloudflare Pages + S
 
 1. Choď na **https://dash.cloudflare.com** → **Workers & Pages** → **Create application** → **Pages** → **Connect to Git**
 2. Vyber svoj GitHub účet, schvál Cloudflare prístup
-3. Vyber repo `internet-iq-test`
+3. Vyber repo `subenai`
 4. **Set up builds and deployments**:
    - Framework preset: **None** (alebo „Vite" ak je v zozname)
    - Build command: `bun install && bun run build`
@@ -73,7 +73,7 @@ Ako rozbehať túto appku na **vlastnom hostingu zadarmo** (Cloudflare Pages + S
    ```
 6. Klikni **Save and Deploy**
 
-Build trvá ~3-5 minút. Keď doběhne, dostaneš URL ako `internet-iq-test.pages.dev`.
+Build trvá ~3-5 minút. Keď doběhne, dostaneš URL ako `subenai.pages.dev`.
 
 ✅ **Otestuj appku na tej URL.** Ak funguje, ideš na vlastnú doménu.
 
@@ -83,7 +83,7 @@ Build trvá ~3-5 minút. Keď doběhne, dostaneš URL ako `internet-iq-test.page
 
 ### V Cloudflare Pages
 1. V Cloudflare projekte: **Custom domains** → **Set up a custom domain**
-2. Zadaj svoju doménu (napr. `internetiqtest.sk`)
+2. Zadaj svoju doménu (napr. `subenai.eu`)
 3. Cloudflare ti ukáže DNS záznamy, ktoré treba nastaviť
 
 ### Vo Websupporte (DNS manager)
@@ -99,7 +99,7 @@ Máš dve možnosti:
    ```
    Typ:   CNAME
    Názov: @  (alebo www)
-   Cieľ:  internet-iq-test.pages.dev
+   Cieľ:  subenai.pages.dev
    TTL:   3600
    ```
 
@@ -183,7 +183,7 @@ V dashboardi: Cloudflare Pages → tvoj projekt → **Settings** →
 | `EMAIL_FROM` | Plain text | `noreply@lvtesting.eu` |
 | `EMAIL_REPLY_TO` | Plain text | `segnities@gmail.com` |
 | `OPS_EMAIL` | Plain text | `segnities@gmail.com` |
-| `SITE_ORIGIN` | Plain text | `https://internetiq.lvtesting.eu` |
+| `SITE_ORIGIN` | Plain text | `https://subenai.lvtesting.eu` |
 
 ⚠️ Mark **Secret** type (nie Plain) všetky `*_KEY` / `*_SECRET` polia,
 aby sa neobjavili v build logoch.
@@ -199,7 +199,7 @@ npx wrangler pages dev -- npm run dev
 ### Krok 4 — Stripe webhook endpoint
 
 V Stripe Dashboard → Developers → Webhooks → **Add endpoint**:
-- URL: `https://internetiq.lvtesting.eu/api/stripe-webhook`
+- URL: `https://subenai.lvtesting.eu/api/stripe-webhook`
 - Events: `checkout.session.completed`, `invoice.paid`,
   `customer.subscription.{created,updated,deleted}`, `charge.refunded`
 - Skopíruj „Signing secret" (whsec_…) → vlož ako `STRIPE_WEBHOOK_SECRET`

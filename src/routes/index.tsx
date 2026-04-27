@@ -6,16 +6,16 @@ import { supabase } from "@/integrations/supabase/client";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Internet IQ Test — Zistíš, či by si prežil" },
+      { title: "subenai — Zistíš, či by si prežil" },
       {
         name: "description",
         content:
           "10 otázok. 90 sekúnd. Reálne scam správy, emaily a stránky. Zisti, či by si na internete prežil — alebo ťa scammeri rozoberú na súčiastky.",
       },
-      { property: "og:title", content: "Internet IQ Test" },
+      { property: "og:title", content: "subenai" },
       {
         property: "og:description",
-        content: "90 sekúnd. 10 otázok. Zisti svoj Internet IQ.",
+        content: "Be online, but safe.",
       },
     ],
   }),
@@ -54,7 +54,7 @@ function Index() {
           </div>
 
           <h1 className="text-balance text-5xl font-black leading-[1.05] tracking-tight sm:text-7xl">
-            Internet IQ Test
+            subenai
             <br />
             <span className="text-foreground">Zistíš, či by si prežil.</span>
           </h1>

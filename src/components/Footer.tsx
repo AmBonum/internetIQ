@@ -7,7 +7,7 @@ export function Footer() {
   return (
     <footer className="mt-24 border-t border-border/60 py-8 text-center text-sm text-muted-foreground">
       <p>
-        Internet IQ Test · spravené s 🍺 v Košiciach ·{" "}
+        subenai · spravené s 🍺 v Košiciach ·{" "}
         <Link to="/" className="hover:text-foreground transition-colors">
           O nás
         </Link>

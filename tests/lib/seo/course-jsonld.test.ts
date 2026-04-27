@@ -33,14 +33,14 @@ describe("buildCourseJsonLd", () => {
 
   it("URL points at the canonical /skolenia/<slug> path", () => {
     const json = buildCourseJsonLd(fixture);
-    expect(json.url).toBe("https://internetiq.lvtesting.eu/skolenia/test-course");
+    expect(json.url).toBe("https://subenai.lvtesting.eu/skolenia/test-course");
   });
 
   it("provider is the site Organization", () => {
     const json = buildCourseJsonLd(fixture);
     const provider = json.provider as { "@type": string; name: string };
     expect(provider["@type"]).toBe("Organization");
-    expect(provider.name).toBe("Internet IQ Test");
+    expect(provider.name).toBe("subenai");
   });
 
   it("serializes cleanly to JSON (no functions / undefined)", () => {

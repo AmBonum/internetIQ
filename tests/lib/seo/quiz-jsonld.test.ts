@@ -34,7 +34,7 @@ describe("buildPackQuizJsonLd", () => {
 
   it("URL points at canonical /test/firma/<slug>", () => {
     const json = buildPackQuizJsonLd(fixture);
-    expect(json.url).toBe("https://internetiq.lvtesting.eu/test/firma/fixture-pack");
+    expect(json.url).toBe("https://subenai.lvtesting.eu/test/firma/fixture-pack");
   });
 
   it("numberOfQuestions matches questionIds length", () => {

@@ -1,12 +1,12 @@
-# internetIQ
+# subenai
 
 > Test your scam-detection skills and see how internet-smart you really are.
 
-internetIQ is an interactive web app that teaches people how to recognize online scams — and lets them test their real-world awareness in a fast, fun, and shareable way.
+subenai is an interactive web app that teaches people how to recognize online scams — and lets them test their real-world awareness in a fast, fun, and shareable way.
 
 ---
 
-## 🚀 What is internetIQ?
+## 🚀 What is subenai?
 
 Every day, people fall for:
 - phishing emails and fake URLs
@@ -14,7 +14,7 @@ Every day, people fall for:
 - fraudulent e-shops
 - social engineering attacks
 
-internetIQ helps you:
+subenai helps you:
 - learn how these scams work
 - recognize warning signs
 - test your ability to detect them
@@ -58,7 +58,7 @@ Plus a fun rating like:
 ### 🔗 Share
 Challenge your friends:
 
-> “I scored 82 on internetIQ — can you beat me?”
+> “I scored 82 on subenai — can you beat me?”
 
 ---
 
@@ -76,7 +76,7 @@ Challenge your friends:
 
 Online scams are increasing — and most people are not prepared.
 
-internetIQ focuses on:
+subenai focuses on:
 - practical awareness (not theory)
 - real-world scenarios
 - fast learning through interaction
@@ -102,7 +102,7 @@ Planned:
 
 ## 🤝 Contributing
 
-You can help improve internetIQ by:
+You can help improve subenai by:
 
 - suggesting new scam scenarios
 - improving explanations
@@ -129,7 +129,7 @@ Your support helps:
 
 ## 🌍 Vision
 
-internetIQ aims to make basic digital safety knowledge accessible to everyone — not just technical users.
+subenai aims to make basic digital safety knowledge accessible to everyone — not just technical users.
 
 Because avoiding scams shouldn’t require expert knowledge.
 

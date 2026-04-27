@@ -7,11 +7,11 @@ import { CONSENT_VERSION } from "@/lib/consent";
 export const Route = createFileRoute("/cookies")({
   head: () => ({
     meta: [
-      { title: "Zásady používania cookies — Internet IQ Test" },
+      { title: "Zásady používania cookies — subenai" },
       {
         name: "description",
         content:
-          "Aké úložisko a cookies používa Internet IQ Test, na čo slúžia, ako dlho zostávajú a ako ich môžeš spravovať.",
+          "Aké úložisko a cookies používa subenai, na čo slúžia, ako dlho zostávajú a ako ich môžeš spravovať.",
       },
       { name: "robots", content: "index, follow" },
     ],

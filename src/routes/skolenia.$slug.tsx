@@ -7,8 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Footer } from "@/components/Footer";
 import { buildCourseJsonLd } from "@/lib/seo/course-jsonld";
 
-const SITE_ORIGIN = "https://internetiq.lvtesting.eu";
-const COPYRIGHT_HOLDER = "Internet IQ Test";
+const SITE_ORIGIN = "https://subenai.lvtesting.eu";
+const COPYRIGHT_HOLDER = "subenai";
 
 export const Route = createFileRoute("/skolenia/$slug")({
   loader: ({ params }) => {
@@ -21,7 +21,7 @@ export const Route = createFileRoute("/skolenia/$slug")({
     const url = `${SITE_ORIGIN}/skolenia/${course.slug}`;
     return {
       meta: [
-        { title: `${course.title} — Bezplatný kurz · Internet IQ Test` },
+        { title: `${course.title} — Bezplatný kurz · subenai` },
         { name: "description", content: course.tagline },
         { name: "author", content: COPYRIGHT_HOLDER },
         {
@@ -35,7 +35,7 @@ export const Route = createFileRoute("/skolenia/$slug")({
         { property: "og:type", content: "article" },
         { property: "og:url", content: url },
         { property: "og:locale", content: "sk_SK" },
-        { property: "og:site_name", content: "Internet IQ Test" },
+        { property: "og:site_name", content: "subenai" },
         { property: "article:published_time", content: course.publishedAt },
         { property: "article:modified_time", content: course.updatedAt },
         { property: "article:author", content: COPYRIGHT_HOLDER },
