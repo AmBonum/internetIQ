@@ -288,7 +288,7 @@ zlyhajú na nepriamych voľbách.
 |---|---|---|---|---|---|
 | [E8.1](./stories/E8.1-test-sets-migration.md) | `test_sets` migration + RLS (extended schema, forward-compat E12 stĺpce) | S | P2 | ✅ Done | — |
 | [E8.2](./stories/E8.2-builder-picker-ui.md) | `/test/zostav` composer UI (pack-preload + picker + threshold) | L | P2 | ✅ Done | E7.1 |
-| [E8.3](./stories/E8.3-zostava-route.md) | `/test/zostava/$id` shareable composer set | S | P2 | 🟡 Ready (E8.2 done) | — |
+| [E8.3](./stories/E8.3-zostava-route.md) | `/test/zostava/$id` shareable composer set | S | P2 | ✅ Done | — |
 
 ### Epic 9 — Question bank +100
 

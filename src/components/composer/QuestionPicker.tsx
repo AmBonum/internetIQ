@@ -113,7 +113,12 @@ export function QuestionPicker({ questions, selectedIds, onToggle }: Props) {
             const selected = selectedIds.has(q.id);
             const disabled = !selected && atMax;
             return (
-              <li key={q.id}>
+              // AC-10 native virtualization: content-visibility:auto skips
+              // paint + layout for off-screen items; contain-intrinsic-size
+              // gives the browser a height hint so the scrollbar stays
+              // accurate. Zero JS overhead vs react-window. Graceful fallback
+              // on older browsers — they just paint everything.
+              <li key={q.id} className="[content-visibility:auto] [contain-intrinsic-size:0_88px]">
                 <label
                   htmlFor={`pick-${q.id}`}
                   className={`flex cursor-pointer items-start gap-3 rounded-xl border p-3 transition-colors ${

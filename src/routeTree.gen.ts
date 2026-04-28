@@ -27,6 +27,7 @@ import { Route as SponzoriVsetciRouteImport } from './routes/sponzori.vsetci'
 import { Route as SkoleniaSlugRouteImport } from './routes/skolenia.$slug'
 import { Route as RShareIdRouteImport } from './routes/r.$shareId'
 import { Route as PodakovanieSessionIdRouteImport } from './routes/podakovanie.$sessionId'
+import { Route as TestZostavaIdRouteImport } from './routes/test.zostava.$id'
 
 const ZmenyRoute = ZmenyRouteImport.update({
   id: '/zmeny',
@@ -118,6 +119,11 @@ const PodakovanieSessionIdRoute = PodakovanieSessionIdRouteImport.update({
   path: '/podakovanie/$sessionId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TestZostavaIdRoute = TestZostavaIdRouteImport.update({
+  id: '/test/zostava/$id',
+  path: '/test/zostava/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -138,6 +144,7 @@ export interface FileRoutesByFullPath {
   '/skolenia/': typeof SkoleniaIndexRoute
   '/test/': typeof TestIndexRoute
   '/testy/': typeof TestyIndexRoute
+  '/test/zostava/$id': typeof TestZostavaIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -158,6 +165,7 @@ export interface FileRoutesByTo {
   '/skolenia': typeof SkoleniaIndexRoute
   '/test': typeof TestIndexRoute
   '/testy': typeof TestyIndexRoute
+  '/test/zostava/$id': typeof TestZostavaIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -179,6 +187,7 @@ export interface FileRoutesById {
   '/skolenia/': typeof SkoleniaIndexRoute
   '/test/': typeof TestIndexRoute
   '/testy/': typeof TestyIndexRoute
+  '/test/zostava/$id': typeof TestZostavaIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -201,6 +210,7 @@ export interface FileRouteTypes {
     | '/skolenia/'
     | '/test/'
     | '/testy/'
+    | '/test/zostava/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -221,6 +231,7 @@ export interface FileRouteTypes {
     | '/skolenia'
     | '/test'
     | '/testy'
+    | '/test/zostava/$id'
   id:
     | '__root__'
     | '/'
@@ -241,6 +252,7 @@ export interface FileRouteTypes {
     | '/skolenia/'
     | '/test/'
     | '/testy/'
+    | '/test/zostava/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -261,6 +273,7 @@ export interface RootRouteChildren {
   SkoleniaIndexRoute: typeof SkoleniaIndexRoute
   TestIndexRoute: typeof TestIndexRoute
   TestyIndexRoute: typeof TestyIndexRoute
+  TestZostavaIdRoute: typeof TestZostavaIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -391,6 +404,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PodakovanieSessionIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/test/zostava/$id': {
+      id: '/test/zostava/$id'
+      path: '/test/zostava/$id'
+      fullPath: '/test/zostava/$id'
+      preLoaderRoute: typeof TestZostavaIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -424,6 +444,7 @@ const rootRouteChildren: RootRouteChildren = {
   SkoleniaIndexRoute: SkoleniaIndexRoute,
   TestIndexRoute: TestIndexRoute,
   TestyIndexRoute: TestyIndexRoute,
+  TestZostavaIdRoute: TestZostavaIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
