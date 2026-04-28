@@ -13,18 +13,22 @@ export const Route = createFileRoute("/testy/")({
     const packs = listPublishedPacks();
     return {
       meta: [
-        { title: "Otestuj svoju branžu — subenai" },
+        { title: "Kyberbezpečnostné testy pre firmy podľa odvetvia — subenai" },
         {
           name: "description",
           content:
-            "Predefinované testy digitálnej obozretnosti pre slovenské firmy podľa branže. E-shop, gastro, IT, autoservis, verejné služby a ďalšie. 5–15 minút.",
+            "Phishing, podvodné SMS a online scamy — testy kybernetickej bezpečnosti pre e-shop, gastro, IT, autoservis a ďalšie odvetvia. Otestuj celý tím.",
         },
         { name: "robots", content: "index, follow, max-image-preview:large" },
         { name: "language", content: "sk-SK" },
-        { property: "og:title", content: "Otestuj svoju branžu — subenai" },
+        {
+          property: "og:title",
+          content: "Kyberbezpečnostné testy pre firmy podľa odvetvia — subenai",
+        },
         {
           property: "og:description",
-          content: "Predefinované testy digitálnej obozretnosti pre slovenské firmy podľa branže.",
+          content:
+            "Phishing, podvodné SMS a online scamy — testy kybernetickej bezpečnosti pre e-shop, gastro, IT, autoservis a ďalšie odvetvia.",
         },
         { property: "og:type", content: "website" },
         { property: "og:url", content: url },

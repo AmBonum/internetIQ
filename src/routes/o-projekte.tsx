@@ -31,7 +31,7 @@ export const Route = createFileRoute("/o-projekte")({
       {
         name: "description",
         content:
-          "Čo je projekt, prečo sponsorship a kam idú peniaze. Transparentne, bez paywallu, bez perks.",
+          "Bezplatný edukačný projekt o kybernetickej bezpečnosti pre slovenských používateľov a firmy. Bez reklám, bez paywallu — transparentne.",
       },
       { name: "robots", content: "index, follow" },
       { property: "og:title", content: "O projekte — subenai" },
@@ -42,7 +42,7 @@ export const Route = createFileRoute("/o-projekte")({
       },
       { property: "og:type", content: "website" },
       { property: "og:url", content: ABOUT_URL },
-      { name: "twitter:card", content: "summary" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [{ rel: "canonical", href: ABOUT_URL }],
     scripts: [

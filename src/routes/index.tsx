@@ -9,22 +9,43 @@ import {
 import { Footer } from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
 import { ROUTES } from "@/config/routes";
+import { SITE_ORIGIN } from "@/config/site";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "subenai — Otestuj sa, kým ťa otestuje podvodník" },
+      { title: "subenai — Bezplatný phishing test a kurzy digitálnej bezpečnosti" },
       {
         name: "description",
         content:
-          "10 otázok. 90 sekúnd. Reálne scam správy, emaily a stránky. Otestuj sa, kým ťa otestuje podvodník — bezplatne, bez registrácie.",
+          "Phishing, podvodné SMS, falošné e-shopy — 10 otázok, 90 sekúnd. Bezplatný test digitálnej bezpečnosti bez registrácie.",
       },
-      { property: "og:title", content: "subenai" },
+      { name: "robots", content: "index, follow, max-image-preview:large" },
+      { name: "language", content: "sk-SK" },
+      {
+        property: "og:title",
+        content: "subenai — Bezplatný phishing test a kurzy digitálnej bezpečnosti",
+      },
       {
         property: "og:description",
-        content: "Otestuj sa, kým ťa otestuje podvodník.",
+        content:
+          "Phishing, podvodné SMS, falošné e-shopy — 10 otázok, 90 sekúnd. Bezplatný test digitálnej bezpečnosti bez registrácie.",
+      },
+      { property: "og:type", content: "website" },
+      { property: "og:url", content: SITE_ORIGIN },
+      { property: "og:locale", content: "sk_SK" },
+      { name: "twitter:card", content: "summary" },
+      {
+        name: "twitter:title",
+        content: "subenai — Bezplatný phishing test a kurzy digitálnej bezpečnosti",
+      },
+      {
+        name: "twitter:description",
+        content:
+          "Phishing, podvodné SMS, falošné e-shopy — 10 otázok, 90 sekúnd. Bezplatný test digitálnej bezpečnosti bez registrácie.",
       },
     ],
+    links: [{ rel: "canonical", href: SITE_ORIGIN }],
   }),
   component: Index,
 });
