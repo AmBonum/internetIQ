@@ -1,17 +1,12 @@
 import { useEffect } from "react";
 import { useConsent } from "@/hooks/useConsent";
 
-const GA_MEASUREMENT_ID = "G-95QZ12WGFD";
-const GA_SCRIPT_ID = "ga4-gtag-script";
-
 declare global {
   interface Window {
     dataLayer?: unknown[];
     gtag?: (...args: unknown[]) => void;
   }
 }
-
-let configured = false;
 
 type ConsentValue = "granted" | "denied";
 
@@ -53,65 +48,8 @@ function buildConsentState(input: {
   };
 }
 
-function ensureGtagStub(needsDecision: boolean) {
-  if (typeof window === "undefined") return;
-  if (window.gtag) return;
-
-  window.dataLayer = window.dataLayer || [];
-  window.gtag = (...args: unknown[]) => {
-    window.dataLayer?.push(args);
-  };
-
-  window.gtag("consent", "default", {
-    ...deniedState(),
-    ...(needsDecision ? { wait_for_update: 500 } : {}),
-  });
-  window.gtag("set", "ads_data_redaction", true);
-  window.gtag("set", "url_passthrough", true);
-  window.gtag("js", new Date());
-}
-
-function loadScriptOnce(onLoad: () => void) {
-  if (typeof document === "undefined") return;
-
-  const existing = document.getElementById(GA_SCRIPT_ID) as HTMLScriptElement | null;
-  if (existing) {
-    if (existing.dataset.loaded === "true") {
-      onLoad();
-      return;
-    }
-    existing.addEventListener("load", onLoad, { once: true });
-    return;
-  }
-
-  const script = document.createElement("script");
-  script.id = GA_SCRIPT_ID;
-  script.async = true;
-  script.src = `https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`;
-  script.addEventListener(
-    "load",
-    () => {
-      script.dataset.loaded = "true";
-      onLoad();
-    },
-    { once: true },
-  );
-  document.head.appendChild(script);
-}
-
 export function GoogleAnalyticsManager() {
-  const { record, hydrated, needsDecision } = useConsent();
-
-  useEffect(() => {
-    ensureGtagStub(needsDecision);
-
-    loadScriptOnce(() => {
-      if (!configured) {
-        window.gtag?.("config", GA_MEASUREMENT_ID, { anonymize_ip: true });
-        configured = true;
-      }
-    });
-  }, [needsDecision]);
+  const { record, hydrated } = useConsent();
 
   useEffect(() => {
     if (!hydrated) return;

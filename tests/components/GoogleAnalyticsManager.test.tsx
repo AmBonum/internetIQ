@@ -29,46 +29,28 @@ function hasCall(
 
 beforeEach(() => {
   useConsentMock.mockReset();
-  const existing = document.getElementById("ga4-gtag-script");
-  if (existing) existing.remove();
-  delete window.gtag;
-  delete window.dataLayer;
+  window.dataLayer = [];
+  window.gtag = (...args: unknown[]) => {
+    window.dataLayer?.push(args);
+  };
 });
 
 describe("GoogleAnalyticsManager", () => {
-  it("sets denied defaults and injects gtag script even before hydration (advanced mode)", () => {
+  it("does not send consent update before hydration", () => {
     useConsentMock.mockReturnValue({
       hydrated: false,
-      needsDecision: true,
       record: null,
     });
 
     render(<GoogleAnalyticsManager />);
 
-    const script = document.getElementById("ga4-gtag-script") as HTMLScriptElement | null;
-    expect(script).not.toBeNull();
-    expect(script?.src).toContain("googletagmanager.com/gtag/js?id=G-95QZ12WGFD");
-
     const calls = getCalls();
-    expect(
-      hasCall(
-        calls,
-        "consent",
-        "default",
-        (arg) =>
-          typeof arg === "object" &&
-          arg !== null &&
-          (arg as { analytics_storage?: string; wait_for_update?: number }).analytics_storage ===
-            "denied" &&
-          (arg as { analytics_storage?: string; wait_for_update?: number }).wait_for_update === 500,
-      ),
-    ).toBe(true);
+    expect(hasCall(calls, "consent", "update")).toBe(false);
   });
 
   it("updates consent as denied when user has not granted analytics/marketing/preferences", () => {
     useConsentMock.mockReturnValue({
       hydrated: true,
-      needsDecision: false,
       record: {
         version: "1.2.1",
         timestamp: "2026-04-28T00:00:00.000Z",
@@ -102,7 +84,6 @@ describe("GoogleAnalyticsManager", () => {
   it("updates consent as granted based on user cookie settings and configures GA after script load", () => {
     useConsentMock.mockReturnValue({
       hydrated: true,
-      needsDecision: false,
       record: {
         version: "1.2.1",
         timestamp: "2026-04-28T00:00:00.000Z",
@@ -117,10 +98,6 @@ describe("GoogleAnalyticsManager", () => {
 
     render(<GoogleAnalyticsManager />);
 
-    const script = document.getElementById("ga4-gtag-script") as HTMLScriptElement | null;
-    expect(script).not.toBeNull();
-    script?.dispatchEvent(new Event("load"));
-
     const calls = getCalls();
     expect(
       hasCall(
@@ -133,17 +110,6 @@ describe("GoogleAnalyticsManager", () => {
           (arg as { analytics_storage?: string }).analytics_storage === "granted" &&
           (arg as { ad_storage?: string }).ad_storage === "granted" &&
           (arg as { functionality_storage?: string }).functionality_storage === "granted",
-      ),
-    ).toBe(true);
-    expect(
-      hasCall(
-        calls,
-        "config",
-        "G-95QZ12WGFD",
-        (arg) =>
-          typeof arg === "object" &&
-          arg !== null &&
-          (arg as { anonymize_ip?: boolean }).anonymize_ip === true,
       ),
     ).toBe(true);
   });
