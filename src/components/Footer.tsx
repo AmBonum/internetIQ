@@ -90,8 +90,8 @@ export function Footer() {
 
   return (
     <footer className="mx-auto mt-24 w-full max-w-5xl border-t border-border/60 pt-12 pb-8">
-      <div className="grid gap-10 sm:grid-cols-2 md:grid-cols-4">
-        <div className="space-y-3">
+      <div className="grid gap-10 text-center sm:grid-cols-2 sm:text-left md:grid-cols-4">
+        <div className="flex flex-col items-center gap-3 sm:items-start">
           <Link to={ROUTES.home} className="inline-flex items-center" aria-label="subenai — domov">
             <img src="/logo.svg" alt="subenai" className="h-8 w-auto" />
           </Link>
@@ -117,18 +117,6 @@ export function Footer() {
               v{CURRENT_VERSION}
             </Link>
           </p>
-          <br />
-          <p className="text-xs text-muted-foreground">
-            powered by{" "}
-            <a
-              href="https://www.lvtesting.eu"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-primary hover:text-foreground transition-colors"
-            >
-              lvtesting.eu
-            </a>
-          </p>
         </div>
 
         {COLUMNS.map((col) => (
@@ -137,11 +125,11 @@ export function Footer() {
       </div>
 
       {sponsors.length > 0 ? (
-        <div className="mt-10 border-t border-border/40 pt-6">
+        <div className="mt-10 border-t border-border/40 pt-6 text-center sm:text-left">
           <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
             Vďaka top sponzorom
           </h3>
-          <ul className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
+          <ul className="mt-3 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-sm sm:justify-start">
             {sponsors.map((s) => (
               <li key={s.id}>
                 {s.display_link ? (
@@ -173,7 +161,7 @@ export function Footer() {
         </div>
       ) : null}
 
-      <div className="mt-10 flex flex-col items-start justify-between gap-3 border-t border-border/40 pt-6 sm:flex-row sm:items-center">
+      <div className="mt-10 flex flex-col items-center justify-between gap-3 border-t border-border/40 pt-6 sm:flex-row sm:items-center">
         <p className="text-xs text-muted-foreground">
           © {new Date().getFullYear()} am.bonum s. r. o. · IČO 55 055 290
         </p>
@@ -185,6 +173,18 @@ export function Footer() {
           Nastavenia cookies
         </button>
       </div>
+
+      <p className="mt-6 text-center text-xs text-muted-foreground">
+        powered by{" "}
+        <a
+          href="https://www.lvtesting.eu"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-primary transition-colors hover:text-foreground"
+        >
+          lvtesting.eu
+        </a>
+      </p>
     </footer>
   );
 }
