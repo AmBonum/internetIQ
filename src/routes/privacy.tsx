@@ -158,6 +158,14 @@ function PrivacyPage() {
                     <td className="py-2">12 mesiacov</td>
                   </tr>
                   <tr className="border-b border-border/60">
+                    <td className="py-2 pr-4">
+                      Vlastné zostavy testov (Composer) — len ID otázok, prah úspešnosti, voliteľný
+                      názov zostavy
+                    </td>
+                    <td className="py-2 pr-4">Plnenie zmluvy / čl. 6 ods. 1 písm. b GDPR</td>
+                    <td className="py-2">12 mesiacov od vytvorenia</td>
+                  </tr>
+                  <tr className="border-b border-border/60">
                     <td className="py-2 pr-4">Analytika a vylepšovanie produktu</td>
                     <td className="py-2 pr-4">Súhlas / čl. 6 ods. 1 písm. a GDPR</td>
                     <td className="py-2">do 13 mesiacov / odvolanie súhlasu</td>
