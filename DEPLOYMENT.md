@@ -215,3 +215,126 @@ npm run audit:bundle
 Skript zachytí (a) tracker SDK kód v dist/, (b) leak `STRIPE_SECRET`,
 `whsec_`, `service_role` alebo `RESEND_API_KEY` references do client
 bundle. Akýkoľvek hit = exit 1.
+
+---
+
+## 🔎 SEO, indexácia a Google Search Console
+
+Toto je produkčný checklist pre `subenai.sk`, aby Google videl reálne HTML,
+našiel sitemapu a indexoval len tie stránky, ktoré majú byť verejné.
+
+### Čo má byť indexované
+
+Tieto routy majú zostať `index, follow` a majú byť v `sitemap.xml`:
+
+- `/`
+- `/testy`
+- `/testy/$slug`
+- `/skolenia`
+- `/skolenia/$slug`
+- `/podpora`
+- `/sponzori`
+- `/sponzori/vsetci`
+- `/spravovat-podporu`
+- `/privacy`
+- `/cookies`
+- `/o-projekte`
+- `/zmeny`
+- `/kontakt`
+
+### Čo nemá byť indexované
+
+Tieto routy musia zostať mimo indexu a nesmú byť v `sitemap.xml`:
+
+- `/test`
+- `/test/zostav`
+- `/test/zostava/$id`
+- `/podakovanie/$sessionId`
+- `/r/$shareId`
+
+Pravidlo je jednoduché: ak je route session-based, share-based alebo dočasne
+vypnutá, patrí `noindex` a nesmie sa objaviť v sitemape.
+
+### Stav v kóde
+
+- `public/robots.txt` povoľuje crawl a odkazuje na `https://subenai.sk/sitemap.xml`
+- `scripts/generate-sitemap.mjs` generuje len verejné routy
+- `/test` a `/test/zostav` sú už odstránené zo sitemap
+- dynamické súkromné routy ako `/podakovanie/$sessionId` a `/test/zostava/$id`
+  majú zostať `noindex, nofollow`
+
+Ak pridáš novú verejnú landing page, musíš spraviť všetky 3 kroky:
+
+1. doplniť route-level SEO meta (`title`, `description`, canonical, robots)
+2. pridať ju do `scripts/generate-sitemap.mjs`, ak je statická
+3. overiť, že nie je blokovaná Cloudflare challenge stránkou
+
+### Cloudflare: kritický krok pre Googlebot
+
+Ak `subenai.sk` vracia Cloudflare „Just a moment..." challenge aj pre
+Googlebot, Search Console neuvidí ani obsah, ani Google tag. V takom stave
+nepomôže ani správny sitemap, ani meta tagy.
+
+V Cloudflare nastav custom rule:
+
+1. `Security` → `WAF` → `Custom rules`
+2. `Create rule`
+3. Názov napr. `Allow verified search crawlers on subenai.sk`
+4. Expression:
+
+```txt
+(http.host eq "subenai.sk" and cf.bot_management.verified_bot and cf.verified_bot_category eq "Search Engine Crawler")
+```
+
+5. Action: `Skip`
+6. V skip zozname zapni aspoň:
+   - `All managed rules`
+   - `Super Bot Fight Mode`
+   - `Browser Integrity Check`
+   - `Security Level`
+
+Ak máš vlastné challenge/block pravidlá, uisti sa, že toto skip pravidlo je
+nad nimi v poradí.
+
+### Google Search Console checklist
+
+Po deployi a po Cloudflare zmene sprav toto:
+
+1. V Search Console maj property `https://subenai.sk/`
+2. V `Sitemaps` pošli `https://subenai.sk/sitemap.xml`
+3. Cez `URL Inspection` otestuj:
+   - `/`
+   - `/testy`
+   - `/skolenia`
+   - `/podpora`
+   - jeden konkrétny `/testy/$slug`
+   - jeden konkrétny `/skolenia/$slug`
+4. Ak `Live test` neukáže HTML z appky, ale challenge stránku, problém je stále
+   Cloudflare, nie React appka
+5. Ak HTML sedí, daj `Request indexing` len na kľúčové landing pages; ostatné si
+   Google doberie zo sitemap
+
+### Google tag: čo je nutné pre detekciu
+
+Pre GA4 na `subenai.sk` používame `G-95QZ12WGFD` v hybridnom režime:
+
+- bootstrap je priamo v `index.html`, aby ho Google vedel detegovať aj bez
+  hydratácie
+- consent update sa posiela z React appky podľa cookie voľby používateľa
+
+Ak Search Console alebo Tag Assistant tag nevidia, skontroluj v tomto poradí:
+
+1. či `subenai.sk` vracia reálny HTML dokument a nie challenge page
+2. či sa po deployi nasadil aktuálny `index.html`
+3. či CSP alebo blokovacie pravidlá nebránia načítaniu `gtag/js`
+
+### Operatívny checklist pred merge na `main`
+
+Pred produkčným merge pre novú verejnú stránku over:
+
+1. route má správny `title`, `meta description`, canonical a `robots`
+2. ak je verejná a statická, je v `scripts/generate-sitemap.mjs`
+3. ak je neverejná alebo tokenová, nie je v sitemape a má `noindex`
+4. `public/robots.txt` stále ukazuje na produkčnú sitemapu
+5. Cloudflare nepúšťa challenge pre verified search crawlers
+6. Search Console `Live test` vracia HTML z appky

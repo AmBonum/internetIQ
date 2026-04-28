@@ -1,7 +1,7 @@
 import { useMemo, useState, type FormEvent } from "react";
 import { createFileRoute, Link, useSearch } from "@tanstack/react-router";
 import { Footer } from "@/components/Footer";
-import { CONTACT_EMAIL } from "@/config/site";
+import { CONTACT_EMAIL, SITE_ORIGIN } from "@/config/site";
 import { ROUTES } from "@/config/routes";
 
 const ONEOFF_AMOUNTS = [5, 10, 25, 50, 100] as const;
@@ -26,10 +26,21 @@ export const Route = createFileRoute("/podpora")({
       {
         name: "description",
         content:
-          "Podpor rozvoj projektu subenai jednorazovo alebo mesačne. Faktúra, žiadne perks, žiadne dark patterns.",
+          "Podpor bezplatný vzdelávací projekt o digitálnej bezpečnosti — jednorazovo alebo mesačne. Faktúra na vyžiadanie.",
       },
       { name: "robots", content: "index, follow" },
+      { property: "og:title", content: "Podpora projektu — subenai" },
+      {
+        property: "og:description",
+        content:
+          "Podpor bezplatný vzdelávací projekt o digitálnej bezpečnosti — jednorazovo alebo mesačne.",
+      },
+      { property: "og:type", content: "website" },
+      { property: "og:url", content: `${SITE_ORIGIN}/podpora` },
+      { property: "og:locale", content: "sk_SK" },
+      { name: "twitter:card", content: "summary" },
     ],
+    links: [{ rel: "canonical", href: `${SITE_ORIGIN}/podpora` }],
   }),
   component: PodporaPage,
 });

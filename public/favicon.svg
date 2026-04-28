@@ -1,12 +1,12 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
   <defs>
     <linearGradient id="bg" gradientUnits="objectBoundingBox" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="oklch(0.88 0.22 130)"/>
-      <stop offset="100%" stop-color="oklch(0.78 0.18 165)"/>
+      <stop offset="0%" stop-color="#84FA3C"/>
+      <stop offset="100%" stop-color="#00E060"/>
     </linearGradient>
   </defs>
-  <rect width="64" height="64" rx="14" fill="url(#bg)"/>
+  <rect width="64" height="64" rx="16" fill="url(#bg)"/>
   <text x="50%" y="54%" text-anchor="middle" dominant-baseline="middle"
         font-family="ui-rounded, 'Nunito', 'Varela Round', system-ui, sans-serif"
-        font-weight="900" font-size="42" fill="oklch(0.18 0.05 265)">S</text>
+        font-weight="900" font-size="44" fill="#0A1628">S</text>
 </svg>

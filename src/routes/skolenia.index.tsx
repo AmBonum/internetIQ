@@ -20,20 +20,21 @@ const CATEGORY_LABEL: Record<CourseCategory, string> = {
 
 export const Route = createFileRoute("/skolenia/")({
   head: () => {
-    const url = `${SITE_ORIGIN}/kurzy`;
+    const url = `${SITE_ORIGIN}/skolenia`;
     return {
       meta: [
-        { title: "Bezplatné školenia — subenai" },
+        { title: "Školenia kybernetickej bezpečnosti zadarmo — subenai" },
         {
           name: "description",
           content:
-            "Krátke bezplatné kurzy o phishingu, scam SMS, telefónnych podvodoch a ochrane osobných údajov. Praktické príklady zo slovenského prostredia.",
+            "Bezplatné kurzy kybernetickej bezpečnosti: phishing, vishing, smishing, online podvody, ochrana údajov. Reálne príklady zo slovenského prostredia.",
         },
         { name: "robots", content: "index, follow, max-image-preview:large" },
-        { property: "og:title", content: "Bezplatné školenia — subenai" },
+        { property: "og:title", content: "Školenia kybernetickej bezpečnosti zadarmo — subenai" },
         {
           property: "og:description",
-          content: "Krátke bezplatné kurzy o digitálnej obozretnosti — slovenský kontext.",
+          content:
+            "Bezplatné kurzy kybernetickej bezpečnosti: phishing, vishing, smishing, online podvody. Reálne príklady zo slovenského prostredia.",
         },
         { property: "og:type", content: "website" },
         { property: "og:url", content: url },
