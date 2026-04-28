@@ -6,7 +6,6 @@ import { ROUTES } from "@/config/routes";
 
 const NAV_ITEMS = [
   { to: ROUTES.testy, label: "Testy" },
-  { to: ROUTES.zostav, label: "Zostav test" },
   { to: ROUTES.skolenia, label: "Školenia" },
   { to: ROUTES.podpora, label: "Podporiť projekt" },
   { to: ROUTES.kontakt, label: "Kontakt" },

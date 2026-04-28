@@ -18,7 +18,6 @@ const COLUMNS: { title: string; links: FooterLink[] }[] = [
     links: [
       { to: ROUTES.test, label: "Spustiť test" },
       { to: ROUTES.testy, label: "Sada testov" },
-      { to: ROUTES.zostav, label: "Zostav vlastný test" },
       { to: ROUTES.skolenia, label: "Školenia" },
     ],
   },
