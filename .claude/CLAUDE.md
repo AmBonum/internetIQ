@@ -45,6 +45,39 @@
   re-shows the banner; coordinate with the cross-cutting decision in
   `tasks/PLAN-*.md`.
 
+## Git / deployment workflow (since 2026-04-28)
+- **`main` = production**. Every push to `main` auto-deploys to
+  `subenai.sk` via Cloudflare Pages. Treat it as immutable except for
+  fully-vetted feature merges or critical hotfixes.
+- **Feature branches** for all new work. Naming: `feature/E<N>-<short-name>`
+  (e.g. `feature/E8-composer`, `feature/E12-edu-mode`). One branch per
+  Epic, not per story — multiple stories from the same epic land on
+  the same branch as separate commits.
+- **Branch from `main`**, push the branch, NEVER push directly to
+  `main` for new feature work. CF Pages auto-builds preview deploys for
+  feature branches; verify there before merging.
+- **Merge into `main` only when the WHOLE epic is at 100 %**: every
+  story in scope is `✅ Done`, lint 0/0, all tests green, build ✓,
+  privacy/cookies/CHANGELOG updated, fresh-context CR done. Partial
+  epics stay on the branch.
+- **Squash or merge commit** at the user's discretion when opening a PR;
+  the agent does not auto-merge. The agent stops at "branch pushed,
+  PR ready to open" and waits.
+- **Allowed direct-to-`main` exceptions** (single small commits, with
+  user confirmation):
+  1. Critical security/privacy hotfix that cannot wait for an epic.
+  2. Meta updates (this `CLAUDE.md`, top-level `README.md`,
+     `.gitignore`) that should propagate to all open branches.
+  3. Trivial typos in Slovak user-facing strings already in production.
+  Anything beyond these → branch.
+- **DB migrations on a branch are *code only* until merged.** Never run
+  the SQL against the production Supabase instance from a feature
+  branch — schema is pinned to `main`. The migration applies to prod
+  Supabase **only after** the PR is merged and the user runs the SQL
+  manually (or `supabase db push` if CLI is wired). The branch's
+  preview deploy will fail any feature requiring the new schema until
+  then; that is expected.
+
 ## Style
 - Slovak in user-facing strings, commit messages, story files. English
   in code identifiers, comments (when necessary), and CLAUDE.md.
