@@ -280,7 +280,7 @@ GRANT SELECT ON public.public_sponsors TO anon, authenticated;
 
 DROP VIEW IF EXISTS public.footer_sponsors;
 CREATE VIEW public.footer_sponsors AS
-SELECT DISTINCT s.id, s.display_name, s.display_link
+SELECT DISTINCT s.id, s.display_name, s.display_link, s.created_at
 FROM public.sponsors s
 LEFT JOIN public.subscriptions sub ON sub.sponsor_id = s.id AND sub.cancelled_at IS NULL
 WHERE s.show_in_footer = true AND s.display_name IS NOT NULL
