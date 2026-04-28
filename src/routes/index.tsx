@@ -315,7 +315,7 @@ function Index() {
             ].map((c) => (
               <div
                 key={c.title}
-                className="rounded-2xl border border-border/60 bg-card/70 p-5 shadow-card backdrop-blur"
+                className="rounded-2xl border border-border/60 bg-card/70 p-5 text-center shadow-card backdrop-blur sm:text-left"
               >
                 <div className="font-display text-4xl font-black text-primary">{c.n}</div>
                 <div className="mt-1 text-base font-semibold">{c.title}</div>
@@ -362,7 +362,7 @@ function Index() {
             aria-hidden="true"
             className="pointer-events-none absolute inset-0 bg-accent-gradient opacity-[0.08]"
           />
-          <div className="relative flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+          <div className="relative flex flex-col items-center gap-6 text-center md:flex-row md:items-center md:justify-between md:text-left">
             <div className="max-w-xl space-y-3">
               <p className="text-xs font-bold uppercase tracking-wider text-primary">
                 Misia projektu
@@ -398,7 +398,7 @@ function Index() {
         {/* Sponsors thank-you — small acknowledgement block */}
         <section
           aria-labelledby="sponsors-h"
-          className="mt-12 flex flex-col items-start justify-between gap-4 rounded-2xl border border-border/60 bg-card/50 p-6 sm:flex-row sm:items-center"
+          className="mt-12 flex flex-col items-center justify-between gap-4 rounded-2xl border border-border/60 bg-card/50 p-6 text-center sm:flex-row sm:items-center sm:text-left"
         >
           <div className="space-y-1">
             <p className="text-2xl" aria-hidden="true">
@@ -473,7 +473,7 @@ function FeatureCard({ to, emoji, title, description, cta }: FeatureCardProps) {
   return (
     <Link
       to={to}
-      className="group flex h-full flex-col rounded-2xl border border-border/60 bg-card/70 p-6 shadow-card backdrop-blur transition hover:border-primary/50 hover:bg-card"
+      className="group flex h-full flex-col items-center rounded-2xl border border-border/60 bg-card/70 p-6 text-center shadow-card backdrop-blur transition hover:border-primary/50 hover:bg-card md:items-start md:text-left"
     >
       <div className="text-3xl" aria-hidden="true">
         {emoji}
