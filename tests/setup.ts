@@ -11,9 +11,10 @@ if (typeof window !== "undefined") {
   if (!Element.prototype.scrollIntoView) {
     Element.prototype.scrollIntoView = () => {};
   }
-  if (!window.scrollTo) {
-    window.scrollTo = () => {};
-  }
+  // jsdom DOES define window.scrollTo, but its implementation logs
+  // "Not implemented" to stderr — overwrite unconditionally so QuestionCard's
+  // scroll-reset effect (and similar UX hooks) doesn't pollute test output.
+  window.scrollTo = (() => {}) as typeof window.scrollTo;
 }
 
 afterEach(() => {

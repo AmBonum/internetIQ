@@ -72,7 +72,9 @@ vi.mock("@/components/quiz/TestFlow", () => ({
   },
 }));
 
-const clipboardMock = vi.hoisted(() => ({ write: vi.fn(async () => true) }));
+const clipboardMock = vi.hoisted(() => ({
+  write: vi.fn<(text: string) => Promise<boolean>>(async () => true),
+}));
 vi.mock("@/lib/clipboard", () => ({
   copyToClipboard: (text: string) => clipboardMock.write(text),
 }));

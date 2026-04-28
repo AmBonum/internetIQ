@@ -161,7 +161,11 @@ export async function buildCheckoutSession(
       ? "Podpora rozvoja subenai — jednorazovo"
       : `Podpora rozvoja subenai — ${input.amountEur} €/mes`;
 
-  const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [
+  // Stripe's index re-export collapses Checkout.SessionCreateParams to a type
+  // alias, so the nested LineItem namespace path is gone — index into the
+  // line_items field instead, which keeps full schema fidelity.
+  type LineItem = NonNullable<Stripe.Checkout.SessionCreateParams["line_items"]>[number];
+  const lineItems: LineItem[] = [
     {
       quantity: 1,
       price_data: {

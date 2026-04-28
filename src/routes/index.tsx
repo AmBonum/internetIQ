@@ -298,7 +298,7 @@ function Index() {
           <div className="mt-6 grid gap-4 sm:grid-cols-3">
             {[
               {
-                n: "10",
+                n: "15",
                 title: "otázok",
                 sub: "phishing, scam, fake stránky",
               },
@@ -309,8 +309,8 @@ function Index() {
               },
               {
                 n: "1",
-                title: "profil",
-                sub: "zistíš, aký user si",
+                title: "test",
+                sub: "zistíš, aký používateľ si",
               },
             ].map((c) => (
               <div
@@ -373,8 +373,9 @@ function Index() {
               <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">
                 Robíme to preto, aby aj seniori, dôchodcovia a ne-technickí používatelia vedeli
                 rozpoznať podvod skôr, než ich pripraví o peniaze. Bez reklám. Bez paywallu.
-                Príspevok od <strong className="text-foreground">5 € mesačne</strong> alebo
-                jednorazovo pomáha pokryť hosting, novú tvorbu obsahu a údržbu.
+                Príspevok od{" "}
+                <strong className="text-foreground">5 € mesačne alebo jednorazovo</strong> pomáha
+                pokryť hosting, novú tvorbu obsahu a údržbu.
               </p>
             </div>
             <div className="flex flex-col gap-3 sm:flex-row md:flex-col">

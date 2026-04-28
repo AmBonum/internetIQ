@@ -17,7 +17,12 @@ export interface Env {
 
 export const SIGNATURE_TOLERANCE_SECONDS = 300;
 export const MAX_AML_AMOUNT_EUR = 500;
-export const STRIPE_API_VERSION = "2024-09-30.acacia" as Stripe.LatestApiVersion;
+// We intentionally pin an older API version (2024-09-30.acacia) for webhook
+// payload-shape stability. The Stripe SDK types `apiVersion` as the literal
+// of its bundled `LatestApiVersion`, so we cast through unknown — Stripe
+// accepts older versions at runtime.
+type StripeApiVersion = NonNullable<ConstructorParameters<typeof Stripe>[1]>["apiVersion"];
+export const STRIPE_API_VERSION = "2024-09-30.acacia" as unknown as StripeApiVersion;
 
 interface RequestContext {
   request: Request;
@@ -154,7 +159,10 @@ async function handleInvoicePaid(
   invoice: Stripe.Invoice,
 ): Promise<ProcessResult> {
   const customerId = readId(invoice.customer);
-  const paymentIntentId = readId(invoice.payment_intent);
+  // Stripe ≥17 removed `invoice.payment_intent` in favour of the
+  // `invoice.payments` ApiList — read the first paid InvoicePayment's
+  // payment_intent id (subscription invoices currently have exactly one).
+  const paymentIntentId = readId(invoice.payments?.data?.[0]?.payment?.payment_intent);
   const amountEur = centsToEur(invoice.amount_paid ?? 0);
 
   if (!customerId || !paymentIntentId) {

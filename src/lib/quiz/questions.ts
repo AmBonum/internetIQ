@@ -2384,6 +2384,1030 @@ export const QUESTIONS: Question[] = [
     explanation:
       "Erasmus+ granty sa prideľujú výhradne cez koordinátora na škole — bez pred-poplatkov, bez emailového výberu mimo prihlásenia. Falošné štipendiá fungujú na princípe advance fee fraud.",
   },
+
+  // ============ E9.2 — Legit SMS / borderline (honeypot, 20× kind:"sms") ============
+  // 8× Slovenská pošta
+  {
+    id: "h-sms-posta-legit-1",
+    category: "honeypot",
+    difficulty: "easy",
+    prompt: "Reagoval by si na túto SMS?",
+    visual: {
+      kind: "sms",
+      sender: "PostaSK",
+      body: "Vasa zasielka EE123456789SK je pripravena na vyzdvihnutie na poste Bratislava-Petrzalka do 7 dni.",
+    },
+    options: [
+      ok("a", "Áno — bežná notifikácia o pripravenej zásielke"),
+      bad("b", "Nie — vyzerá podozrivo", "minor"),
+    ],
+    explanation:
+      "Slovenská pošta posiela informačné SMS o pripravených zásielkach so sledovacím kódom (EE…SK). Žiadny link, žiadna platba. Aj keď je SMS legit, sledovanie si vždy over zadaním kódu na posta.sk ručne, nie cez link v SMS.",
+  },
+  {
+    id: "h-sms-posta-legit-2",
+    category: "honeypot",
+    difficulty: "easy",
+    prompt: "Reagoval by si na túto SMS?",
+    visual: {
+      kind: "sms",
+      sender: "BalikoBOX",
+      body: "Vyzdvihovaci kod: 482913. Platnost 48 hodin. Lokacia: BalikoBOX OC Aupark.",
+    },
+    options: [ok("a", "Áno — kód použijem pri boxe"), bad("b", "Nie — vyzerá podozrivo", "minor")],
+    explanation:
+      "BalikoBOX kódy sú 6-miestne čísla bez akéhokoľvek linku. SMS slúži len ako notifikácia, kód zadáš priamo na termináli. Žiadna platba sa cez SMS nikdy nepýta.",
+  },
+  {
+    id: "h-sms-posta-legit-3",
+    category: "honeypot",
+    difficulty: "medium",
+    prompt: "Reagoval by si na túto SMS?",
+    visual: {
+      kind: "sms",
+      sender: "Slovenska posta",
+      body: "Doruceny doporuceny list, prevzatie potvrdte podpisom u doruchovatela. ID listu: RR0091238SK.",
+    },
+    options: [ok("a", "Áno — počkám na doručovateľa"), bad("b", "Nie — vyzerá podozrivo", "minor")],
+    explanation:
+      "Notifikácia o doporučenom liste je štandardná služba pošty pre adresátov, ktorí majú aktivovanú SMS-notifikáciu. Žiadny link, žiadna platba. Trackovanie cez ID listu je možné len cez posta.sk.",
+  },
+  {
+    id: "h-sms-posta-legit-4",
+    category: "honeypot",
+    difficulty: "medium",
+    prompt: "Klikol by si na link v tejto SMS?",
+    visual: {
+      kind: "sms",
+      sender: "PostaSK",
+      body: "Sledovanie zasielky CC918273645SK:",
+      link: "https://tandt.posta.sk/?id=CC918273645SK",
+    },
+    options: [
+      ok("a", "Áno — `tandt.posta.sk` je oficiálna subdoména pošty"),
+      bad("b", "Nie — vyzerá podozrivo", "minor"),
+    ],
+    explanation:
+      "tandt.posta.sk (track-and-trace) je oficiálna subdoména Slovenskej pošty. Doménu vlastní podľa SK-NIC pošta. Aj tak: bezpečnejší zvyk je otvoriť posta.sk ručne a vložiť kód.",
+  },
+  {
+    id: "h-sms-posta-legit-5",
+    category: "honeypot",
+    difficulty: "easy",
+    prompt: "Reagoval by si na túto SMS?",
+    visual: {
+      kind: "sms",
+      sender: "Posta",
+      body: "Zasielka EH4438122SK bola dorucena dna 28.04.2026 o 14:32, prevzala adresat.",
+    },
+    options: [
+      ok("a", "Áno — len potvrdenie o doručení, beriem na vedomie"),
+      bad("b", "Nie — vyzerá podozrivo", "minor"),
+    ],
+    explanation:
+      "Pošta posiela potvrdzujúce SMS po úspešnom doručení. Bez linku, bez akcie zo strany prijímateľa. Iba informačná hodnota.",
+  },
+  {
+    id: "h-sms-posta-legit-6",
+    category: "honeypot",
+    difficulty: "medium",
+    prompt: "Reagoval by si na túto SMS?",
+    visual: {
+      kind: "sms",
+      sender: "PostaSK",
+      body: "Vasa zasielka cak na poste do 02.05.2026. Po tomto datume bude vratena odosielatelovi.",
+    },
+    options: [
+      ok("a", "Áno — pôjdem na poštu si prevziať"),
+      bad("b", "Nie — vyzerá podozrivo", "minor"),
+    ],
+    explanation:
+      "Pripomienka pred uplynutím odbernej lehoty (zvyčajne 14 dní) je štandard pre nevyzdvihnuté zásielky. Žiadny link, žiadny doplatok. Treba ísť osobne na pobočku.",
+  },
+  {
+    id: "h-sms-posta-legit-7",
+    category: "honeypot",
+    difficulty: "hard",
+    prompt: "Klikol by si na link v tejto SMS?",
+    visual: {
+      kind: "sms",
+      sender: "PostaSK",
+      body: "Doplatok za zasielku zo zahranicia: 1,80 EUR. Detail a platba:",
+      link: "https://eshop.posta.sk/colne-doplatky/EE883",
+    },
+    options: [
+      ok("a", "Áno — `eshop.posta.sk` je oficiálna doména pre platby pošty"),
+      bad("b", "Nie — vyzerá podozrivo", "minor"),
+    ],
+    explanation:
+      "Doplatky za clo/colné poplatky pri zásielkach zo zahraničia sú reálne — pošta ich rieši cez eshop.posta.sk. Suma 1,80 EUR je v korelácii s realitou (pri scamoch býva 1,99 €). Aj tak: doménu si over otvorením posta.sk ručne, prejdi do sekcie doplatkov.",
+  },
+  {
+    id: "h-sms-posta-legit-8",
+    category: "honeypot",
+    difficulty: "easy",
+    prompt: "Reagoval by si na túto SMS?",
+    visual: {
+      kind: "sms",
+      sender: "Posta",
+      body: "Vyzdvihnutie zasielky moznost predlzit. Volajte 0850 122 413.",
+    },
+    options: [
+      ok("a", "Áno — zavolám zo svojho telefónu na číslo z webu pošty"),
+      bad("b", "Nie — vyzerá podozrivo", "minor"),
+    ],
+    explanation:
+      "0850 122 413 je oficiálne info-číslo Slovenskej pošty (overiteľné na posta.sk). Aj tak: pred zavolaním si číslo skontroluj na oficiálnom webe — útočník mohol číslo v SMS zmeniť.",
+  },
+
+  // 6× banky (OTP, potvrdenia transakcií, 3DS)
+  {
+    id: "h-sms-bank-legit-1",
+    category: "honeypot",
+    difficulty: "easy",
+    prompt: "Reagoval by si na túto SMS?",
+    visual: {
+      kind: "sms",
+      sender: "CSOB",
+      body: "Overovaci kod: 472918. Nezdielajte ho s nikym, ani s pracovnikom banky.",
+    },
+    options: [
+      ok("a", "Áno — kód zadám len v aplikácii / na webe csob.sk, ktoré som otvoril sám"),
+      bad("b", "Nie — vyzerá podozrivo", "minor"),
+    ],
+    explanation:
+      "OTP od ČSOB príde, keď si práve potvrdzuješ prihlásenie alebo platbu, ktorú si sám iniciaval. Bez linku, varovanie pred zdieľaním. Ak ti príde kód a NIČ si nerobil, znamená to, že niekto skúša prihlásenie tvojím účtom — vtedy banku ihneď kontaktuj.",
+  },
+  {
+    id: "h-sms-bank-legit-2",
+    category: "honeypot",
+    difficulty: "medium",
+    prompt: "Reagoval by si na túto SMS?",
+    visual: {
+      kind: "sms",
+      sender: "Tatra banka",
+      body: "Platba 25,40 EUR v TESCO BRATISLAVA bola autorizovana z karty *4821 dna 28.04 o 17:14.",
+    },
+    options: [
+      ok("a", "Áno — len notifikácia o mojej vlastnej platbe"),
+      bad("b", "Nie — vyzerá podozrivo", "minor"),
+    ],
+    explanation:
+      "Tatra banka posiela transakčné notifikácie po prebehnutej platbe. Bez akcie. Skontroluj posledné 4 čísla karty — keď nesedia, hneď zablokuj kartu cez aplikáciu.",
+  },
+  {
+    id: "h-sms-bank-legit-3",
+    category: "honeypot",
+    difficulty: "easy",
+    prompt: "Reagoval by si na túto SMS?",
+    visual: {
+      kind: "sms",
+      sender: "VUB",
+      body: "3D Secure kod: 882134. Pre potvrdenie platby AMAZON 47,90 EUR. Platnost 5 min.",
+    },
+    options: [
+      ok("a", "Áno — práve som platil na Amazone, kód zadám"),
+      bad("b", "Nie — vyzerá podozrivo", "minor"),
+    ],
+    explanation:
+      "3D Secure kód príde od banky pri online platbe. Pravidlo: zadaj len keď SI naozaj platil a vidíš správnu sumu + obchodníka. Ak suma alebo obchodník nesedí — kód NEZADAJ a kartu okamžite zablokuj.",
+  },
+  {
+    id: "h-sms-bank-legit-4",
+    category: "honeypot",
+    difficulty: "medium",
+    prompt: "Reagoval by si na túto SMS?",
+    visual: {
+      kind: "sms",
+      sender: "SLSP",
+      body: "Vyplata mzdy 1234,56 EUR pripisana na ucet *7821 dna 28.04.2026.",
+    },
+    options: [
+      ok("a", "Áno — moja výplata, len beriem na vedomie"),
+      bad("b", "Nie — vyzerá podozrivo", "minor"),
+    ],
+    explanation:
+      "SLSP posiela notifikácie o pripísaných platbách. Žiadny link, žiadna akcia — iba informácia. Suma + posledné 4 čísla účtu by mali sedieť s tvojím skutočným stavom.",
+  },
+  {
+    id: "h-sms-bank-legit-5",
+    category: "honeypot",
+    difficulty: "medium",
+    prompt: "Reagoval by si na túto SMS?",
+    visual: {
+      kind: "sms",
+      sender: "mBank",
+      body: "Pridanie noveho prijemcu Jan Novak SK12 1100 0000 0029 1234 5678 v aplikacii mBank. Kod: 661482.",
+    },
+    options: [
+      ok("a", "Áno — práve som v appke pridával príjemcu, kód zadám"),
+      bad("b", "Nie — vyzerá podozrivo", "minor"),
+    ],
+    explanation:
+      "mBank potvrdzuje pridanie nového príjemcu OTP kódom. Pravidlo: ak SI práve nepridával príjemcu a kód príde, NIEKTO skúša ovládnuť tvoj účet — kontaktuj banku okamžite cez číslo z karty (nie z SMS).",
+  },
+  {
+    id: "h-sms-bank-legit-6",
+    category: "honeypot",
+    difficulty: "easy",
+    prompt: "Reagoval by si na túto SMS?",
+    visual: {
+      kind: "sms",
+      sender: "FioBanka",
+      body: "Vyber 100 EUR z bankomatu BRATISLAVA SLOVNAFT z karty *3344 dna 28.04 o 18:42.",
+    },
+    options: [
+      ok("a", "Áno — práve som vyberal, len potvrdenie"),
+      bad("b", "Nie — vyzerá podozrivo", "minor"),
+    ],
+    explanation:
+      "Fio posiela notifikácie o výberoch. Žiadny link, len informácia o tvojej akcii. Ak miesto / suma / čas nesedia — kartu hneď blokuj.",
+  },
+
+  // 4× úrady (FS, slovensko.sk, SP, ePN)
+  {
+    id: "h-sms-urad-legit-1",
+    category: "honeypot",
+    difficulty: "medium",
+    prompt: "Reagoval by si na túto SMS?",
+    visual: {
+      kind: "sms",
+      sender: "FinSprava",
+      body: "Vase danove priznanie typ B za rok 2025 bolo spracovane. Preplatok 87,40 EUR bude pripisany na ucet do 30 dni.",
+    },
+    options: [
+      ok("a", "Áno — len informácia o spracovaní môjho priznania"),
+      bad("b", "Nie — vyzerá podozrivo", "minor"),
+    ],
+    explanation:
+      "Finančná správa posiela informačné SMS po spracovaní priznania, ak má daňovník aktívnu SMS-notifikáciu cez slovensko.sk. Žiadny link, žiadna platba — preplatok sa pripíše na účet, ktorý si uviedol v priznaní. Ak chceš overiť detail, prihlás sa na pfs.financnasprava.sk ručne.",
+  },
+  {
+    id: "h-sms-urad-legit-2",
+    category: "honeypot",
+    difficulty: "hard",
+    prompt: "Reagoval by si na túto SMS?",
+    visual: {
+      kind: "sms",
+      sender: "slovensko.sk",
+      body: "V eDesk schranke mate nove podanie. Pre zobrazenie sa prihlaste cez eID na slovensko.sk.",
+    },
+    options: [
+      ok("a", "Áno — prihlásim sa cez eID na slovensko.sk ručne"),
+      bad("b", "Nie — vyzerá podozrivo", "minor"),
+    ],
+    explanation:
+      "slovensko.sk posiela notifikácie o doručených úradných správach. SMS sama o sebe žiadny link neobsahuje — prihlasuje sa cez eID priamo na slovensko.sk. Útočník nedokáže obísť eID autentifikáciu.",
+  },
+  {
+    id: "h-sms-urad-legit-3",
+    category: "honeypot",
+    difficulty: "medium",
+    prompt: "Reagoval by si na túto SMS?",
+    visual: {
+      kind: "sms",
+      sender: "SocPoist",
+      body: "Nemocenske za obdobie 14.04-25.04.2026 vo vyske 312,80 EUR vyplatene dna 28.04.2026.",
+    },
+    options: [
+      ok("a", "Áno — moje nemocenské, len potvrdenie"),
+      bad("b", "Nie — vyzerá podozrivo", "minor"),
+    ],
+    explanation:
+      "Sociálna poisťovňa informuje o vyplatení dávky cez SMS, ak má poistenec aktívnu notifikáciu. Bez linku — informácia smeruje k bankovej notifikácii, ktorá ju potvrdí pohybom na účte.",
+  },
+  {
+    id: "h-sms-urad-legit-4",
+    category: "honeypot",
+    difficulty: "medium",
+    prompt: "Reagoval by si na túto SMS?",
+    visual: {
+      kind: "sms",
+      sender: "ePN",
+      body: "Lekar Vam dnes vystavil ePN c. 2026/04/8821, platnost od 28.04.2026. Detaily v aplikacii eZdravie.",
+    },
+    options: [
+      ok("a", "Áno — môj lekár, otvorím eZdravie ručne"),
+      bad("b", "Nie — vyzerá podozrivo", "minor"),
+    ],
+    explanation:
+      "ePN (elektronická PN) sa vystavuje cez NCZI a notifikuje pacienta SMS. Žiadny link — detail si pacient otvorí v aplikácii eZdravie / na ezdravie.sk po prihlásení cez eID.",
+  },
+
+  // 2× borderline (vyžaduje rozhodnutie)
+  {
+    id: "h-sms-border-1",
+    category: "honeypot",
+    difficulty: "hard",
+    prompt: "Klikol by si na link v tejto SMS?",
+    visual: {
+      kind: "sms",
+      sender: "Posta",
+      body: "Vasa zasielka prosla colnou kontrolou. Sledovanie:",
+      link: "https://tandt.posta.sk/?id=RA8821736SK",
+    },
+    options: [
+      ok("a", "Áno — `tandt.posta.sk` je legit subdoména, kód si overím"),
+      bad("b", "Nie — vyzerá podozrivo", "minor"),
+    ],
+    explanation:
+      "Doména `tandt.posta.sk` je oficiálna track-and-trace pošty. Pri zásielkach zo zahraničia po colnom konaní príde takáto notifikácia. Tip: scam by zvyčajne použil doménu typu `posta-sk.tracking.eu` alebo `posta-info.com` — overuj vlastnícky koreň.",
+  },
+  {
+    id: "h-sms-border-2",
+    category: "honeypot",
+    difficulty: "hard",
+    prompt: "Klikol by si na link v tejto SMS?",
+    visual: {
+      kind: "sms",
+      sender: "CSOB",
+      body: "Detegovane neobvykle prihlasenie z noveho zariadenia (Praha, CZ). Ak ste to neboli vy:",
+      link: "https://www.csob.sk/security/zablokuj-pristup",
+    },
+    options: [
+      ok("a", "Áno — `csob.sk` je legit, ihneď riešim"),
+      bad("b", "Nie — vyzerá podozrivo", "minor"),
+    ],
+    explanation:
+      "csob.sk je oficiálna doména ČSOB s vlastníctvom v SK-NIC. Banky vážne berú nezvyčajné prihlásenia a posielajú takéto upozornenia. Aj tak: bezpečnejšia cesta je otvoriť aplikáciu/web sám a skontrolovať bezpečnosť — z nej zablokuješ prístupy.",
+  },
+
+  // ============ E9.3 finish — Industry-specific scams (+5) ============
+  {
+    id: "p-zdrav-fakelekar-1",
+    category: "phishing",
+    difficulty: "medium",
+    prompt: 'Email od „lekára". Reakcia?',
+    visual: {
+      kind: "email",
+      from: "MUDr. Jana Krátka",
+      fromEmail: "ordinacia.kratka@gmail-clinic.com",
+      subject: "Vaša ePZP karta vyžaduje potvrdenie údajov",
+      body: "Dobrý deň. Vaša elektronická preukaz poistenca (ePZP) bude deaktivovaná do 48h, ak nepotvrdíte údaje. Kliknite a vyplňte rodné číslo a zdravotnú poisťovňu.",
+      cta: "Potvrdiť údaje",
+    },
+    options: [
+      bad("a", "Vyplním — nechcem prísť o ePZP", "critical"),
+      ok("b", "Ignorujem — ordinácie nikdy takto nepotvrdzujú údaje cez Gmail"),
+    ],
+    explanation:
+      "Ordinácie pracujú cez NCZI a eZdravie — nikdy cez gmail-clinic.com. ePZP sa nedá deaktivovať e-mailom. Phishing zacieľujúci na pacientov bezprostredne zbiera rodné číslo + zdravotnú poisťovňu = vstupenka pre identity fraud a falošné liečenie.",
+  },
+  {
+    id: "p-zdrav-supplier-1",
+    category: "phishing",
+    difficulty: "hard",
+    prompt: "Email pre nemocničného pracovníka. Akcia?",
+    visual: {
+      kind: "email",
+      from: "Updates Microsoft",
+      fromEmail: "security-updates@windows-patch-2026.org",
+      subject: "Kritická bezpečnostná aktualizácia — nemocničné systémy",
+      body: "Pre podporu izolovaných nemocničných sietí pribudla nutná bezpečnostná aktualizácia. Stiahnite a spustite priložený inštalátor s admin právami.",
+      cta: "Stiahnuť patch.exe",
+    },
+    options: [
+      bad("a", "Spustím — IT sa neozvalo, ja to vyriešim", "critical"),
+      ok("b", "Ignorujem — Microsoft posiela patch cez WSUS, nie cez email a .org doménu"),
+    ],
+    explanation:
+      'Najčastejší ransomware vector pre nemocnice je takýto „security update" mail s priloženým EXE. Microsoft nedistribuuje patche emailom a `windows-patch-2026.org` je cudzí registrant. Spustenie binárky s admin právami v nemocničnej sieti = encryption celej infraštruktúry.',
+  },
+  {
+    id: "p-zdrav-recept-1",
+    category: "scenario",
+    difficulty: "medium",
+    prompt: 'Pacient pýta od sestry „prezri si môj recept".',
+    visual: {
+      kind: "text",
+      label: "Telefonát na recepciu",
+      body: 'Pán Halmaďan: „Dobrý deň, môj otec dnes nemôže prísť. Pošlite mi prosím SMS s receptom na inzulín, ja mu ho vyzdvihnem v lekárni."',
+    },
+    options: [
+      bad("a", "Pošlem SMS s číslom receptu — pomáham seniorovi", "medium"),
+      ok("b", "Odmietnem — eRecepty sa neposielajú SMS, lekáreň ich vyhľadá podľa rodného čísla"),
+    ],
+    explanation:
+      "eRecept je v centrálnom systéme NCZI — lekáreň ho nájde pri prevzatí podľa rodného čísla pacienta + občianskeho preukazu/karty poistenca. Posielanie čísla SMS = porušenie GDPR a otvorené dvere pre vyzdvihnutie liekov inou osobou.",
+  },
+  {
+    id: "p-disp-cargotheft-1",
+    category: "phishing",
+    difficulty: "hard",
+    prompt: "Email pre dispečera prepravnej firmy. Akcia?",
+    visual: {
+      kind: "email",
+      from: "Logistics Partner DE",
+      fromEmail: "dispo@logisticspartner-de.online",
+      subject: "Nová zákazka 24t Frankfurt → Bratislava — urgentný re-dispatch",
+      body: "Pôvodný dopravca odpadol. Cena 2200 EUR (250 nad trh). Potrebujeme CMR a SPZ vozidla na potvrdenie do 1 hodiny — odpoveď na túto adresu.",
+      cta: "Odpovedať s CMR + SPZ",
+    },
+    options: [
+      bad("a", "Pošlem CMR a SPZ — cena je dobrá, urgent", "critical"),
+      ok(
+        "b",
+        "Overujem cez TimoCom / volanie do firmy z webu — žiadne potvrdzovanie cez .online doménu",
+      ),
+    ],
+    explanation:
+      "Cargo theft scenár: scammer získa identity vozidla a vodiča, vystupuje pred kamionovým prevádzkovateľom ako dispečer a ukradne tovar. Cena nadtrhom + tlak < 1 hodiny + .online doména = klasické signály. Overovanie sa robí cez burzu (TimoCom, Trans.eu) alebo telefón z webu.",
+  },
+  {
+    id: "p-disp-fakecmr-1",
+    category: "fake_vs_real",
+    difficulty: "medium",
+    prompt: 'PDF priložené k mailu od „nového dopravcu". Akcia?',
+    visual: {
+      kind: "email",
+      from: "Marek B., dispatcher",
+      fromEmail: "dispatch@trans-express-eu.icu",
+      subject: "Potvrdený CMR — vozidlo SPZ BL-129XY",
+      body: "V prílohe podpísaný CMR a list o sprostredkovaní. Prosím o úhradu zálohy 30 % na účet IBAN SI56 ... pred naložením.",
+      cta: "Otvoriť CMR.pdf",
+    },
+    options: [
+      bad("a", "Zaplatím zálohu — máme CMR, je to v poriadku", "critical"),
+      ok(
+        "b",
+        "Overujem firmu cez SK obchodný register a TimoCom — `.icu` doména a SI IBAN sú red flag",
+      ),
+    ],
+    explanation:
+      "Slovenský dopravca s SI (slovinský) IBAN a `.icu` doménou je takmer vždy scam. CMR PDF sa dá ľahko sfalšovať. Vlastníka vozidla SPZ BL-129XY si over cez orsr.sk a zavolaj na číslo z webu firmy, nie z mailu.",
+  },
+
+  // ============ E9.4 — Honeypot extension (+30) ============
+  // 10× emaily ktoré sa SPRÁVAJÚ ako phishing, ale sú legit
+  {
+    id: "h-mail-bank-realnotice-1",
+    category: "honeypot",
+    difficulty: "medium",
+    prompt: "Email od banky, naozaj urgentný tón. Reakcia?",
+    visual: {
+      kind: "email",
+      from: "Tatra banka — bezpečnosť",
+      fromEmail: "bezpecnost@tatrabanka.sk",
+      subject: "Nezvyčajné prihlásenie z nového zariadenia (Linz, AT)",
+      body: 'Dnes o 03:14 sa niekto pokúsil prihlásiť na váš účet z nového zariadenia v Linzi. Ak to nebol(a) ste vy, prihláste sa do Internet bankingu a v sekcii „Aktívne zariadenia" zariadenie odhláste. Heslo zmeňte cez aplikáciu Tatra banka.',
+    },
+    options: [
+      ok("a", "Legit — `tatrabanka.sk` je oficiálna doména, postup vedie do appky"),
+      bad("b", "Phishing — banka nikdy neposiela urgentné maily", "minor"),
+    ],
+    explanation:
+      "Banky reálne posielajú bezpečnostné notifikácie z `bezpecnost@tatrabanka.sk` (overiteľné na webe banky). Pravidlo: e-mail neobsahuje žiadny link na prihlásenie — vyzýva otvoriť aplikáciu/web ručne. To je legit signál; phishing by ti dal jeden klik.",
+  },
+  {
+    id: "h-mail-cf-realnotice-1",
+    category: "honeypot",
+    difficulty: "hard",
+    prompt: "Email po pokuse o prihlásenie. Klikneš?",
+    visual: {
+      kind: "email",
+      from: "GitHub",
+      fromEmail: "noreply@github.com",
+      subject: "[GitHub] Please verify your device",
+      body: "We've detected a sign-in to your account from a new device. To continue, click the verification link below. If this wasn't you, change your password.",
+      cta: "Verify device",
+    },
+    options: [
+      ok("a", "Legit — vlastnoručne som sa prihlasoval z nového notebooku"),
+      bad("b", "Phishing — `verify` linky sú vždy podozrivé", "minor"),
+    ],
+    explanation:
+      "GitHub posiela device-verification e-mail po každom prihlásení z nového zariadenia. Ak SI sa práve sám prihlasoval, je legit (over odosielateľa: `noreply@github.com`). Ak nie, NEKLIKAJ — zmeň heslo a vyhoď podozrivú session na github.com/settings/sessions.",
+  },
+  {
+    id: "h-mail-shipping-real-1",
+    category: "honeypot",
+    difficulty: "medium",
+    prompt: "Email od kuriéra so suspect tónom. Reakcia?",
+    visual: {
+      kind: "email",
+      from: "DHL Express",
+      fromEmail: "noreply@dhl.com",
+      subject: "Doručenie sa nepodarilo — zásielka bude vrátená",
+      body: "Pri doručovaní vašej zásielky 7891234567 sa nepodarilo zastihnúť adresáta. Bez akcie do 5 dní sa zásielka vráti odosielateľovi. Pre prebookovanie navštívte mydhl.express.dhl.",
+    },
+    options: [
+      ok("a", "Legit — `dhl.com` a `mydhl.express.dhl` sú oficiálne, otvorím ručne"),
+      bad("b", "Phishing — push na termín = scam", "minor"),
+    ],
+    explanation:
+      "DHL reálne posiela neúspešné doručenie z `dhl.com` a smeruje na `mydhl.express.dhl`. Aj scam takéto SMS/maily kopíruje, ale s podvrhnutou doménou. Doménu vždy over — DHL používa root `dhl.com` (overiteľné v whois).",
+  },
+  {
+    id: "h-mail-stripe-real-1",
+    category: "honeypot",
+    difficulty: "hard",
+    prompt: "Email od Stripe podnikateľovi. Reakcia?",
+    visual: {
+      kind: "email",
+      from: "Stripe",
+      fromEmail: "no-reply@stripe.com",
+      subject: "Akcia potrebná: aktualizácia bankového účtu pre payouts",
+      body: "Aby sme mohli pokračovať vo výplatách, musíme overiť aktuálny IBAN. Prihláste sa na dashboard.stripe.com a v Settings → Payouts overte / aktualizujte bankový účet.",
+    },
+    options: [
+      ok("a", "Legit — Stripe takto upozorňuje, otvorím dashboard.stripe.com ručne"),
+      bad("b", "Phishing — kto by od podnikateľa pýtal IBAN", "minor"),
+    ],
+    explanation:
+      "Stripe posiela KYC / payout notifikácie z `stripe.com`. Žiadny link na prihlásenie — len výzva otvoriť dashboard ručne. Legit. Phishingová verzia by mala link s predvyplneným formulárom (`stripe-verify.io`).",
+  },
+  {
+    id: "h-mail-azure-real-1",
+    category: "honeypot",
+    difficulty: "hard",
+    prompt: "Email od Microsoftu IT-správcovi. Reakcia?",
+    visual: {
+      kind: "email",
+      from: "Microsoft Azure",
+      fromEmail: "azure-noreply@microsoft.com",
+      subject: "Action required: subscription will be disabled in 3 days",
+      body: "Your Azure subscription has reached the spending limit. Without billing review, services will be paused on 2026-05-01. Manage in Azure portal (portal.azure.com).",
+    },
+    options: [
+      ok("a", "Legit — `microsoft.com` doména, smeruje na `portal.azure.com` ručne"),
+      bad("b", "Phishing — vážne MS by neposielal také urgentné maily", "minor"),
+    ],
+    explanation:
+      "Microsoft realne posiela billing-notifikácie z `azure-noreply@microsoft.com`. Klúčový signál: vyzýva otvoriť `portal.azure.com` ručne, žiadny prihlasovací link. Phishingová verzia by mala link na fake login.",
+  },
+  {
+    id: "h-mail-gov-real-1",
+    category: "honeypot",
+    difficulty: "medium",
+    prompt: "Email z Finančnej správy. Reakcia?",
+    visual: {
+      kind: "email",
+      from: "Finančná správa SR",
+      fromEmail: "noreply@financnasprava.sk",
+      subject: "Doručené potvrdenie podania na portáli FS",
+      body: "Vaše elektronické podanie typu DPH bolo prijaté dňa 28.04.2026, identifikátor PDF-2026-091823. Detail v Osobnej internetovej zóne na pfs.financnasprava.sk po prihlásení.",
+    },
+    options: [
+      ok("a", "Legit — doména `financnasprava.sk`, smeruje na PFS ručné prihlásenie"),
+      bad("b", "Phishing — neprihlásim sa nikam", "minor"),
+    ],
+    explanation:
+      "FS posiela potvrdenia podaní z `financnasprava.sk`. Žiadny link na prihlásenie, len ID podania na overenie v PFS. Phishingová verzia by mala link na falošný login.",
+  },
+  {
+    id: "h-mail-eshop-real-1",
+    category: "honeypot",
+    difficulty: "easy",
+    prompt: "Email od e-shopu. Reakcia?",
+    visual: {
+      kind: "email",
+      from: "Alza.sk",
+      fromEmail: "obchod@alza.sk",
+      subject: "Vaša objednávka 8821547 bola odoslaná",
+      body: "Balík odoslal kuriér Packeta, sledovacie číslo Z9981234. Sledovanie cez packeta.sk po zadaní čísla. Detail objednávky v účte na alza.sk.",
+    },
+    options: [
+      ok("a", "Legit — moja objednávka, skopírujem si tracking číslo"),
+      bad("b", "Phishing — neklikám na nič v emailoch", "minor"),
+    ],
+    explanation:
+      "Alza posiela objednávkové potvrdenia z `obchod@alza.sk`. Žiadny urgent push, len informácia + sledovacie číslo. Pravidlo: tracking si vlož ručne na packeta.sk, nie cez link v maili.",
+  },
+  {
+    id: "h-mail-it-real-1",
+    category: "honeypot",
+    difficulty: "hard",
+    prompt: "Email od IT v korporácii. Reakcia?",
+    visual: {
+      kind: "email",
+      from: "IT Helpdesk",
+      fromEmail: "helpdesk@firma.sk",
+      subject: "Naplánovaná údržba VPN — restart connection",
+      body: "Dnes 22:00–23:00 prebehne reštart VPN concentratorov. Po reštarte budete musieť znovu pripojiť VPN klienta. Žiadne prihlasovacie údaje sa nemenia.",
+    },
+    options: [
+      ok("a", "Legit — vnútorná IT komunikácia, doména firmy"),
+      bad("b", "Phishing — IT mi nikdy nepíše", "minor"),
+    ],
+    explanation:
+      'Korporátne IT bežne avizuje plánovanú údržbu z firemnej domény. Žiadny link, žiadne prihlasovacie údaje. Phishingová verzia by ťa nasmerovala na „re-authentication" link na fake stránku.',
+  },
+  {
+    id: "h-mail-recruit-real-1",
+    category: "honeypot",
+    difficulty: "medium",
+    prompt: "Email od recruitera na LinkedIn. Reakcia?",
+    visual: {
+      kind: "email",
+      from: "Anna Tomeková (Profesia)",
+      fromEmail: "anna.tomekova@profesia.sk",
+      subject: "Pozícia Senior Backend Developer — záujem o rozhovor?",
+      body: "Dobrý deň. Hľadáme seniora pre nášho klienta (banka, BA). Plat 4200–5500 EUR. Ak má zmysel, pošlem detail a CV pošlite mi prosím cez profesia.sk profil.",
+    },
+    options: [
+      ok("a", "Legit — `profesia.sk` doména, žiadny urgent push"),
+      bad("b", "Phishing — recruiteri sú scam", "minor"),
+    ],
+    explanation:
+      'Profesia recruiteri reálne posielajú maily z `profesia.sk`. Plat-vilka, žiadosť o CV cez platformu (nie e-mailom), žiadne pred-poplatky = legit. Scam recruiter (najmä cez WhatsApp) by ťa žiadal o data pre „verification" alebo o platbu za „onboarding".',
+  },
+  {
+    id: "h-mail-google-real-1",
+    category: "honeypot",
+    difficulty: "easy",
+    prompt: "Email od Googlu. Reakcia?",
+    visual: {
+      kind: "email",
+      from: "Google",
+      fromEmail: "no-reply@accounts.google.com",
+      subject: "Nové prihlásenie na vaše Google konto",
+      body: "Práve sa niekto prihlásil na vaše Google konto z nového zariadenia (iPhone, Bratislava). Ak ste to boli vy, ignorujte. Ak nie, zabezpečte konto na myaccount.google.com.",
+    },
+    options: [
+      ok("a", "Legit — moje vlastné prihlásenie z iPhonu"),
+      bad("b", "Phishing — zabezpečenie cez link je scam", "minor"),
+    ],
+    explanation:
+      "Google posiela device-sign-in maily z `no-reply@accounts.google.com`. Žiadny prihlasovací link — len odkaz na `myaccount.google.com`, ktorý si otvor ručne. Phishing by mal `secure-google-login.com`.",
+  },
+
+  // 8× volania ktoré pripomínajú vishing, ale sú legit
+  {
+    id: "h-call-pz-real-1",
+    category: "honeypot",
+    difficulty: "hard",
+    prompt: "Volanie. Reakcia?",
+    visual: {
+      kind: "call",
+      caller: "PZ SR — Bratislava",
+      number: "0961 100 200",
+      hint: "Predstavujú sa: por. Krátka, OO PZ Bratislava-Staré Mesto. Pýtajú sa ohľadom mojej včerajšej žiadosti o nový OP.",
+    },
+    options: [
+      ok("a", "Legit — moja žiadosť, ja som im dal číslo. Overím cez minv.sk callback"),
+      bad("b", "Vishing — polícia takto netelefonuje", "minor"),
+    ],
+    explanation:
+      "Polícia reálne kontaktuje žiadateľov o OP / pas pri nezrovnalostiach v podaní. Číslo 0961 ... je oficiálny rozsah PZ. Bezpečnostný postup: zavolaj späť na centrálne číslo PZ z minv.sk — útočník nedokáže ovládnuť centrálu.",
+  },
+  {
+    id: "h-call-bank-real-1",
+    category: "honeypot",
+    difficulty: "hard",
+    prompt: "Volanie. Reakcia?",
+    visual: {
+      kind: "call",
+      caller: "Tatra banka — fraud team",
+      number: "+421 2 5919 1000",
+      hint: "Pýtajú sa, či som naozaj zaplatil 1230 EUR cez kartu na Aliexpress dnes ráno. Tvrdí, že to vyzerá ako fraud.",
+    },
+    options: [
+      ok(
+        "a",
+        "Legit — fraud team reálne tieto veci rieši, ale moje údaje nedávam, zavolám späť cez 0800 zo zadnej strany karty",
+      ),
+      bad("b", "Vishing — banka nikdy nevolá", "minor"),
+    ],
+    explanation:
+      "Banky reálne mávajú fraud teamy a volajú pri podozrivých transakciách. Číslo `+421 2 5919 1000` je TB centrála (overené). Pravidlo: NIKDY nezadávaj OTP/heslo do telefónu, vždy zavolaj späť na číslo zo zadnej strany karty — ten istý fraud team ti aj tak odpovie.",
+  },
+  {
+    id: "h-call-doctor-real-1",
+    category: "honeypot",
+    difficulty: "medium",
+    prompt: "Volanie. Reakcia?",
+    visual: {
+      kind: "call",
+      caller: "Sestra ambulancie",
+      number: "0905 ... (mobilný)",
+      hint: '„Volám z ambulancie MUDr. Halmádyho. Doktor sa chce ozvať ohľadom vašich výsledkov, prosím, zavolajte mu späť na pevnú linku 02/..."',
+    },
+    options: [
+      ok("a", "Legit — ambulancia, ja zavolám späť na pevnú linku, ktorú si overím"),
+      bad("b", "Vishing — nikomu zo seba neodpovedám", "minor"),
+    ],
+    explanation:
+      "Ambulancie reálne volajú pacientom z mobilov sestier. Bezpečné: nepýtaj sa žiadne osobné údaje, zavolaj späť na pevnú linku, ktorú nájdeš v ezdravie.sk / zoznam ambulancií.",
+  },
+  {
+    id: "h-call-fs-real-1",
+    category: "honeypot",
+    difficulty: "hard",
+    prompt: "Volanie. Reakcia?",
+    visual: {
+      kind: "call",
+      caller: "Daňový úrad Bratislava",
+      number: "+421 2 4827 1810",
+      hint: "Inšpektorka pýta upresnenie pri mojom DPH priznaní (chýba potvrdenie zo zahraničia).",
+    },
+    options: [
+      ok("a", "Legit — DÚ takto reálne pýta dôkazy, ale ja zavolám späť cez ústredné číslo"),
+      bad("b", "Vishing — FS nikdy netelefonuje", "minor"),
+    ],
+    explanation:
+      "Daňové úrady reálne telefonujú pri kontrolných podaniach a chýbajúcich prílohách. Číslo `+421 2 4827 1810` je BA DÚ. Postup: zaznač meno + ID prípadu, zavolaj späť cez ústredné číslo FS z financnasprava.sk. Útočník nemôže ovládnuť ústredie.",
+  },
+  {
+    id: "h-call-courier-real-1",
+    category: "honeypot",
+    difficulty: "easy",
+    prompt: "Volanie. Reakcia?",
+    visual: {
+      kind: "call",
+      caller: "Kuriér DPD",
+      number: "0905 ... (mobilný)",
+      hint: '„Som pred bytom, neviem nájsť zvonček. Volám z mobilu, aby som vás zastihol."',
+    },
+    options: [
+      ok("a", "Legit — kuriér naozaj často volá z mobilu, žiadne údaje nepýta"),
+      bad("b", "Vishing — kuriéri sú scam", "minor"),
+    ],
+    explanation:
+      'Kuriéri (DPD/GLS/Packeta) bežne volajú z firemných mobilov. Žiadne údaje nepýtajú — len logistika. Scam-vishing kuriér by pýtal číslo karty „za doplatok".',
+  },
+  {
+    id: "h-call-spa-real-1",
+    category: "honeypot",
+    difficulty: "medium",
+    prompt: "Volanie. Reakcia?",
+    visual: {
+      kind: "call",
+      caller: "Sociálna poisťovňa — pobočka",
+      number: "+421 2 ... (pevná)",
+      hint: "Žiadajú dovysvetliť údaj v mojom oznámení o zmene zamestnávateľa.",
+    },
+    options: [
+      ok("a", "Legit — SP takto reálne pracuje, ja zavolám späť cez socpoist.sk callback"),
+      bad("b", "Vishing — SP mi nemá čo volať", "minor"),
+    ],
+    explanation:
+      "Sociálna poisťovňa pri nejasnostiach v oznámeniach reálne kontaktuje cez pobočku. Pravidlo: nezadávaj rodné číslo do telefónu, zavolaj späť cez ústredné číslo SP zo socpoist.sk a pýtaj si svoj prípad cez ID.",
+  },
+  {
+    id: "h-call-employer-real-1",
+    category: "honeypot",
+    difficulty: "easy",
+    prompt: "Volanie. Reakcia?",
+    visual: {
+      kind: "call",
+      caller: "HR — moja firma",
+      number: "+421 2 ... (firemné ústredie)",
+      hint: "HR pýta podpísať novú dohodu a posiela link na dokumenty cez interný portál.",
+    },
+    options: [
+      ok("a", "Legit — moja firma, doménu portálu si overím cez intranet"),
+      bad("b", "Vishing — HR nikomu nedôverujem", "minor"),
+    ],
+    explanation:
+      "HR reálne volá zo firemného ústredia a posiela linky na interný portál. Pravidlo: doménu portálu si over v intranet záložkách / od kolegu. Vishing-HR by mal externú doménu typu `mojafirma-hr.online`.",
+  },
+  {
+    id: "h-call-energy-real-1",
+    category: "honeypot",
+    difficulty: "medium",
+    prompt: "Volanie. Reakcia?",
+    visual: {
+      kind: "call",
+      caller: "ZSE — zákaznícka linka",
+      number: "0850 111 555",
+      hint: "Avizujú výpadok elektriny v mojej oblasti dňa 30.04 (plánovaný odpočet/údržba).",
+    },
+    options: [
+      ok("a", "Legit — ZSE 0850 číslo je oficiálne, len informačný hovor"),
+      bad("b", "Vishing — energetické firmy sú scam", "minor"),
+    ],
+    explanation:
+      "ZSE / SSE / VSE posielajú info o plánovaných výpadkoch cez 0850 čísla a SMS. Žiadne údaje sa nepýtajú. Vishing-energetik by pýtal číslo zmluvy + pohrozil odpojením, ak okamžite nezaplatím cez SMS-platbu.",
+  },
+
+  // 6× listings podozrivé, ale legit
+  {
+    id: "h-list-cheap-real-1",
+    category: "honeypot",
+    difficulty: "medium",
+    prompt: "Inzerát na Bazoš. Reakcia?",
+    visual: {
+      kind: "listing",
+      site: "bazos.sk",
+      title: "Auto Škoda Octavia 2018, 120 000 km — RÝCHLO",
+      price: "8 500 EUR",
+      location: "Bratislava — sťahujem sa do zahraničia",
+      description:
+        "Stav výborný, servisná knižka, 1 majiteľ. Predávam súrne kvôli sťahovaniu do Rakúska. Auto si môžete prísť pozrieť, kúpa cez kúpnopredajnú zmluvu na DI.",
+    },
+    options: [
+      ok("a", "Legit — nízka cena má reálny dôvod (sťahovanie), platba klasicky pri prevode na DI"),
+      bad("b", "Scam — všetko pod cenou je podvod", "minor"),
+    ],
+    explanation:
+      "Sťahovanie do zahraničia je reálny dôvod pre nižšiu cenu. Legit signály: predávajúci ponúka osobnú obhliadku, kúpu cez DI, žiadnu zálohu vopred. Scam by tlačil na rezervačnú zálohu na účet pred obhliadkou.",
+  },
+  {
+    id: "h-list-deceased-real-1",
+    category: "honeypot",
+    difficulty: "hard",
+    prompt: "Inzerát z dedičstva. Reakcia?",
+    visual: {
+      kind: "listing",
+      site: "bazos.sk",
+      title: "Vintage hodinky Omega Seamaster — z pozostalosti otca",
+      price: "350 EUR",
+      location: "Trnava — osobné prevzatie",
+      description:
+        "Otec zomrel, predávam jeho zbierku. Hodinky funkčné, originálna škatuľka. Cenu som dal nižšiu, lebo nemám prehľad o trhu. Stretnutie u mňa doma alebo v meste.",
+    },
+    options: [
+      ok("a", "Legit — pozostalosť je reálny scenár, nízka cena má dôvod"),
+      bad("b", "Scam — pozostalosť je vždy scam", "minor"),
+    ],
+    explanation:
+      'Pozostalosti sa reálne predávajú, často pod cenou (pozostalí nemajú trhovú znalosť). Legit signály: osobné prevzatie, žiadna preprava cez kuriéra so zálohou. Scam-pozostalosť (najmä z UK/USA) by žiadal preposlať tovar cez „dôveryhodného agenta" za zálohu.',
+  },
+  {
+    id: "h-list-rental-real-1",
+    category: "honeypot",
+    difficulty: "medium",
+    prompt: "Prenájom bytu — pôsobí podozrivo nízko. Reakcia?",
+    visual: {
+      kind: "listing",
+      site: "nehnutelnosti.sk",
+      title: "2-izbový byt 55 m² Petržalka",
+      price: "550 EUR / mesiac",
+      location: "BA — Petržalka, blízko Aupark",
+      description:
+        "Hľadáme dlhodobého nájomcu, byt po deduške, doplníme len pár vecí. Obhliadka tento týždeň. Zmluva cez realitnú kanceláriu Reality Plus.",
+    },
+    options: [
+      ok("a", "Legit — pod-trh, ale s dôvodom (po deduške) + zmluva cez realitku"),
+      bad("b", "Scam — byty pod 600 € sú scam", "minor"),
+    ],
+    explanation:
+      'Byty po pozostalí v Petržalke sa reálne prenajímajú za 500–600 € (rodina nemá trhovú motiváciu). Legit signály: obhliadka pred zmluvou, zmluva cez registrovanú realitku, žiadna záloha vopred. Scam-byt by žiadal 1 nájom + depozit na účet ešte pred obhliadkou („som v zahraničí, kľúče pošlem kuriérom").',
+  },
+  {
+    id: "h-list-pottery-real-1",
+    category: "honeypot",
+    difficulty: "easy",
+    prompt: "Inzerát s neobvykle nízkou cenou. Reakcia?",
+    visual: {
+      kind: "listing",
+      site: "bazos.sk",
+      title: "Modranská keramika — sada 6 ks z pozostalosti",
+      price: "20 EUR",
+      location: "Pezinok — osobné prevzatie",
+      description:
+        "Mama vyhadzuje, ja by som rád, aby to niekto využil. Sada talieriov mierny škrabanec. Iba osobne, ja nepošlem.",
+    },
+    options: [
+      ok("a", "Legit — drobnosti z domova predávajú často symbolicky"),
+      bad("b", "Scam — nízka cena = scam", "minor"),
+    ],
+    explanation:
+      'Drobné domáce predmety sa reálne predávajú lacno, ľudia ich chcú dať preč skôr ako ich vyhodia. Legit signál: „iba osobne, nepošlem" = predávajúci nehrá s eskrowom ani prepravou.',
+  },
+  {
+    id: "h-list-bike-real-1",
+    category: "honeypot",
+    difficulty: "medium",
+    prompt: "Inzerát bicykla — pôsobí súrne. Reakcia?",
+    visual: {
+      kind: "listing",
+      site: "bazos.sk",
+      title: "Horský bicykel CUBE Stereo 27.5 — kúpený 2022",
+      price: "850 EUR",
+      location: "Žilina — osobné prevzatie",
+      description:
+        "Predávam, lebo idem na štúdium do USA, do 14 dní. Originálna cena 2200 €, používaný ~10×. Stretnutie tento víkend, pri kúpe doklad o pôvode.",
+    },
+    options: [
+      ok("a", "Legit — dôvod (odchod do USA) + osobné prevzatie + doklad"),
+      bad("b", "Scam — všetko súrne je scam", "minor"),
+    ],
+    explanation:
+      "Odchod do zahraničia je reálny urgentný dôvod predaja drahých vecí pod cenou. Legit signály: ponuka dokladu o pôvode (chráni kupujúceho pred kradnutým bicyklom), osobné prevzatie, jasná lokalita. Scam-súrne by chcel zálohu na rezerváciu pred obhliadkou.",
+  },
+  {
+    id: "h-list-furniture-real-1",
+    category: "honeypot",
+    difficulty: "easy",
+    prompt: "Pohovka zadarmo. Reakcia?",
+    visual: {
+      kind: "listing",
+      site: "bazos.sk",
+      title: "ZADARMO sedacia súprava — odvoz dnes/zajtra",
+      price: "0 EUR",
+      location: "Bratislava — Dúbravka, 3. poschodie bez výťahu",
+      description:
+        "Sťahujeme sa, sedačku už nepotrebujeme. Odvoz si zariadi nový majiteľ. Stav slušný, mierne použitá.",
+    },
+    options: [
+      ok("a", "Legit — nábytok zadarmo pri sťahovaní je bežné"),
+      bad("b", "Scam — nič nie je zadarmo", "minor"),
+    ],
+    explanation:
+      'Pri sťahovaní sa veci zadarmo dávajú bežne (lacnejšie ako odvoz na zberný dvor). Žiadna platba, žiadne osobné údaje. Scam by sa pýtal „odošlite 50 € za prípravu na odvoz cez kuriéra".',
+  },
+
+  // 6× SMS od appiek (Bolt/Wolt/Uber/Yango)
+  {
+    id: "h-sms-bolt-real-1",
+    category: "honeypot",
+    difficulty: "easy",
+    prompt: "Reagoval by si na túto SMS?",
+    visual: {
+      kind: "sms",
+      sender: "Bolt",
+      body: "Vodic Marek (BL-742EE) je 2 min od miesta vyzdvihnutia. Cena jazdy 6,80 EUR.",
+    },
+    options: [ok("a", "Áno — moja jazda, len info"), bad("b", "Nie — vyzerá podozrivo", "minor")],
+    explanation:
+      'Bolt posiela transakčné SMS o stave jazdy. Žiadny link, žiadna platba — kreditka už je v aplikácii. Bezpečné je platiť cez aplikáciu, nie hotovosťou (predíde sa „zmenenej trase" scamu vodiča).',
+  },
+  {
+    id: "h-sms-wolt-real-1",
+    category: "honeypot",
+    difficulty: "easy",
+    prompt: "Reagoval by si na túto SMS?",
+    visual: {
+      kind: "sms",
+      sender: "Wolt",
+      body: "Tvoj kurier prevzal objednavku z Hostinec U Lipy. Doruci do 22 minut.",
+    },
+    options: [
+      ok("a", "Áno — moja objednávka, sleduje stav"),
+      bad("b", "Nie — vyzerá podozrivo", "minor"),
+    ],
+    explanation:
+      'Wolt posiela stavové SMS. Žiadna akcia. Aplikácia je primárny kanál — ak ti príde SMS „Wolt: zaplaťte 0,5 € za doručenie cez link", je to phishing.',
+  },
+  {
+    id: "h-sms-uber-real-1",
+    category: "honeypot",
+    difficulty: "medium",
+    prompt: "Reagoval by si na túto SMS?",
+    visual: {
+      kind: "sms",
+      sender: "Uber",
+      body: "Verifikacny kod: 4821. Nikomu ho neposielajte.",
+    },
+    options: [
+      ok("a", "Áno — práve som sa prihlasoval do appky"),
+      bad("b", "Nie — vyzerá podozrivo", "minor"),
+    ],
+    explanation:
+      "Uber posiela 2FA kód pri prihlásení. Pravidlo: ak kód príde a TY si sa neprihlasoval, niekto skúša ovládnuť tvoj účet — kód NEZADAJ a v aplikácii zmeň heslo.",
+  },
+  {
+    id: "h-sms-yango-real-1",
+    category: "honeypot",
+    difficulty: "medium",
+    prompt: "Reagoval by si na túto SMS?",
+    visual: {
+      kind: "sms",
+      sender: "Yango",
+      body: "Tvoja jazda je dokoncena. Cena 5,40 EUR strhnuta z karty *6628. Hodnotenie v aplikacii.",
+    },
+    options: [
+      ok("a", "Áno — moja jazda, beriem na vedomie"),
+      bad("b", "Nie — vyzerá podozrivo", "minor"),
+    ],
+    explanation:
+      'Yango posiela transakčné SMS po jazde. Suma + posledné 4 čísla karty by mali sedieť s aplikáciou. Žiadny link, žiadna akcia. Phishing by mal „zaplaťte zvyšok 4 EUR cez link".',
+  },
+  {
+    id: "h-sms-airbnb-real-1",
+    category: "honeypot",
+    difficulty: "medium",
+    prompt: "Reagoval by si na túto SMS?",
+    visual: {
+      kind: "sms",
+      sender: "Airbnb",
+      body: "Tvoja rezervacia HMA82B7K bola potvrdena. Detail v aplikacii.",
+    },
+    options: [
+      ok("a", "Áno — moja rezervácia, otvorím appku ručne"),
+      bad("b", "Nie — vyzerá podozrivo", "minor"),
+    ],
+    explanation:
+      'Airbnb potvrdzuje rezervácie cez SMS. Žiadny link, len ID rezervácie. Detail si pozri v aplikácii alebo na airbnb.com — phishing-Airbnb by mal link na fake login pre „verifikáciu".',
+  },
+  {
+    id: "h-sms-applepay-real-1",
+    category: "honeypot",
+    difficulty: "hard",
+    prompt: "Reagoval by si na túto SMS?",
+    visual: {
+      kind: "sms",
+      sender: "Apple",
+      body: "Apple ID Verification Code: 728193. Nezdielajte. Platnost 10 min.",
+    },
+    options: [
+      ok("a", "Áno — práve sa prihlasujem na novom MacBooku"),
+      bad("b", "Nie — vyzerá podozrivo", "minor"),
+    ],
+    explanation:
+      "Apple posiela 6-miestne 2FA kódy pri prihlasovaní na nové zariadenie. Žiadny link. Pravidlo: ak kód príde a TY sa neprihlasuješ, NIEKTO skúša ovládnuť tvoje Apple ID — okamžite zmeň heslo cez appleid.apple.com.",
+  },
 ];
 
 const TEST_SIZE = 15;

@@ -301,7 +301,8 @@ describe("processEvent — invoice.paid (subscription)", () => {
     const event = makeEvent("invoice.paid", {
       id: "in_1",
       customer: "cus_sub",
-      payment_intent: "pi_sub_1",
+      // Stripe ≥17 moved payment_intent into invoice.payments[].payment.payment_intent.
+      payments: { data: [{ payment: { type: "payment_intent", payment_intent: "pi_sub_1" } }] },
       amount_paid: 1000,
       currency: "eur",
       invoice_pdf: "https://stripe.example/invoice.pdf",
