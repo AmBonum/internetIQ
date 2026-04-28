@@ -163,7 +163,7 @@ export function Footer() {
 
       <div className="mt-10 flex flex-col items-center justify-between gap-3 border-t border-border/40 pt-6 sm:flex-row sm:items-center">
         <p className="text-xs text-muted-foreground">
-          © {new Date().getFullYear()} am.bonum s. r. o. · IČO 55 055 290
+          © {new Date().getFullYear()} subenai · Všetky práva vyhradené.
         </p>
         <button
           type="button"
