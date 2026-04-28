@@ -3,6 +3,8 @@ export const ROUTES = {
   test: "/test",
   testy: "/testy",
   testySlug: "/testy/$slug",
+  zostav: "/test/zostav",
+  zostava: "/test/zostava/$id",
   skolenia: "/skolenia",
   skoleniaSlug: "/skolenia/$slug",
   podpora: "/podpora",
