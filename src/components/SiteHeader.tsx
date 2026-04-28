@@ -8,6 +8,7 @@ const NAV_ITEMS = [
   { to: ROUTES.testy, label: "Testy" },
   { to: ROUTES.skolenia, label: "Školenia" },
   { to: ROUTES.podpora, label: "Podporiť projekt" },
+  { to: ROUTES.kontakt, label: "Kontakt" },
 ] as const;
 
 const CTA_ITEM = {
@@ -68,7 +69,7 @@ export function SiteHeader() {
           </SheetTrigger>
           <SheetContent
             side="right"
-            className="flex w-screen max-w-full flex-col gap-0 border-l border-border/60 bg-background p-0 sm:max-w-md"
+            className="flex w-screen max-w-full flex-col gap-0 border-l border-border/60 bg-background p-0 sm:max-w-md [&>button]:hidden"
           >
             <div className="flex items-center justify-between border-b border-border/40 px-5 py-4">
               <Link
