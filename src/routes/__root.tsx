@@ -2,6 +2,7 @@ import { Outlet, Link, createRootRoute } from "@tanstack/react-router";
 
 import { ConsentBanner } from "@/components/ConsentBanner";
 import { ConsentPreferencesDialog } from "@/components/ConsentPreferencesDialog";
+import { GoogleAnalyticsManager } from "@/components/GoogleAnalyticsManager";
 import { SiteHeader } from "@/components/SiteHeader";
 
 function NotFoundComponent() {
@@ -29,6 +30,7 @@ function NotFoundComponent() {
 function RootComponent() {
   return (
     <>
+      <GoogleAnalyticsManager />
       <SiteHeader />
       <Outlet />
       <ConsentBanner />
