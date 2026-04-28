@@ -18,9 +18,7 @@ const TODAY = new Date().toISOString().slice(0, 10);
 
 const STATIC_ROUTES = [
   { loc: "/", priority: "1.0", changefreq: "weekly" },
-  { loc: "/test", priority: "0.9", changefreq: "monthly" },
   { loc: "/testy", priority: "0.9", changefreq: "weekly" },
-  { loc: "/test/zostav", priority: "0.7", changefreq: "monthly" },
   { loc: "/skolenia", priority: "0.9", changefreq: "weekly" },
   { loc: "/cookies", priority: "0.3", changefreq: "yearly" },
   { loc: "/privacy", priority: "0.3", changefreq: "yearly" },
