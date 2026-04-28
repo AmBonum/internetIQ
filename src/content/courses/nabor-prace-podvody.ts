@@ -44,7 +44,7 @@ export const naborPraceScamCourse: Course = {
     },
     {
       kind: "example",
-      heading: `Scenár #3 — Přeposielanie balíkov (money mule)`,
+      heading: `Scenár #3 — Preposielanie balíkov (money mule)`,
       visual: {
         kind: "text",
         label: `WhatsApp správa od „manažéra"`,
