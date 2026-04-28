@@ -15,6 +15,7 @@ import { Route as SponzoriRouteImport } from './routes/sponzori'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as PodporaRouteImport } from './routes/podpora'
 import { Route as OProjekteRouteImport } from './routes/o-projekte'
+import { Route as KontaktRouteImport } from './routes/kontakt'
 import { Route as CookiesRouteImport } from './routes/cookies'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TestyIndexRouteImport } from './routes/testy.index'
@@ -54,6 +55,11 @@ const PodporaRoute = PodporaRouteImport.update({
 const OProjekteRoute = OProjekteRouteImport.update({
   id: '/o-projekte',
   path: '/o-projekte',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KontaktRoute = KontaktRouteImport.update({
+  id: '/kontakt',
+  path: '/kontakt',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CookiesRoute = CookiesRouteImport.update({
@@ -110,6 +116,7 @@ const PodakovanieSessionIdRoute = PodakovanieSessionIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/cookies': typeof CookiesRoute
+  '/kontakt': typeof KontaktRoute
   '/o-projekte': typeof OProjekteRoute
   '/podpora': typeof PodporaRoute
   '/privacy': typeof PrivacyRoute
@@ -128,6 +135,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/cookies': typeof CookiesRoute
+  '/kontakt': typeof KontaktRoute
   '/o-projekte': typeof OProjekteRoute
   '/podpora': typeof PodporaRoute
   '/privacy': typeof PrivacyRoute
@@ -147,6 +155,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/cookies': typeof CookiesRoute
+  '/kontakt': typeof KontaktRoute
   '/o-projekte': typeof OProjekteRoute
   '/podpora': typeof PodporaRoute
   '/privacy': typeof PrivacyRoute
@@ -167,6 +176,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/cookies'
+    | '/kontakt'
     | '/o-projekte'
     | '/podpora'
     | '/privacy'
@@ -185,6 +195,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/cookies'
+    | '/kontakt'
     | '/o-projekte'
     | '/podpora'
     | '/privacy'
@@ -203,6 +214,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/cookies'
+    | '/kontakt'
     | '/o-projekte'
     | '/podpora'
     | '/privacy'
@@ -222,6 +234,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CookiesRoute: typeof CookiesRoute
+  KontaktRoute: typeof KontaktRoute
   OProjekteRoute: typeof OProjekteRoute
   PodporaRoute: typeof PodporaRoute
   PrivacyRoute: typeof PrivacyRoute
@@ -279,6 +292,13 @@ declare module '@tanstack/react-router' {
       path: '/o-projekte'
       fullPath: '/o-projekte'
       preLoaderRoute: typeof OProjekteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/kontakt': {
+      id: '/kontakt'
+      path: '/kontakt'
+      fullPath: '/kontakt'
+      preLoaderRoute: typeof KontaktRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/cookies': {
@@ -369,6 +389,7 @@ const SponzoriRouteWithChildren = SponzoriRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CookiesRoute: CookiesRoute,
+  KontaktRoute: KontaktRoute,
   OProjekteRoute: OProjekteRoute,
   PodporaRoute: PodporaRoute,
   PrivacyRoute: PrivacyRoute,

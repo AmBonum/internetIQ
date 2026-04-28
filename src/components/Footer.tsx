@@ -25,6 +25,7 @@ const COLUMNS: { title: string; links: FooterLink[] }[] = [
     title: "Projekt",
     links: [
       { to: ROUTES.oProjecte, label: "O projekte" },
+      { to: ROUTES.kontakt, label: "Kontakt" },
       { to: ROUTES.podpora, label: "Podporiť projekt" },
       { to: ROUTES.sponzori, label: "Sponzori" },
       { to: ROUTES.zmeny, label: "Zmeny a verzie" },

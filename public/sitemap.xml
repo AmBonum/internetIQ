@@ -43,6 +43,12 @@
     <priority>0.5</priority>
   </url>
   <url>
+    <loc>https://subenai.sk/kontakt</loc>
+    <lastmod>2026-04-27</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
     <loc>https://subenai.sk/podpora</loc>
     <lastmod>2026-04-27</lastmod>
     <changefreq>monthly</changefreq>

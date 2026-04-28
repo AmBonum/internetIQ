@@ -25,12 +25,14 @@ Verzie idú od najnovšej. Drobné úpravy textov a interné práce neuvádzame.
 - **FAQ sekcia** na úvodnej stránke s odpoveďami na najčastejšie otázky o teste, anonymite a podpore.
 - Po dokončení testu sa **úvodný titulok prispôsobuje skóre** — pre slabší výsledok motivačný tón, pre vysoký pochvalný.
 - **15 nových otázok** zameraných na konkrétne odvetvia a vekové skupiny (študenti, seniori, žiaci).
+- Stránka **Kontakt** s priamym linkom na `subenai.podpora@gmail.com` a 6 prednastavenými témami (technická pomoc, GDPR, sponzorstvo, spolupráca…). Odpovedáme typicky do 2 pracovných dní.
 
 ### Zmenené
 - **Identifikácia prevádzkovateľa** v zásadách ochrany súkromia — projekt teraz transparentne vystupuje ako am.bonum s. r. o. (predtým fyzická osoba). Cookie banner sa znova zobrazil, aby si mohol/a aktualizovať svoj súhlas pod správnu entitu.
 - Texty na stránkach **O projekte**, **Cookies** a **Súkromie** o trackingu: sformulované tak, aby boli zrozumiteľné a konzistentné s tým, čo cookie banner naozaj robí — analytika a marketing sa zapnú **iba so súhlasom**.
-- V hlavičke stránky pribudol odkaz **Podporiť projekt**; v päte stránky **Sponzori** a **Zmeny**.
+- V hlavičke stránky pribudol odkaz **Podporiť projekt**; v päte stránky **Sponzori**, **Zmeny** a **Kontakt**.
 - Firemné testy presunuté z `/test/firma/...` na kratší a zrozumiteľnejší **`/testy/...`**. Staré linky redirectujú.
+- Projekt presťahovaný na vlastnú doménu **subenai.sk**.
 
 ### Opravené
 - Drobná chyba pri prepínaní medzi rôznymi testami: po dokončení jedného testu sa pri kliknutí na iný niekedy zobrazil starý výsledok. Teraz sa každý test začne čisto od prvej otázky.

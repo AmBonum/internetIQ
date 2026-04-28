@@ -4,7 +4,7 @@
 |----------|--------------------------------------|
 | **ID**   | US-200                               |
 | **Priorita** | P1                               |
-| **Stav** | Draft                                |
+| **Stav** | 🟡 Partial — MVP `/kontakt` mailto-only odoslaný 2026-04-28; full form (DB + Turnstile + rate limit + ticket) zostáva. |
 | **Feature** | Kontaktný formulár                |
 | **Rola** | Akýkoľvek návštevník (reg. aj anonym.) |
 
@@ -26,9 +26,23 @@ Formulár musí byť dostupný z viacerých miest (pätička, `/contact`, help c
 
 ---
 
+## Stav implementácie (2026-04-28)
+
+**MVP odoslaný**: stránka `/kontakt` ([src/routes/kontakt.tsx](../../../src/routes/kontakt.tsx))
+s `mailto:` linkmi (CONTACT_EMAIL premenná z `src/config/site.ts`) + 6 triage tém
+s prefilled subjects + Footer link v stĺpci „Projekt" + privacy crosslink. Žiadny
+formulár, žiadna DB, žiadny Turnstile — len plain mailto. Pokrýva 80% use-case-u
+(reálni používatelia napíšu napriamo); plný formulár sadne na rovnakú stránku
+keď sa AC-2 — AC-8 doimplementujú. Sitemap + test pokryté.
+
+**Zostáva v rámci tejto story**: AC-2 (form fields), AC-4 (Turnstile),
+AC-5 (ticket #), AC-6 (DB schema), AC-7 (auto-reply), AC-8 (GDPR cross-link
+už pokrytý mailto subject-om „GDPR žiadosť").
+
 ## Akceptačné kritériá
 
-- [ ] **AC-1:** Kontaktný formulár je dostupný na `/contact` a ako inline sekcia na `/help` (US-150). Odkaz „Kontakt" je v pätičke každej stránky.
+- [x] **AC-1 (MVP)**: Stránka `/kontakt` existuje, Footer link „Kontakt" je v stĺpci „Projekt" na každej stránke. Plné `/help` cross-link sa rieši v US-150.
+- [ ] **AC-1 (full)**: Inline sekcia na `/help` (US-150).
 - [ ] **AC-2:** Formulár obsahuje polia:
   - **Email** (povinný, validácia formátu)
   - **Typ dotazu** (select: Technická pomoc / Obchodná otázka / Nahlásenie problému / GDPR žiadosť / Iné)

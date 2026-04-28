@@ -222,7 +222,7 @@ const FAQ_SECTIONS: {
         id: "zmazanie",
         question: "Môžem si zmazať svoje dáta?",
         answer:
-          "Áno. Anonymný výsledok je zviazaný len s ID relácii v tvojom prehliadači — nie s tvojou identitou. Stačí vymazať cookies a lokálne úložisko prehliadača (Nastavenia → Súkromie → Vymazať dáta prehliadania). Ak si použil zdieľateľný link, napíš nám na kontaktný e-mail v päte a konkrétny záznam odstránime.",
+          "Áno. Anonymný výsledok je zviazaný len s ID relácii v tvojom prehliadači — nie s tvojou identitou. Stačí vymazať cookies a lokálne úložisko prehliadača (Nastavenia → Súkromie → Vymazať dáta prehliadania). Ak si použil zdieľateľný link, napíš nám cez stránku Kontakt v päte a konkrétny záznam odstránime.",
       },
     ],
   },
