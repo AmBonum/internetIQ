@@ -3,7 +3,7 @@ import { render, fireEvent, act } from "@testing-library/react";
 import { ConsentProvider } from "@/hooks/useConsent";
 import { ResultsView } from "@/components/quiz/ResultsView";
 import { TRAP_SEEN_STORAGE_KEY } from "@/lib/data-trap/copy";
-import type { ScoreResult } from "@/lib/quiz/scoring";
+import type { AnswerRecord, ScoreResult } from "@/lib/quiz/scoring";
 
 // Mock Link component to avoid RouterProvider requirement
 vi.mock("@tanstack/react-router", async () => {
@@ -56,17 +56,42 @@ const mockResult: ScoreResult = {
   },
   breakdown: {
     phishing: 80,
-    social_engineering: 70,
-    crypto: 60,
+    url: 70,
+    fake_vs_real: 60,
+    scenario: 65,
   },
   insights: ["Mistake 1"],
-  flags: {},
+  flags: [],
 };
 
-const mockAnswers = [
-  { questionId: "q1", correct: true, answer: "a", timeMs: 2000 },
-  { questionId: "q2", correct: false, answer: "b", timeMs: 1500 },
-  { questionId: "q3", correct: true, answer: "c", timeMs: 1800 },
+const mockAnswers: AnswerRecord[] = [
+  {
+    questionId: "q1",
+    optionId: "a",
+    correct: true,
+    severity: null,
+    responseMs: 2000,
+    category: "phishing",
+    difficulty: "easy",
+  },
+  {
+    questionId: "q2",
+    optionId: "b",
+    correct: false,
+    severity: "medium",
+    responseMs: 1500,
+    category: "url",
+    difficulty: "medium",
+  },
+  {
+    questionId: "q3",
+    optionId: "c",
+    correct: true,
+    severity: null,
+    responseMs: 1800,
+    category: "scenario",
+    difficulty: "easy",
+  },
 ];
 
 function renderResults(result = mockResult, answers = mockAnswers, onRestart = vi.fn()) {

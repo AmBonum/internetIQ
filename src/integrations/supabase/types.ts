@@ -33,6 +33,7 @@ export type Database = {
           stats: Json;
           survey_completed: boolean;
           survey_extras_completed: boolean;
+          test_set_id: string | null;
           top_fear: string | null;
           total_penalty: number;
           total_time_ms: number;
@@ -62,6 +63,7 @@ export type Database = {
           stats: Json;
           survey_completed?: boolean;
           survey_extras_completed?: boolean;
+          test_set_id?: string | null;
           top_fear?: string | null;
           total_penalty: number;
           total_time_ms: number;
@@ -91,10 +93,55 @@ export type Database = {
           stats?: Json;
           survey_completed?: boolean;
           survey_extras_completed?: boolean;
+          test_set_id?: string | null;
           top_fear?: string | null;
           total_penalty?: number;
           total_time_ms?: number;
           wants_courses?: boolean | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "attempts_test_set_id_fkey";
+            columns: ["test_set_id"];
+            isOneToOne: false;
+            referencedRelation: "test_sets";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      test_sets: {
+        Row: {
+          author_password_hash: string | null;
+          collects_responses: boolean;
+          created_at: string;
+          creator_label: string | null;
+          id: string;
+          max_questions: number;
+          passing_threshold: number;
+          question_ids: string[];
+          source_pack_slugs: string[] | null;
+        };
+        Insert: {
+          author_password_hash?: string | null;
+          collects_responses?: boolean;
+          created_at?: string;
+          creator_label?: string | null;
+          id?: string;
+          max_questions: number;
+          passing_threshold?: number;
+          question_ids: string[];
+          source_pack_slugs?: string[] | null;
+        };
+        Update: {
+          author_password_hash?: string | null;
+          collects_responses?: boolean;
+          created_at?: string;
+          creator_label?: string | null;
+          id?: string;
+          max_questions?: number;
+          passing_threshold?: number;
+          question_ids?: string[];
+          source_pack_slugs?: string[] | null;
         };
         Relationships: [];
       };

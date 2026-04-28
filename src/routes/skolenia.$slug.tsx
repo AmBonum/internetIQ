@@ -1,5 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { getCourseBySlug } from "@/content/courses";
+import type { CourseSection } from "@/content/courses/_schema";
 import { CourseHero } from "@/components/courses/CourseHero";
 import { CourseSectionView } from "@/components/courses/sections/CourseSections";
 import { RelatedCourses } from "@/components/courses/RelatedCourses";
@@ -63,7 +64,7 @@ function CoursePage() {
       <main className="mx-auto max-w-3xl px-4 pb-12 pt-12 sm:pt-16">
         <CourseHero course={course} />
 
-        {course.sections.map((section, idx) => (
+        {course.sections.map((section: CourseSection, idx: number) => (
           <CourseSectionView key={idx} section={section} idx={idx} />
         ))}
 
@@ -76,7 +77,7 @@ function CoursePage() {
               Zdroje
             </h2>
             <ul className="mt-3 space-y-1 text-sm" role="list">
-              {course.sources.map((s, i) => (
+              {course.sources.map((s: { label: string; url: string }, i: number) => (
                 <li key={i}>
                   <a
                     href={s.url}

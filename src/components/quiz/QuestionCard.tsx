@@ -23,6 +23,16 @@ export function QuestionCard({ question, index, total, onAnswer }: Props) {
     setSecondsLeft(timeLimit);
     setSelected(null);
     setRevealed(false);
+    // Mobile UX: carrying focus from the just-clicked option button onto
+    // the same DOM-position button of the next question makes "B" look
+    // pre-selected; carrying scroll position from a long question onto
+    // the next one hides the prompt below the fold. Reset both.
+    if (typeof document !== "undefined" && document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
+    if (typeof window !== "undefined") {
+      window.scrollTo({ top: 0, behavior: "auto" });
+    }
   }, [question.id, timeLimit]);
 
   const handleSubmit = useCallback(
