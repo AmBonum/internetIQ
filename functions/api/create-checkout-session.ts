@@ -198,7 +198,6 @@ export async function buildCheckoutSession(
     params.subscription_data = { metadata: input.metadata };
   } else {
     params.payment_intent_data = { metadata: input.metadata };
-    params.invoice_creation = { enabled: true };
   }
 
   return stripe.checkout.sessions.create(params);
@@ -260,8 +259,12 @@ export async function onRequestPost(ctx: RequestContext): Promise<Response> {
     }
     return jsonResponse(200, { url: session.url, id: session.id });
   } catch (err) {
+    const stripeErr = err as Record<string, unknown>;
     console.error("create-checkout-session", {
       message: err instanceof Error ? err.message : "unknown",
+      code: stripeErr?.code,
+      type: stripeErr?.type,
+      statusCode: stripeErr?.statusCode,
     });
     return jsonResponse(500, { error: "stripe_error" });
   }
