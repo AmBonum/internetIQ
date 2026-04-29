@@ -77,7 +77,7 @@ export const qrQuishingCourse: Course = {
       kind: "scenario",
       heading: "Centrum mesta, sobota ráno",
       story: `Na parkovacom automate vedľa nákupného centra skenujete QR kód označený „Rýchla platba". Stránka vyzerá rovnako ako mestský portál. Pýta sa na číslo parkovacieho miesta, EČV a číslo karty vrátane CVV kódu.`,
-      right_action: `CVV kód parkovacie automaty nikdy nepytajú — to je jednoznačný znak podvodu. Zatvoríte stránku. Zaplatíte priamo kartou na automate, prípadne cez oficálnu mestskú appku.`,
+      right_action: `CVV kód parkovacie automaty nikdy nepytajú — to je jednoznačný znak podvodu. Zatvoríte stránku. Zaplatíte priamo kartou na automate, prípadne cez oficiálnu mestskú appku.`,
     },
   ],
   sources: [

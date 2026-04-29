@@ -29,7 +29,7 @@ export const marketplaceCourse: Course = {
         description: `Súrne predám, sťahujem sa do Nemecka. Auto je v perfektnom stave, prvý majiteľ. Posielam fotky aj papiere na WhatsApp. Záujemca pošle 1 000 € zálohu, dovoz a obhliadka v Bratislave do 3 dní.`,
         imageEmoji: "🚗",
       },
-      commentary: `BMW 2018 s 90 tis. km má reálnu cenu 18-22 tisíc EUR. „Polovica" + „súrne" + „sťahujem sa" je kombinácia, ktorá NIKDY nie je pravda. Po zálohe auto neprídeš, telefón prestane fungovať.`,
+      commentary: `BMW 2018 s 90 tis. km má reálnu cenu 18-22 tisíc EUR. „Polovica" + „súrne" + „sťahujem sa" je kombinácia, ktorá NIKDY nie je pravda. Po zálohe auto nepríde, telefón prestane fungovať.`,
     },
     {
       kind: "example",

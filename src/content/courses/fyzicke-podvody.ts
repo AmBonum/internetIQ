@@ -15,7 +15,7 @@ export const fyzickePodvodyCourse: Course = {
     {
       kind: "intro",
       heading: "Pred obrazovkou si ostražitý. Čo pri dverách?",
-      body: `Phishing, smishing, vishing — väčšina ľudí vie, že hrozby číhajú online. Lenže podvody existujú aj v realite, tvárou v tvár. A práve tu zlyhávajú aj tí, ktorí by „na email nenaleteli". Fyzický kontakt buduje dôveru rýchlejšie než akákoľvek správa — útočník vidí tvoju reakiu, prispôsobuje sa v reálnom čase a využíva spoločenský tlak. Výsledok: rozhodneš sa rýchlivšie, menej kriticky. Táto kapitola ti ukáže najčastejšie scenáre a jednoduchú obranu.`,
+      body: `Phishing, smishing, vishing — väčšina ľudí vie, že hrozby číhajú online. Lenže podvody existujú aj v realite, tvárou v tvár. A práve tu zlyhávajú aj tí, ktorí by „na email nenaleteli". Fyzický kontakt buduje dôveru rýchlejšie než akákoľvek správa — útočník vidí tvoju reakciu, prispôsobuje sa v reálnom čase a využíva spoločenský tlak. Výsledok: rozhodneš sa rýchlejšie, menej kriticky. Táto kapitola ti ukáže najčastejšie scenáre a jednoduchú obranu.`,
     },
     {
       kind: "example",
@@ -90,7 +90,7 @@ export const fyzickePodvodyCourse: Course = {
     {
       kind: "scenario",
       heading: "Sobotný predpoludnie — zvonček",
-      story: `Práve ste doma sami. Zazvonili. Cez kukátko vidíte mužaa v reflexnej veste s tabletom. „Dobrý deň, SVB technik, kontrola plynovodného potrubia po havárii u susedov. Potrebujem prístup do panelu na chodbe a zobrať vzorku z vášho kohútika."`,
+      story: `Práve ste doma sami. Zazvonili. Cez kukátko vidíte muža v reflexnej veste s tabletom. „Dobrý deň, SVB technik, kontrola plynovodného potrubia po havárii u susedov. Potrebujem prístup do panelu na chodbe a zobrať vzorku z vášho kohútika."`,
       right_action: `Povedzte: „Počkajte, zavolám si overiť." Zavreli ste dvere (nezamkli ich, viete ich otvoriť). Cez google nájdete zákaznícku linku svojho plynárenského operátora. Zavoláte — a zistíte, že žiadna havarijná kontrola nebola plánovaná. Muža cez dvere informujete, že nevpustíte nikoho bez potvrdenia od spoločnosti, a zavoláte 158.`,
     },
   ],

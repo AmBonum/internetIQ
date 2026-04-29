@@ -16,6 +16,10 @@ import { qrQuishingCourse } from "./qr-quishing";
 import { aiDeepfakeCourse } from "./ai-deepfake-podvody";
 import { kradezKontCourse } from "./kradez-kont-socialnych-sieti";
 import { naborPraceScamCourse } from "./nabor-prace-podvody";
+import { pigButcheringCourse } from "./pig-butchering-podvod";
+import { malvertisingCourse } from "./malvertising-fake-reklamy";
+import { aiBezpecnostCourse } from "./ai-bezpecnost-co-nezdielat";
+import { aiPomocnikCourse } from "./ai-pomocnik-kazdy-den";
 
 export type { Course, CourseCategory, CourseSection, CourseDifficulty } from "./_schema";
 export { courseSchema } from "./_schema";
@@ -35,6 +39,10 @@ export const COURSES: Course[] = [
   aiDeepfakeCourse,
   kradezKontCourse,
   naborPraceScamCourse,
+  pigButcheringCourse,
+  malvertisingCourse,
+  aiBezpecnostCourse,
+  aiPomocnikCourse,
 ];
 
 const slugs = new Set<string>();

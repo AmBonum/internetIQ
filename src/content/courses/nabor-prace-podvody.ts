@@ -59,7 +59,7 @@ export const naborPraceScamCourse: Course = {
         `Plat výrazne nad trhom bez požadovanej kvalifikácie alebo skúseností.`,
         `Žiadosť o platbu pred nástupom — poplatok, kurz, certifikát, vybavenie.`,
         `Žiadosť o sken pasu, občianskeho alebo bankových údajov pred podpisom zmluvy.`,
-        `Vague popis práce: „spracovanie dát", „kontrola balíkov", „pomoc zákazníkom" — bez detailov.`,
+        `Nejasný popis práce: „spracovanie dát", „kontrola balíkov", „pomoc zákazníkom" — bez detailov.`,
         `Kontakt len cez WhatsApp alebo osobné správy, žiadny firemný email ani web.`,
         `Práca zahŕňa prijímanie platieb na váš účet a ďalší prevod — toto je klasický money mule.`,
         `Uviedli vás bez prihlasovania — „vy ste boli vybraní" bez žiadosti.`,
@@ -70,7 +70,7 @@ export const naborPraceScamCourse: Course = {
       heading: "Ako bezpečne hľadať prácu online",
       do: [
         `Overte firmu v Obchodnom registri SR (orsr.sk) pred akýmkoľvek kontaktom.`,
-        `Pohovor cez legitímnu videonástroj (Teams, Zoom) s overitelným ID zamestnávateľa.`,
+        `Pohovor cez legitímny videokonferenčný nástroj (Teams, Zoom) s overiteľným ID zamestnávateľa.`,
         `Podpíšte zmluvu pred začatím práce — a zmluvu si nechajte prečítať.`,
         `Pracovný inzerát nájdite na overených portáloch: profesia.sk, linkedin.com, kariera.sk.`,
         `Ak dostanete platbu vopred a majú vás žiadať previesť ďalej — zastavte sa a nahláste polícia.`,
@@ -86,7 +86,7 @@ export const naborPraceScamCourse: Course = {
       kind: "scenario",
       heading: "Pondelok ráno — správa na Instagrame",
       story: `Dostanete DM od účtu „eu.staz.official": „Ahoj, náš recruiter videl tvoj profil a myslíme, že si ideálny/a pre náš program v Bruseli. Platba 1 500 €/mesiac, štart o 2 týždne. Stačí uhradiť registračný poplatok 120 € a zaslať scan pasu."`,
-      right_action: `Nereagujete. Overíte si: EU stáže sa neprijímajú cez Instagram DM, EU nikdy nevyberá registračné poplatky, doménu „eu.staz.official" na Instagrame neexistuje žiadna EU inštitúcia. Nahlásite účet ako podvod priamo na Instagrame a ignorujete správu. Ak ste poplatok nejakým spôsobom zaplatili — kontaktujete banku okamžite a nahlásite políciu.`,
+      right_action: `Nereagujete. Overíte si: EU stáže sa neprijímajú cez Instagram DM, EU nikdy nevyberá registračné poplatky, účet „eu.staz.official" na Instagrame nepatrí žiadnej EU inštitúcii. Nahlásite účet ako podvod priamo na Instagrame a ignorujete správu. Ak ste poplatok nejakým spôsobom zaplatili — kontaktujete banku okamžite a nahlásite políciu.`,
     },
   ],
   sources: [

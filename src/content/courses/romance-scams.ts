@@ -34,7 +34,7 @@ export const romanceScamsCourse: Course = {
         label: `Konverzácia z Facebook Messenger (12. týždeň)`,
         body: `Tomás, 52, ropná plošina pri Nórsku: „Skončil sa mi kontrakt a chcem prísť za tebou do Bratislavy. Ale firma mi zadržala výplatu kým neuhradím colné poplatky 2 800 EUR za nástroje. Mohla by si mi to pomôcť uhradiť? Vrátim ti hneď ako prídem, peniaze mám na nórskom účte."`,
       },
-      commentary: `Iný frame, rovnaký scenár. „Ropná plošina" — exotická lokácia, neoveriteľná. „Colné poplatky / nástroje / výplata zadržaná" — konkrétne, ale neoveriteľné. Žiadna firma neoveruje colný dlh cez peňaženku zamestnanca, ani cez prítom partnerov.`,
+      commentary: `Iný frame, rovnaký scenár. „Ropná plošina" — exotická lokácia, neoveriteľná. „Colné poplatky / nástroje / výplata zadržaná" — konkrétne, ale neoveriteľné. Žiadna firma neoveruje colný dlh cez peňaženku zamestnanca, ani cez peňaženky ich partnerov.`,
     },
     {
       kind: "example",

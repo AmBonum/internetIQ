@@ -723,7 +723,7 @@ export const QUESTIONS: Question[] = [
     prompt: 'Volá ti niekto s indickým prízvukom: „Som z Microsoftu, váš počítač je infikovaný."',
     options: [
       bad("a", "Spolupracujem, dám mu vzdialený prístup", "critical"),
-      ok("b", "Zaveseím a zablokujem číslo"),
+      ok("b", "Zavesím a zablokujem číslo"),
       bad("c", "Pýtam sa detaily", "medium"),
     ],
     explanation:
@@ -1255,7 +1255,7 @@ export const QUESTIONS: Question[] = [
       ok("b", "Ignorujem — celebrity giveaway scam"),
     ],
     explanation:
-      "Celebrity giveaway scam (MrBeast, Musk, Bezos…) je všade. Žiadny prevod ti neprde.",
+      "Celebrity giveaway scam (MrBeast, Musk, Bezos…) je všade. Žiadny prevod ti nepríde.",
   },
   {
     id: "h-extortion-1",
@@ -3407,6 +3407,210 @@ export const QUESTIONS: Question[] = [
     ],
     explanation:
       "Apple posiela 6-miestne 2FA kódy pri prihlasovaní na nové zariadenie. Žiadny link. Pravidlo: ak kód príde a TY sa neprihlasuješ, NIEKTO skúša ovládnuť tvoje Apple ID — okamžite zmeň heslo cez appleid.apple.com.",
+  },
+
+  // ============ E10 — Pig butchering + malvertising + crypto recovery (IOCTA 2025/2026) ============
+
+  // ----- Pig butchering — šafránové prasiatko (8 otázok) -----
+  {
+    id: "s-pig-contact-1",
+    category: "scenario",
+    difficulty: "easy",
+    prompt:
+      'Na WhatsApp ti príde správa: „Ahoj Miro, posielam číslo od Tomáša, ale možno som sa pomýlil — ospravedlňujem sa!" Neznáme zahraničné číslo. Čo urobíš?',
+    options: [
+      bad("a", "Odpoviem — to sa stáva, môže to byť zaujímavý človek", "critical"),
+      ok("b", 'Správu ignorujem alebo odpoviem iba „Zlé číslo" a nič viac'),
+      bad("c", "Odpovedám a pýtam sa kde vzal moje číslo", "medium"),
+    ],
+    explanation:
+      '„Omylom" správa od cudzinca je klasický štart pig butchering podvodu. Útočník cielene skúša čísla — neexistuje náhodný omyl. Akákoľvek odpoveď otvára konverzáciu a potenciálne týždne manipulácie.',
+  },
+  {
+    id: "s-pig-video-1",
+    category: "scenario",
+    difficulty: "medium",
+    prompt:
+      'Cudzinec ti píše na WhatsApp už 3 týždne, každý deň. Ponúka video hovor, ale vždy ho odkladá — „zlé spojenie", „pracovné stretnutie". Tvoja reakcia?',
+    options: [
+      bad("a", "Viem, že má rušnú prácu — je to vážny človek", "critical"),
+      ok("b", "Bez živého videohovoru nedôverujem tejto osobe a finančné témy odmietam"),
+      bad("c", "Pošlem mu najprv malú sumu — overí sa tým jeho zámer", "critical"),
+    ],
+    explanation:
+      'Útočníci pig butchering schémy sa systematicky vyhýbajú videohvoru — ich „tvár" je ukradnutá z internetu. Tri týždne putovania bez jediného živého kontaktu je silný signál. Finančná transakcia, nech je akokoľvek malá, je vstupná brána do podvodu.',
+  },
+  {
+    id: "s-pig-platform-1",
+    category: "scenario",
+    difficulty: "medium",
+    prompt:
+      'Nový online "priateľ" ti odporučil investičnú platformu s odkazom, kde jeho portfólio vzrástlo o 180 % za 2 mesiace. Čo kontroluješ pred registráciou?',
+    options: [
+      bad("a", "Nič — ak mu to funguje, prečo nie mne", "critical"),
+      ok("b", "Overím platformu v registri NBS / ESMA — či má licenciu na Slovensku"),
+      bad("c", "Investujem malú sumu a uvidím", "critical"),
+    ],
+    explanation:
+      "Každý, kto ponúka investičné poradenstvo v SR, musí byť registrovaný v NBS (nbs.sk → Dohľad → Registre). Ak platforma v registri nie je, je nelegálna. 180 % za 2 mesiace je matematicky nemožný legitímny výnos.",
+  },
+  {
+    id: "p-pig-platform-url-1",
+    category: "url",
+    difficulty: "medium",
+    prompt:
+      'Priateľ z internetu ti poslal link na „overenú" investičnú platformu. Je táto URL v poriadku?',
+    visual: { kind: "url", url: "https://sk-invest-global-trade.com/dashboard", secure: true },
+    options: [
+      bad("a", "Áno — HTTPS a slovenský prefix sú dobré signály", "critical"),
+      ok("b", "Nie — žiadna regulovaná inštitúcia nemá takúto doménu"),
+    ],
+    explanation:
+      'Regulované investičné platformy sú buď priamo na doméne brokera (napr. xtb.com, portu.sk) alebo banky. Generické domény s „invest", „global", „trade" sú typický pig butchering scam. HTTPS nezaručuje, že stránka je legitímna.',
+  },
+  {
+    id: "s-pig-withdraw-1",
+    category: "scenario",
+    difficulty: "hard",
+    prompt:
+      'Chceš vybrať "zisky" z online investičnej platformy. Platforma hovorí: „Pred výplatou 9 200 € musíte uhradiť daňovú zálohu 15 % (1 380 €) kryptomenou." Čo urobíš?',
+    options: [
+      bad("a", "Zaplatím — chcem dostať zisky", "critical"),
+      ok("b", "Odmieta — toto je podvod, zálohu na daň pred výberom nikdy neplatím"),
+      bad("c", "Zaplatím polovicu a uvidím", "critical"),
+    ],
+    explanation:
+      "Toto je posledná fáza pig butchering: peniaze na platforme sú fiktívne, záloha je reálna strata. Regulovaná platforma NIKDY nevyžaduje daňovú zálohu pred výberom a vôbec nie v kryptomenách. Daň z investičného zisku platieb SR daňovnímu úradu — až po prijatí peňazí, nie pred.",
+  },
+  {
+    id: "f-pig-fake-1",
+    category: "fake_vs_real",
+    difficulty: "hard",
+    prompt: "Ktorý z týchto znakov naznačuje pig butchering (NIE legitímnu investičnú platformu)?",
+    options: [
+      ok(
+        "a",
+        'Prvý kontakt bol „omylná" správa od cudzinca, potom romantické záujmy, potom investičná ponuka',
+      ),
+      bad("b", "Platforma je registrovaná v NBS a má bankový prevod ako možnosť vkladu", "minor"),
+      bad("c", "Broker ponúka video konzultáciu s licencovaným poradcom na Slovensku", "minor"),
+    ],
+    explanation:
+      "Legitímna platforma nikdy nezačína cez osobný romantický záujem a nikdy nefunguje výlučne cez odkaz od jednej osoby. Pig butchering je komplexná sociálna manipulácia, nie len investičná reklama.",
+  },
+  {
+    id: "s-crypto-recovery-1",
+    category: "scenario",
+    difficulty: "hard",
+    prompt:
+      'Po strate 4 000 € na falošnej investičnej platforme ti na Facebooku napíše: „Pomáhame obetiam podvodov získať kryptomeny späť — 80 % úspešnosť, poplatok iba po vrátení." Reaguješ?',
+    options: [
+      bad("a", "Áno — nič nestrácam, poplatok platím až po vrátení", "critical"),
+      ok("b", "Nie — recovery scam je ďalší podvod na obetí predchádzajúceho"),
+      bad("c", "Pošlem malú sumu ako test — ak vráti, pošlem viac", "critical"),
+    ],
+    explanation:
+      'Crypto recovery scam cieli priamo na obete predchádzajúcich podvodov. Útočníci vedia o tvojej strate (kupujú databázy obetí) a sľubujú „vrátenie" za poplatok. Ak zaplatíš, prídu ďalšie poplatky. Peniaze stratiť sa prakticky nedajú vrátiť technicky — kontaktuj políciu SR (158) a podaj trestné oznámenie, nie platené recovery firmy.',
+  },
+  {
+    id: "s-pig-social-1",
+    category: "scenario",
+    difficulty: "easy",
+    prompt:
+      'Neznámy kontakt na Instagrame ti posiela správy 2 týždne — zaujíma sa o teba, komentuje fotky, pýta na prácu. Potom zmení tému: „Kamoška zarobila 5 000 € cez platformu, ukážem ti." Čo to je?',
+    options: [
+      bad("a", "Možno naozaj chce pomôcť — spýtam sa viac", "critical"),
+      ok("b", "Pig butchering — budovanie dôvery pred investičným podvodom"),
+      bad("c", "Multilevel marketing — budem opatrný, ale vypočujem si", "medium"),
+    ],
+    explanation:
+      "Sociálna platforma (Instagram, TikTok, Tinder) + neznámý záujem + niekoľko týždňov budovania vzťahu + náhla zmena na investičnú tému = pig butchering. Kamoška, ktorá zarobila, je súčasť scenáru — neexistuje alebo je tiež obeť.",
+  },
+
+  // ----- Malvertising — falošné Google / Meta reklamy (6 otázok) -----
+  {
+    id: "u-malvad-bank-1",
+    category: "url",
+    difficulty: "easy",
+    prompt:
+      'Hľadaš „tatra banka prihlasenie" na Google. Prvý výsledok má štítok „Sponzorované" a URL je táto. Klikneš?',
+    visual: { kind: "url", url: "https://tatrabanka-prihlasenie.sk/ib/login", secure: true },
+    options: [
+      bad("a", "Áno — prvý výsledok vo vyhľadávači je vždy správny", "critical"),
+      ok("b", "Nie — pravá doména je tatrabanka.sk, nie tatrabanka-prihlasenie.sk"),
+    ],
+    explanation:
+      "Malvertising = útočníci platia za Google reklamu s falošnou doménou. tatrabanka-prihlasenie.sk je samostatná doména, nie subdoména banky. Tatra banka používa výlučne tatrabanka.sk a jej subdomény (napr. tb.tatrabanka.sk). Prihlasovanie záložkou je vždy bezpečnejšie ako Google.",
+  },
+  {
+    id: "u-malvad-bank-2",
+    category: "url",
+    difficulty: "easy",
+    prompt:
+      'Vo výsledkoch Google vidíš reklamu „VÚB Internetbanking — Prihlásenie". URL v reklame je táto. Je v poriadku?',
+    visual: { kind: "url", url: "https://vub-banking.online/prihlasenie", secure: true },
+    options: [
+      bad("a", "Áno — VÚB je tam uvedená, určite je to ich stránka", "critical"),
+      ok("b", "Nie — VÚB je na vub.sk, nie vub-banking.online"),
+    ],
+    explanation:
+      "Zobrazený text reklamy môže hovoriť čokoľvek — kľúčová je doména v URL. vub-banking.online nie je VÚB banka. Pravá VÚB = vub.sk. HTTPS a zelený zámok nie sú dokladom autenticity — sú bežné aj na phishingových stránkach.",
+  },
+  {
+    id: "u-malvad-m365-1",
+    category: "url",
+    difficulty: "medium",
+    prompt:
+      "Bing ti ako sponzorovaný výsledok zobrazí prihlasovanie do Microsoft 365 na tejto adrese. Prihlósiš sa?",
+    visual: { kind: "url", url: "https://microsoft365-sk.login-secure.com/oauth2", secure: true },
+    options: [
+      bad("a", "Áno — vidím Microsoft v adrese aj HTTPS", "critical"),
+      ok("b", "Nie — pravý M365 login je login.microsoftonline.com, nie login-secure.com"),
+    ],
+    explanation:
+      'Microsoft 365 autentifikácia prebieha výlučne na login.microsoftonline.com alebo login.microsoft.com. Akákoľvek iná doména s kľúčovým slovom „microsoft" v texte je phishing. Útočník zaplatil za reklamu na Bing — spamovanie reklámnych sietí falošnými loginmi je bežná taktika.',
+  },
+  {
+    id: "s-malvad-invest-1",
+    category: "scenario",
+    difficulty: "medium",
+    prompt:
+      'Na Facebooku vidíš reklamu: „Slovenská sporiteľňa — krypto portál pre klientov SR. Garantovaný výnos 12 % mesačne." Čo s tým?',
+    options: [
+      bad("a", "Kliknem — SLSP je dôveryhodná banka, to musí byť legitímne", "critical"),
+      ok("b", "Ignorujem — garantovaný výnos je zákonom zakázaný a SLSP krypto portál nemá"),
+      bad("c", "Registrujem sa s malou sumou — uvidím", "critical"),
+    ],
+    explanation:
+      "SLSP (ani žiadna regulovaná banka) nesmie garantovať výnos — to je porušenie zákona o cenných papieroch. SLSP krypto portál na rok 2026 neprevádzkuje. Reklama na sociálnej sieti s takýmto obsahom je vždy podvod — nahlás ju Facebooku aj NBS.",
+  },
+  {
+    id: "h-malvad-legit-1",
+    category: "honeypot",
+    difficulty: "medium",
+    prompt:
+      'Vo výsledkoch Google vidíš reklamu „ČSOB — Prihlásenie do George". URL v reklamnom odkaze ukazuje na csob.sk. Prihlósiš sa?',
+    visual: { kind: "url", url: "https://csob.sk/george/login", secure: true },
+    options: [
+      ok("a", "Áno — csob.sk je pravá doména ČSOB"),
+      bad("b", "Nie — reklamy sú vždy nebezpečné", "minor"),
+    ],
+    explanation:
+      "Reklamy NIE SÚ vždy nebezpečné — nebezpečná je falošná doména. csob.sk je legitímna doména ČSOB. Kľúčové pravidlo: skontroluj doménu v URL, nie len vizuálny štítok reklamy. Ak doména sedí, reklama môže byť bezpečná.",
+  },
+  {
+    id: "s-malvad-google-habit-1",
+    category: "scenario",
+    difficulty: "easy",
+    prompt:
+      "Ako si najlepšie zabezpečiť, že nikdy neklikneš na falošnú Google reklamu na bankové prihlásenie?",
+    options: [
+      bad("a", "Používam vždy Google — rýchlo nájdem čo potrebujem", "medium"),
+      ok("b", "Uložím si prihlasovanie do záložiek prehliadača a tieto záložky vždy používam"),
+      bad("c", 'Kontrolujem vždy, či reklama má štítok „Sponzorované" — také preskočím', "minor"),
+    ],
+    explanation:
+      'Záložka (bookmark) v prehliadači je najbezpečnejší spôsob — priamo zasiane do prehliadača, nedá sa sfalšovať reklamou. Preskakovanie „Sponzorovaných" výsledkov je dobré, ale nie dostatočné — útočníci platia aj za organické SEO pozície.',
   },
 ];
 

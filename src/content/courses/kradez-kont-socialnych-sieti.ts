@@ -14,7 +14,7 @@ export const kradezKontCourse: Course = {
     {
       kind: "intro",
       heading: "Prečo chcú váš Instagram viac ako váš email",
-      body: `Účet na sociálnych sieťach má pre útočníka väčšiu hodnotu, než si myslíte. Prístup k vášmu Instagramu, Facebooku alebo TikToku poskytuje: databázu vašich kontaktov (potenciálne obete), históriu komunikácie (material pre vydieranie), dôveryhodný kanál pre ďalšie podvody (scamovanie priateľov z vašého mena), prístup k prepojeným aplikáciám a niekedy aj priamu platobné funkcie. Krádež účtu prebehne za menej ako minútu — obrana tiež netrvá dlho.`,
+      body: `Účet na sociálnych sieťach má pre útočníka väčšiu hodnotu, než si myslíte. Prístup k vášmu Instagramu, Facebooku alebo TikToku poskytuje: databázu vašich kontaktov (potenciálne obete), históriu komunikácie (materiál pre vydieranie), dôveryhodný kanál pre ďalšie podvody (scamovanie priateľov z vášho mena), prístup k prepojeným aplikáciám a niekedy aj priame platobné funkcie. Krádež účtu prebehne za menej ako minútu — obrana tiež netrvá dlho.`,
     },
     {
       kind: "example",
@@ -38,7 +38,7 @@ export const kradezKontCourse: Course = {
         body: "Haha toto to musis vidiet, si tam aj ty 😂 → cutt.ly/xy7k2",
         link: "https://cutt.ly/xy7k2",
       },
-      commentary: `Kamoška to nenapisala — jej účet je kompromitovaný. Útočník posiela správu všetkým jej kontaktom. Link po naskenovaní buď inštaluje malware alebo vedie na falošnú Instagram login stránku. Pravidlo: ak je link bez kontextu od kohokoľvek — overíte priamym telefonátom/SMS pred kliknutím.`,
+      commentary: `Kamoška to nenapísala — jej účet je kompromitovaný. Útočník posiela správu všetkým jej kontaktom. Link po naskenovaní buď inštaluje malware alebo vedie na falošnú Instagram login stránku. Pravidlo: ak je link bez kontextu od kohokoľvek — overíte priamym telefonátom/SMS pred kliknutím.`,
     },
     {
       kind: "example",
@@ -48,7 +48,7 @@ export const kradezKontCourse: Course = {
         label: "Direct message z vášho vlastného locknutého účtu",
         body: `„Máme prístup k vášmu účtu a súkromným správam. Zaplaťte 200 EUR v Bitcoine na adresu [xxx] do 48 hodín alebo zverejníme obsah. Ak kontaktujete políciu, okamžite publikujeme."`,
       },
-      commentary: `Toto je sextortion / vydieranie. 90 % týchto správ sú bluf — útočníci posielajú tisíce správ v nádeji, že niekto zaplatí. Plaťte! Nikdy. Nahláste Instagramu (help.instagram.com), zmeňte heslo, nahláste polícia 158. Dokumentujte screenshotmi.`,
+      commentary: `Toto je sextortion / vydieranie. 90 % týchto správ sú bluf — útočníci posielajú tisíce správ v nádeji, že niekto zaplatí. Neplaťte! Nikdy. Nahláste Instagramu (help.instagram.com), zmeňte heslo, nahláste polícia 158. Dokumentujte screenshotmi.`,
     },
     {
       kind: "checklist",
