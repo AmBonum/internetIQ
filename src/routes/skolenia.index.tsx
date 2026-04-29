@@ -1,11 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
+import { Search, X } from "lucide-react";
 import { COURSES } from "@/content/courses";
 import type { CourseCategory } from "@/content/courses";
 import { CourseCard } from "@/components/courses/CourseCard";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { SITE_ORIGIN } from "@/config/site";
+import { searchCourses } from "@/lib/course-search";
 
 const CATEGORY_LABEL: Record<CourseCategory, string> = {
   sms: "SMS",
@@ -65,6 +67,8 @@ export const Route = createFileRoute("/skolenia/")({
 
 function CoursesIndexPage() {
   const [activeCategories, setActiveCategories] = useState<Set<CourseCategory>>(new Set());
+  const [query, setQuery] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const availableCategories = useMemo(() => {
     const seen = new Set<CourseCategory>();
@@ -73,9 +77,15 @@ function CoursesIndexPage() {
   }, []);
 
   const filtered = useMemo(() => {
-    if (activeCategories.size === 0) return COURSES;
-    return COURSES.filter((c) => activeCategories.has(c.category));
-  }, [activeCategories]);
+    let result = COURSES;
+    if (activeCategories.size > 0) {
+      result = result.filter((c) => activeCategories.has(c.category));
+    }
+    if (query.trim()) {
+      result = searchCourses(result, query);
+    }
+    return result;
+  }, [activeCategories, query]);
 
   function toggleCategory(cat: CourseCategory) {
     setActiveCategories((prev) => {
@@ -85,6 +95,8 @@ function CoursesIndexPage() {
       return next;
     });
   }
+
+  const isFiltered = activeCategories.size > 0 || query.trim().length > 0;
 
   return (
     <div className="min-h-screen bg-background">
@@ -96,6 +108,33 @@ function CoursesIndexPage() {
             registrácia, žiadne reklamy. 5 – 20 minút na školenie.
           </p>
         </header>
+
+        {/* Search bar */}
+        <div className="relative mb-4">
+          <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <input
+            ref={inputRef}
+            type="search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Hľadaj školenie… napr. seniori, krypto, AI, phishing"
+            aria-label="Hľadaj školenie"
+            className="h-11 w-full rounded-xl border border-border/60 bg-card/30 pl-10 pr-10 text-sm outline-none transition placeholder:text-muted-foreground/60 focus:border-primary/60 focus:bg-card/60 focus:ring-2 focus:ring-primary/20"
+          />
+          {query && (
+            <button
+              type="button"
+              aria-label="Vymazať vyhľadávanie"
+              onClick={() => {
+                setQuery("");
+                inputRef.current?.focus();
+              }}
+              className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-0.5 text-muted-foreground transition hover:text-foreground"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          )}
+        </div>
 
         {availableCategories.length > 1 && (
           <section
@@ -140,8 +179,28 @@ function CoursesIndexPage() {
           </section>
         )}
 
+        {/* Result count */}
+        {isFiltered && filtered.length > 0 && (
+          <p className="mb-4 text-sm text-muted-foreground">
+            {filtered.length === 1
+              ? "1 školenie"
+              : filtered.length < 5
+                ? `${filtered.length} školenia`
+                : `${filtered.length} školení`}
+            {query.trim() ? ` pre „${query.trim()}"` : ""}
+          </p>
+        )}
+
         {filtered.length === 0 ? (
-          <p className="text-center text-muted-foreground">Žiadne školenia pre vybraté filtre.</p>
+          <div className="py-16 text-center">
+            <p className="text-muted-foreground">
+              Nenašlo sa žiadne školenie
+              {query.trim() ? ` pre „${query.trim()}"` : " pre vybraté filtre"}.
+            </p>
+            <p className="mt-2 text-sm text-muted-foreground/70">
+              Skúste: seniori, krypto, AI, phishing, romance, práca, QR…
+            </p>
+          </div>
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {filtered.map((c) => (
