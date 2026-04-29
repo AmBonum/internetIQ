@@ -68,7 +68,7 @@ Po 2 dňoch: „Ojoj, trh sa otočil, tvoja pozícia hrozí likvidáciou. Pošli
 
 Po týždni: „Nepodarilo sa zachrániť pozíciu, ale máš nárok na refundáciu — pošli 1 200 EUR daň."`,
       },
-      commentary: `Neexistuje legitímny broker, ktorý ti zavolá cez WhatsApp a tlačí ťa na vyšší vklad. Marek je v call-centre v Albánsku alebo Izraeli, čítate skript. „Margin call" a „daň z refundácie" sú farebné variácie na to isté: pošli ešte viac peňazí.`,
+      commentary: `Neexistuje legitímny broker, ktorý ti zavolá cez WhatsApp a tlačí ťa na vyšší vklad. Marek je v call-centre v Albánsku alebo Izraeli, číta skript. „Margin call" a „daň z refundácie" sú farebné variácie na to isté: pošli ešte viac peňazí.`,
     },
     {
       kind: "example",

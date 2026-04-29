@@ -80,7 +80,7 @@ export const aiDeepfakeCourse: Course = {
     {
       kind: "scenario",
       heading: "Nedeľný obed — telefón zavibruje",
-      story: `Sedíte pri obede. Zavolá číslo vášho syna. Hovorí „tato" a vysvetluje, že je v Viedni zastihnutý bez peňaženky po nehodičke. Počujete jeho hlas, dokonca aj jeho typický smiech pri nervozite. Pýta si 900 EUR prevodom hned.`,
+      story: `Sedíte pri obede. Zavolá číslo vášho syna. Hovorí „tato" a vysvetluje, že je vo Viedni zastihnutý bez peňaženky po nehodičke. Počujete jeho hlas, dokonca aj jeho typický smiech pri nervozite. Pýta si 900 EUR prevodom hneď.`,
       right_action: `Zavesíte. Vytočíte syna na jeho čísle z kontaktov. Syn zdvíha z domu — je v poriadku a o ničom nevie. Nahlásite hovor na 158 (podvod, klonovanie hlasu) a upozorníte príbuzných.`,
     },
   ],

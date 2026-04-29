@@ -22,7 +22,7 @@ export const dataHygieneCourse: Course = {
       flags: [
         `Používaš to isté heslo na viacerých službách.`,
         `Heslo je „menoSluzby123" alebo dátum narodenia.`,
-        `Nemáš zapnuté 2FA na e-maili (ten je kľúč ku všetkému).`,
+        `Nemáš zapnuté 2FA na e-maile (ten je kľúč ku všetkému).`,
         `Posledných 12 mesiacov si nezmenil žiadne heslo.`,
         `Tvoj e-mail je v haveibeenpwned.com — pravdepodobne uniklo aspoň jedno heslo.`,
         `Ukladáš si heslá v Notes / Excel / na papier vedľa monitora.`,

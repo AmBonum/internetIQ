@@ -107,7 +107,7 @@ export const becWorkplaceCourse: Course = {
         `Neignorovať „skoro správnu" doménu — vždy preveriť písmeno po písmene.`,
         `Nepoužiť kontaktné číslo z e-mailu na callback — vždy z firemného adresára.`,
         `Neprijímať „embargo" / „dôvernosť" ako dôvod nepovedať to nikomu.`,
-        `Nepostpoint procesné kontroly „lebo CEO sa hnevá, že to dlho trvá".`,
+        `Neodkladaj procesné kontroly „lebo CEO sa hnevá, že to dlho trvá".`,
       ],
     },
     {
