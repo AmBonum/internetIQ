@@ -19,10 +19,40 @@ function buildRequest(body: unknown, ip = "203.0.113.1") {
   });
 }
 
-function mockSupabaseInsert(returnedId = "set_abc123", error: string | null = null) {
-  return vi.spyOn(globalThis, "fetch").mockImplementation(async (input) => {
+interface MockOpts {
+  hashReturn?: string | null;
+  hashError?: string | null;
+  capturedInsert?: { body?: unknown };
+}
+
+function mockSupabaseInsert(
+  returnedId = "set_abc123",
+  error: string | null = null,
+  opts: MockOpts = {},
+) {
+  return vi.spyOn(globalThis, "fetch").mockImplementation(async (input, init) => {
     const url = typeof input === "string" ? input : (input as Request).url;
+    if (url.includes("/rest/v1/rpc/hash_test_set_password")) {
+      if (opts.hashError) {
+        return new Response(JSON.stringify({ message: opts.hashError }), {
+          status: 500,
+          headers: { "content-type": "application/json" },
+        });
+      }
+      return new Response(JSON.stringify(opts.hashReturn ?? "$2a$10$STUBHASH"), {
+        status: 200,
+        headers: { "content-type": "application/json" },
+      });
+    }
     if (url.includes("/rest/v1/test_sets")) {
+      if (opts.capturedInsert) {
+        const bodyText = typeof init?.body === "string" ? init.body : "";
+        try {
+          opts.capturedInsert.body = JSON.parse(bodyText);
+        } catch {
+          opts.capturedInsert.body = bodyText;
+        }
+      }
       if (error) {
         return new Response(JSON.stringify({ message: error }), {
           status: 400,
@@ -222,5 +252,109 @@ describe("POST /api/test-sets — supabase failures", () => {
     });
     expect(response.status).toBe(500);
     expect((await response.json()).error).toBe("insert_failed");
+  });
+});
+
+describe("POST /api/test-sets — E12.2 education mode", () => {
+  const eduBase = {
+    question_ids: realIds,
+    passing_threshold: 70,
+    max_questions: realIds.length,
+  } as const;
+
+  it("hashes the password via RPC and INSERTs hash + collects_responses=true", async () => {
+    const captured: { body?: unknown } = {};
+    mockSupabaseInsert("set_edu_1", null, {
+      hashReturn: "$2a$10$ABCDE",
+      capturedInsert: captured,
+    });
+    const response = await onRequestPost({
+      request: buildRequest({
+        ...eduBase,
+        collects_responses: true,
+        author_password: "very-strong-pass",
+      }),
+      env,
+    });
+    expect(response.status).toBe(200);
+    const body = await response.json();
+    expect(body.id).toBe("set_edu_1");
+    expect(body.url).toBe("/test/zostava/set_edu_1");
+    expect(body.results_url).toBe("/test/zostava/set_edu_1/vysledky");
+
+    const insertBody = captured.body as Record<string, unknown> | Array<Record<string, unknown>>;
+    const row = Array.isArray(insertBody) ? insertBody[0] : insertBody;
+    expect(row.collects_responses).toBe(true);
+    expect(row.author_password_hash).toBe("$2a$10$ABCDE");
+    // Plain password must NOT leak into the INSERT row.
+    expect(JSON.stringify(row)).not.toContain("very-strong-pass");
+  });
+
+  it("returns 400 password_required when collects_responses=true but no password", async () => {
+    mockSupabaseInsert();
+    const response = await onRequestPost({
+      request: buildRequest({ ...eduBase, collects_responses: true }),
+      env,
+    });
+    expect(response.status).toBe(400);
+    expect((await response.json()).error).toBe("password_required");
+  });
+
+  it("returns 400 password_length for <8 chars", async () => {
+    mockSupabaseInsert();
+    const response = await onRequestPost({
+      request: buildRequest({
+        ...eduBase,
+        collects_responses: true,
+        author_password: "short",
+      }),
+      env,
+    });
+    expect(response.status).toBe(400);
+    expect((await response.json()).error).toBe("password_length");
+  });
+
+  it("returns 400 password_without_collects when password set without toggle", async () => {
+    mockSupabaseInsert();
+    const response = await onRequestPost({
+      request: buildRequest({
+        ...eduBase,
+        collects_responses: false,
+        author_password: "valid-pass-1234",
+      }),
+      env,
+    });
+    expect(response.status).toBe(400);
+    expect((await response.json()).error).toBe("password_without_collects");
+  });
+
+  it("returns 500 hash_failed when RPC errors", async () => {
+    mockSupabaseInsert("set_x", null, { hashError: "rpc broken" });
+    const response = await onRequestPost({
+      request: buildRequest({
+        ...eduBase,
+        collects_responses: true,
+        author_password: "valid-pass-1234",
+      }),
+      env,
+    });
+    expect(response.status).toBe(500);
+    expect((await response.json()).error).toBe("hash_failed");
+  });
+
+  it("non-edu submit unchanged: no results_url, no hash call, no edu fields in INSERT", async () => {
+    const captured: { body?: unknown } = {};
+    mockSupabaseInsert("set_anon", null, { capturedInsert: captured });
+    const response = await onRequestPost({
+      request: buildRequest({ ...eduBase }),
+      env,
+    });
+    expect(response.status).toBe(200);
+    const body = await response.json();
+    expect(body.results_url).toBeUndefined();
+    const insertBody = captured.body as Record<string, unknown> | Array<Record<string, unknown>>;
+    const row = Array.isArray(insertBody) ? insertBody[0] : insertBody;
+    expect(row.collects_responses).toBe(false);
+    expect(row.author_password_hash).toBeNull();
   });
 });
