@@ -80,26 +80,23 @@ tasks/
    build. Žiadne batch-merge bez review.
 5. **Archív** — splnené plány idú do `tasks/done/{rok}/`.
 
-## Definition of Ready (DoR — pred štartom story)
+## Definition of Ready / Definition of Done
 
-- [ ] Acceptance criteria odsúhlasené (PO + 1 reviewer)
-- [ ] Závislosti hotové (alebo paralelne plánované)
-- [ ] Open question pre danú story zodpovedaná
-- [ ] Story má svoje vlastné branch-name a commit prefix
-  (napr. `feat(consent): ...`, `feat(survey): ...`,
-  `feat(review): ...`, `feat(trap): ...`, `feat(courses): ...`)
+Kanonický kontrolný zoznam je v samostatnom súbore (anglicky, ako CLAUDE.md):
 
-## Definition of Done (DoD — po dokončení story)
+📋 **[`tasks/DEFINITION_OF_DONE.md`](./DEFINITION_OF_DONE.md)** — pokrýva:
 
-- [ ] **Acceptance criteria** splnené (overiteľné automatizovaným testom)
-- [ ] **Implementácia** + **testy** v PR
-- [ ] `npm run lint` zelený, `npm run build` zelený
-- [ ] **Týkajúca sa dokumentácia** aktualizovaná
-  (README, /privacy, /cookies, course content guide ...)
-- [ ] **Code review prešlo vo fresh kontexte** (zero MAJOR+ findings)
-- [ ] Žiadne `// TODO`, `// FIXME`, `console.log` ostávajúce v PR
-- [ ] Žiadne nové ESLint warnings nad rámec aktuálneho count-u
-- [ ] **Privacy/cookie politika aktualizovaná**, ak feature pridáva
-  nový typ údaja alebo nový sprostredkovateľ
-- [ ] **`CONSENT_VERSION`** bumpnutý ak feature pridáva nové
-  typy spracúvania (koordinovať batch-bump na konci epicu)
+- § 1 — Definition of Ready (pred štartom story)
+- § 2 — Story DoD (per-story: implementation, unit tests, docs, CR)
+- § 3 — Feature / Epic DoD (Playwright integration + e2e testy, schema +
+  secrets, privacy, a11y, perf, security review)
+- § 4 — test pyramída (čo patrí kam — Vitest vs Playwright integration vs e2e)
+- § 5 — Pre-merge gates (lint / test / build / e2e zelené)
+- § 6 — Post-merge verification (smoke check, migrácie, monitoring, rollback)
+- § 7 — Cross-cutting concerns (DB schema / nový API endpoint / nová route /
+  PII / tretí service)
+- § 8 — Quick reference scenáre
+- § 9 — Anti-patterns
+
+Všetky stories v `tasks/stories/` referujú tento dokument — žiadna story sa
+neoznačí ako ✅ Done bez splnenia § 2, žiadny epic sa nemerguje bez § 3.
