@@ -240,10 +240,10 @@ Three reference plans live in `specs/examples/`. **Read them before writing your
 5. **Confirm the feature boundary** — what the story / browser tells you is IN scope vs OUT. Write the "Out of scope" section first; it pre-empts scope creep. Copy from the source story's "Out of scope" verbatim where possible, then extend.
 6. **Walk happy paths first**, mapping each AC from the story to a TC (cite as `**AC reference:** AC-N`). This surfaces the user-visible vocabulary that "Negative" and "Edge cases" reuse.
 7. **Convert each Risk row from the source story into an edge-case TC** (cite as `**Risk reference:** "<risk text>"`). Then run the **15-category edge-case checklist (§3) explicitly** for anything the story didn't anticipate — do not skip.
-8. **Save the plan** — primary path: `planner_save_plan` with `specs/<area>/<slug>.md`. The MCP `planner_save_plan` tool is the **canonical** way to create a plan file (it validates the path and registers metadata). Use the `Write` tool only when you need ad-hoc files outside the plan canon (e.g. a new sub-folder `README.md` to document a niche convention).
+8. **Save the plan with `Write`, NOT with `planner_save_plan`.** The MCP `planner_save_plan` tool injects its own template (`## Application Overview`, `## Test Scenarios`, numbered `1.1.` headings, `**Steps:**` blocks) that **does not match** the project's required format from `specs/README.md` and § 4 of this prompt. Always author the plan body in this prompt's format and write it directly via `Write` to `specs/<area>/<slug>.md`. **If you find yourself producing `## Application Overview` or `**Steps:**` headings, stop — the MCP template hijacked the format; rewrite the file via `Write` with the correct skeleton from § 4.**
 9. **Update an existing plan** — use `Edit` for in-place updates when a feature changes. Bump `**Last updated:**`. Don't create v2 files.
 10. **Create a new sub-folder** — use `Bash mkdir -p specs/<area>/<sub>/` only when the area is at the 5-file cap and a new feature genuinely belongs deeper (not laterally). Add `.gitkeep` if leaving it empty initially.
-11. **Submit** — `planner_submit_plan` to register the plan with the test-runner MCP server. Generator agent picks it up from there.
+11. **Submit (optional)** — `planner_submit_plan` registers the plan with the test-runner MCP server. The generator agent reads plans from `specs/` directly via `Read`, so submission is informational, not a contract. Skip it if it errors; it does not block downstream agents.
 
 ---
 

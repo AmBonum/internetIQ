@@ -16,6 +16,15 @@ export class ConsentBanner {
     return this.page.locator("#consent-banner-title").locator("..").locator("..");
   }
 
+  /**
+   * The consent preferences modal opened by the banner's "Nastavenia"
+   * button OR by the footer's "Nastavenia cookies" button. Same Radix
+   * dialog regardless of trigger.
+   */
+  get preferencesDialog() {
+    return this.page.getByRole("dialog");
+  }
+
   async isVisible(): Promise<boolean> {
     return this.root.isVisible();
   }
