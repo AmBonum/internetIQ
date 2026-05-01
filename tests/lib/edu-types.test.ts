@@ -22,7 +22,7 @@ describe("edu/types — rowsToCsv", () => {
     expect(lines).toHaveLength(2);
   });
 
-  it("formats fields correctly: Skóre as raw, Vyhovel as 'áno'/'nie', čas in seconds", () => {
+  it('formats fields correctly: "Skóre" as raw, "Vyhovel" as "áno"/"nie", "Čas" in seconds', () => {
     const csv = rowsToCsv([sample({ total_time_ms: 90_000, final_score: 71 })], 70);
     const fields = csv.split("\r\n")[1].split(",");
     expect(fields[2]).toBe("71"); // Skóre
@@ -30,7 +30,7 @@ describe("edu/types — rowsToCsv", () => {
     expect(fields[5]).toBe("90"); // Čas (s)
   });
 
-  it("flips Vyhovel to 'nie' when score is below threshold", () => {
+  it('flips "Vyhovel" to "nie" when score is below threshold', () => {
     const csv = rowsToCsv([sample({ final_score: 50 })], 70);
     const fields = csv.split("\r\n")[1].split(",");
     expect(fields[4]).toBe("nie");

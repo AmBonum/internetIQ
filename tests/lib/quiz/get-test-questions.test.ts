@@ -35,7 +35,7 @@ describe("getTestQuestions", () => {
     expect(honeypotInBank).toBeGreaterThanOrEqual(94);
   });
 
-  it("E9.2 legit-SMS bank has exactly 20 questions (8 pošta + 6 banky + 4 úrady + 2 borderline)", () => {
+  it("E9.2 legit-SMS bank has exactly 20 questions (8 post + 6 banks + 4 government offices + 2 borderline)", () => {
     const e92 = QUESTIONS.filter(
       (q) =>
         q.id.startsWith("h-sms-posta-legit-") ||

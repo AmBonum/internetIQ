@@ -1,13 +1,13 @@
 -- ============================================================================
--- INTERNET IQ TEST — Kompletná schéma databázy
+-- INTERNET IQ TEST — Complete database schema
 -- ============================================================================
--- Použitie: 
--- 1. Vytvor si nový projekt na supabase.com (zadarmo)
--- 2. V Supabase dashboard otvor: SQL Editor -> New query
--- 3. Skopíruj celý obsah tohto súboru a klikni RUN
+-- Usage:
+-- 1. Create a new project on supabase.com (free tier).
+-- 2. In the Supabase dashboard open: SQL Editor -> New query.
+-- 3. Copy the full contents of this file and click RUN.
 -- ============================================================================
 
--- 1) TABUĽKA POKUSOV
+-- 1) ATTEMPTS TABLE
 CREATE TABLE public.attempts (
   id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
   share_id TEXT NOT NULL UNIQUE,
@@ -40,13 +40,13 @@ CREATE TABLE public.attempts (
   survey_extras_completed BOOLEAN NOT NULL DEFAULT false
 );
 
--- 2) INDEXY
+-- 2) INDEXES
 CREATE INDEX attempts_score_idx ON public.attempts (final_score DESC);
 CREATE INDEX attempts_created_idx ON public.attempts (created_at DESC);
 CREATE INDEX attempts_share_id_idx ON public.attempts (share_id);
 CREATE INDEX idx_attempts_answers ON public.attempts USING gin (answers);
 
--- 3) CONSTRAINTS (validácia dát)
+-- 3) CONSTRAINTS (data validation)
 ALTER TABLE public.attempts
   ADD CONSTRAINT attempts_final_score_range CHECK (final_score BETWEEN 0 AND 100),
   ADD CONSTRAINT attempts_base_score_range CHECK (base_score BETWEEN 0 AND 100),
@@ -96,7 +96,7 @@ CREATE POLICY "Anyone can update demographics"
   USING (true)
   WITH CHECK (true);
 
--- 5) VALIDAČNÝ TRIGGER pre demografické polia
+-- 5) VALIDATION TRIGGER for demographic fields
 CREATE OR REPLACE FUNCTION public.validate_attempt_demographics()
 RETURNS trigger
 LANGUAGE plpgsql
@@ -126,7 +126,7 @@ CREATE TRIGGER validate_attempt_demographics_trg
 BEFORE INSERT OR UPDATE ON public.attempts
 FOR EACH ROW EXECUTE FUNCTION public.validate_attempt_demographics();
 
--- 6) BEZPEČNOSTNÝ TRIGGER — chráni skóre proti prepisu
+-- 6) SECURITY TRIGGER — protects scores against overwrite
 CREATE OR REPLACE FUNCTION public.forbid_attempt_score_changes()
 RETURNS trigger
 LANGUAGE plpgsql
@@ -403,7 +403,7 @@ BEGIN
 END $$;
 
 -- ============================================================================
--- E12.1 — Education mode (autori zbierajú odpovede študentov, opt-in PII).
+-- E12.1 — Education mode (authors collect student responses, opt-in PII).
 -- ============================================================================
 
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
@@ -529,8 +529,9 @@ END $$;
 
 -- ============================================================================
 -- E12.3 + E12.7 — Lock down anon INSERT for edu attempts.
--- Anon môže INSERT iba non-edu rows (respondent_* NULL). Edu rows
--- zapisuje výlučne /api/finish-edu-attempt CF Function cez service-role.
+-- Anon may INSERT only non-edu rows (respondent_* NULL). Edu rows are
+-- written exclusively by /api/finish-edu-attempt CF Function via the
+-- service-role key.
 -- ============================================================================
 
 DROP POLICY IF EXISTS "Anyone can insert attempts" ON public.attempts;
@@ -540,9 +541,9 @@ CREATE POLICY "Anon insert non-edu attempts only"
   WITH CHECK (respondent_name IS NULL AND respondent_email IS NULL);
 
 -- ============================================================================
--- HOTOVO!
--- Teraz choď do Settings -> API a skopíruj si:
---   - Project URL  (napr. https://abcdef.supabase.co)
+-- DONE!
+-- Now go to Settings -> API and copy:
+--   - Project URL  (e.g. https://abcdef.supabase.co)
 --   - anon public key
--- Tieto použiješ v Cloudflare Pages ako environment variables.
+-- You will use these in Cloudflare Pages as environment variables.
 -- ============================================================================

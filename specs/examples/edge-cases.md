@@ -4,253 +4,270 @@
 **Component(s) under test:** `src/components/composer/edu/dashboard/AuthorPasswordGate.tsx`, `functions/api/verify-author-password.ts`, RPC `verify_test_set_password`
 **Routes:** `/test/zostava/$id/vysledky`
 **API endpoints:** `POST /api/verify-author-password`, `DELETE /api/verify-author-password`
-**Data dependencies:** `test_sets.author_password_hash` (bcrypt cez `pgcrypto`), HttpOnly cookie `subenai_edu_author`, JWT claims `{set_id, role:"author"}` signed s `JWT_SECRET`
+**Data dependencies:** `test_sets.author_password_hash` (bcrypt via `pgcrypto`), HttpOnly cookie `subenai_edu_author`, JWT claims `{set_id, role:"author"}` signed with `JWT_SECRET`
+**Source stories:** `tasks/stories/E12.4-results-dashboard.md`
 **Last updated:** 2026-05-01
 
 ---
 
 ## Context
 
-**Referenčný plán pre planner — demonštruje, ako sa píše plán s ťažiskom na edge cases.** Author password gate je bezpečnostne najcitlivejší endpoint v edu mode (chráni PII celej triedy). Plán cieli na **hraničné situácie a útoky**, lebo happy path má len 1 zaujímavý prípad.
+Reference plan for the planner — demonstrates how to write a plan whose centre of gravity is in **edge cases**. The author password gate is the most security-sensitive endpoint of edu mode (it protects an entire class's PII). The happy path has only one interesting case; the rest of the plan walks attacker scenarios and brittle situations.
 
 ## Out of scope
 
-- Zobrazenie agregátov a per-respondent tabuľky po prihlásení — pokrýva `specs/edu/results-dashboard.md`.
-- CSV export logika — pokrýva `specs/edu/csv-export.md`.
-- DELETE respondenta z dashboardu — pokrýva `specs/edu/delete-respondent.md`.
+- Aggregate display and the per-respondent table after login — covered by `specs/edu/results-dashboard.md`.
+- CSV export logic — covered by `specs/edu/csv-export.md`.
+- Deleting a respondent from the dashboard — covered by `specs/edu/delete-respondent.md`.
 
 ---
 
 ## Happy paths
 
-### TC-01: Správne heslo otvorí dashboard
+### TC-01: Correct password opens the dashboard
+
+**AC reference:** AC-1, AC-3
 
 **Prerequisites**:
-- Edu test set existuje s heslom `Tajne123!@#`.
-- Browser na `/test/zostava/<setId>/vysledky` (no cookie).
+- An edu test set exists with the password `Tajne123!@#`.
+- Browser at `/test/zostava/<setId>/vysledky` (no cookie).
 
-**When** zadáš heslo `Tajne123!@#`
-**and** klikneš „Otvoriť výsledky →"
-**Then** server vráti HTTP 200 + `Set-Cookie: subenai_edu_author=<JWT>; HttpOnly; Secure; SameSite=Lax; Path=/test/zostava/<setId>; Max-Age=3600`
-**and** stránka prejde do dashboard view (gate zmizne)
-**and** zobrazí sa tabuľka respondentov
+**When** the user types `Tajne123!@#` in the password field
+**and** clicks the button labelled "Otvoriť výsledky →"
+**Then** the server returns HTTP 200 with `Set-Cookie: subenai_edu_author=<JWT>; HttpOnly; Secure; SameSite=Lax; Path=/test/zostava/<setId>; Max-Age=3600`
+**and** the page transitions to the dashboard view (the gate unmounts)
+**and** the respondents table is rendered
 
 ---
 
 ## Negative scenarios
 
-### TC-02: Nesprávne heslo
+### TC-02: Wrong password fails with a generic 401
+
+**AC reference:** AC-3
 
 **Prerequisites**:
-- Edu test set s heslom `Tajne123!@#`.
+- An edu test set with password `Tajne123!@#`.
 
-**When** zadáš heslo `iné-heslo`
-**and** klikneš „Otvoriť výsledky →"
-**Then** server vráti HTTP 401 s `{"error":"unauthorized"}`
-**and** žiadny `Set-Cookie` header v odpovedi
-**and** UI zobrazí „Nesprávne heslo, alebo sa zostava nenašla."
+**When** the user types `wrong-password`
+**and** clicks the submit button
+**Then** the server returns HTTP 401 with `{"error":"unauthorized"}`
+**and** the response carries no `Set-Cookie` header
+**and** the UI shows the Slovak message "Nesprávne heslo, alebo sa zostava nenašla."
 
-### TC-03: Prázdne heslo
+### TC-03: Empty password keeps the button disabled
 
 **Prerequisites**:
-- Otvorený gate.
+- The gate is open.
 
-**When** klikneš submit so prázdnym poľom
-**Then** tlačidlo je disabled (klient-side gate)
-**and** žiadny POST sa neodošle
+**When** the user clicks submit with the password field empty
+**Then** the button is disabled (client-side gate)
+**and** no POST is sent
 
 ---
 
 ## Edge cases
 
-### TC-04: Brute-force — 6. pokus z toho istého IP
+### TC-04: Brute-force — the 6th attempt from the same IP is throttled
+
+**Risk reference:** "Brute force on author password"
 
 **Prerequisites**:
-- 5 nesprávnych pokusov v rámci posledných 15 min z `cf-connecting-ip=198.51.100.30` (mocked).
+- 5 wrong attempts in the last 15 minutes from `cf-connecting-ip=198.51.100.30` (mocked).
 
-**When** odošleš 6. pokus s ľubovoľným heslom (aj správnym)
-**Then** server vráti HTTP 429 `{"error":"rate_limited"}` ešte pred volaním RPC
-**and** UI zobrazí „Príliš veľa pokusov. Skús to znova o 15 minút."
-**and** ani správne heslo neotvorí dashboard počas trvania penalty window
+**When** the user submits a 6th attempt with any password (even the correct one)
+**Then** the server returns HTTP 429 `{"error":"rate_limited"}` before invoking the RPC
+**and** the UI shows "Príliš veľa pokusov. Skús to znova o 15 minút."
+**and** even a correct password does not open the dashboard during the penalty window
 
-### TC-05: Brute-force — distribútovaný útok cez 10 IP adries
+### TC-05: Distributed brute-force — 10 IPs each at the per-IP cap
 
-**Prerequisites**:
-- 10 rôznych IP, každá vykonala 5 pokusov za posledných 15 min.
-
-**When** 11. IP odošle 1. pokus s nesprávnym heslom
-**Then** server vráti 401 `unauthorized` (nie 429 — táto IP má svoju kvótu)
-**and** poznámka: rate limit je **per-(IP,set)** — útočník s IP-rotation môže obísť cap
-**and** _open question (viď nižšie): potrebujeme aj per-set globálny cap?_
-
-### TC-06: Heslo s leading/trailing whitespace
+**Risk reference:** "IP rotation bypass of brute-force protection"
 
 **Prerequisites**:
-- Edu set s heslom `Tajne123` (bez medzier).
+- 10 distinct mocked IPs, each having submitted 5 wrong attempts in the last 15 minutes.
 
-**When** zadáš `  Tajne123  ` (s medzerami)
-**Then** server NE-trim-uje heslo pred bcrypt comparison
-**and** vráti 401 (rovnaké heslo s medzerami != bez medzier — bcrypt je byte-exact)
-**and** _alternatívne, ak v UI máš `.trim()` na input, dokumentuj to v plane_
+**When** an 11th IP submits its first attempt with a wrong password
+**Then** the server returns 401 `unauthorized` (not 429 — this IP has its own quota)
+**and** the rate limit is **per-(IP, set)**: an attacker with IP rotation can sidestep the cap
+**and** _open question (see below): do we need a per-set global cap?_
 
-### TC-07: Heslo dlhé 200 znakov
-
-**Prerequisites**:
-- Edu set s heslom `Tajne123` (8 znakov, bcrypt prefix nie je problém).
-
-**When** zadáš heslo dlhé 200 znakov
-**Then** bcrypt internally truncate na 72 byty, ale comparison je správny (`Tajne123` != truncated 200-char)
-**and** server vráti 401
-**and** žiadne crash / timeout — bcrypt je rýchly aj na 200 znakov
-
-### TC-08: Cookie tampering — pozmenený JWT payload
+### TC-06: Password with surrounding whitespace
 
 **Prerequisites**:
-- Klient má valídny `subenai_edu_author` cookie pre `set-A`.
+- An edu set with password `Tajne123` (no spaces).
 
-**When** v devtools editneš cookie value, nahradíš base64 payload pre `set-B`
-**and** otvoríš `/test/zostava/<set-A>/vysledky`
-**Then** server overí JWT signature → nesedí (HMAC verify fail)
-**and** vráti HTTP 401 `{"error":"token_bad_signature"}`
-**and** dashboard sa nezobrazí
+**When** the user types `  Tajne123  ` (spaces both sides)
+**Then** the server does NOT trim the password before bcrypt comparison
+**and** the response is 401 (bcrypt is byte-exact: spaces ≠ no spaces)
+**and** _alternatively, if the UI applies `.trim()` to the input, document that explicitly in this plan_
 
-### TC-09: Cookie z iného setu (set_mismatch)
-
-**Prerequisites**:
-- Valídna session cookie pre `set-A`.
-
-**When** ručne navštíviš `/test/zostava/<set-B>/vysledky`
-**Then** browser pošle cookie pre `set-B` len ak Path scope match (čo NIE je — Path je `/test/zostava/set-A`)
-**and** server vidí no-cookie a vráti `no_session` 401
-**and** zobrazí sa password gate pre `set-B`
-
-### TC-10: Respondent JWT skúsi otvoriť dashboard
+### TC-07: 200-character password
 
 **Prerequisites**:
-- Klient má valídny respondent attempt JWT (z `/api/begin-edu-attempt`) v custom cookie.
+- An edu set with password `Tajne123` (8 chars; bcrypt-friendly).
 
-**When** ručne nastavíš `subenai_edu_author=<respondent-JWT>`
-**and** voláš `POST /api/results-data`
-**Then** `verifyEduAuthorToken` overí signature OK, ale claim `role !== "author"`
-**and** server vráti HTTP 401 `{"error":"token_wrong_role"}`
-**and** dashboard sa nezobrazí
+**When** the user types a 200-character password
+**Then** bcrypt internally truncates input at 72 bytes, but the comparison is correct (`Tajne123` ≠ truncated 200-char input)
+**and** the server returns 401
+**and** no crash or timeout — bcrypt is fast even on 200 characters
 
-### TC-11: Cookie expired (TTL 60 min)
+### TC-08: Cookie tampering — payload changed for another set
 
-**Prerequisites**:
-- Valídna author session cookie vydaná pred 61 min (clock posunutý).
-
-**When** voláš `POST /api/results-data`
-**Then** JWT verifikácia vráti `{ok: false, reason: "expired"}`
-**and** server vráti HTTP 401 `{"error":"token_expired"}`
-**and** UI prejde späť na password gate
-
-### TC-12: Logout DELETE vyčistí cookie
+**Risk reference:** "Session token tampering"
 
 **Prerequisites**:
-- Aktívna session.
+- The browser holds a valid `subenai_edu_author` cookie for `set-A`.
 
-**When** klikneš „Odhlásiť"
-**Then** browser pošle `DELETE /api/verify-author-password` s `set_id` v body
-**and** server vráti HTTP 200 + `Set-Cookie: subenai_edu_author=; Max-Age=0; Path=/test/zostava/<setId>`
-**and** browser cookie pre tento Path zmizne
-**and** ďalší pokus o `/results-data` vráti `no_session`
+**When** the user edits the cookie value in DevTools, replacing the base64 payload with claims for `set-B`
+**and** opens `/test/zostava/<set-A>/vysledky`
+**Then** the server verifies the JWT signature → mismatch (HMAC verify fails)
+**and** the response is HTTP 401 with `{"error":"token_bad_signature"}`
+**and** the dashboard does not render
 
-### TC-13: Logout pre iný set ako aktuálny
-
-**Prerequisites**:
-- Cookie pre `set-A` aktívna.
-
-**When** odošleš `DELETE /api/verify-author-password` s `set_id: "set-B"` v body
-**Then** server vystaví Max-Age=0 cookie pre Path `/test/zostava/set-B`
-**and** cookie pre `set-A` zostáva netknutá (Path scope-ovaná samostatne)
-
-### TC-14: 50 paralelných pokusov o login z 50 tabov
+### TC-09: Cookie from another set (set_mismatch)
 
 **Prerequisites**:
-- 50 tabov otvorených na rovnakom URL, všetky s rovnakým správnym heslom.
+- A valid session cookie for `set-A`.
 
-**When** všetky 50 tabov odošlú submit naraz
-**Then** prvých 5 prejde 401/200 (rate limit allows 5 / 15 min)
-**and** zvyšných 45 dostane 429 `rate_limited`
-**and** žiadny crash, žiadny memory leak na server side
+**When** the user manually navigates to `/test/zostava/<set-B>/vysledky`
+**Then** the browser sends the `set-B` cookie ONLY if Path scope matches (it does NOT — Path is `/test/zostava/set-A`)
+**and** the server sees no cookie and returns `no_session` 401
+**and** the password gate for `set-B` is shown
 
-### TC-15: Server zlyhá — Supabase RPC vráti error
+### TC-10: Respondent JWT cannot be reused as an author session
 
-**Prerequisites**:
-- Mock `verify_test_set_password` RPC vracia 500 timeout.
-
-**When** odošleš submit s ľubovoľným heslom
-**Then** server vráti HTTP 500 `{"error":"rpc_failed"}`
-**and** UI zobrazí „Chyba pri overovaní hesla. Skús to prosím znova."
-**and** žiadne pokusov sa nepripočíta do rate-limit countera (penalize success/failure, not server error)
-
-### TC-16: JWT_SECRET secret rotation počas aktívnej session
+**Risk reference:** "Role escalation via reused token"
 
 **Prerequisites**:
-- Cookie vydaná s old secret.
-- CF Pages env var `JWT_SECRET` zmenený na new secret pred 1 min.
+- The browser holds a valid respondent attempt JWT (issued by `/api/begin-edu-attempt`) in a custom cookie.
 
-**When** voláš `POST /api/results-data`
-**Then** verifikácia s new secret zlyhá → `bad_signature`
-**and** server vráti 401, UI prejde na password gate
-**and** _operational note: rotácia secret-u znamená force re-login pre všetkých autorov — zdokumentuj v ops runbook-u_
+**When** the test sets `subenai_edu_author=<respondent-JWT>` manually
+**and** calls `POST /api/results-data`
+**Then** `verifyEduAuthorToken` validates the signature, but `claim.role !== "author"`
+**and** the server returns HTTP 401 with `{"error":"token_wrong_role"}`
+**and** the dashboard does not render
+
+### TC-11: Cookie expired (TTL 60 minutes)
+
+**Prerequisites**:
+- A valid author session cookie issued 61 minutes ago (clock shifted forward).
+
+**When** the user calls `POST /api/results-data`
+**Then** JWT verification returns `{ok: false, reason: "expired"}`
+**and** the server returns HTTP 401 with `{"error":"token_expired"}`
+**and** the UI returns to the password gate
+
+### TC-12: Logout DELETE clears the cookie
+
+**Prerequisites**:
+- An active session.
+
+**When** the user clicks the button labelled "Odhlásiť"
+**Then** the browser sends `DELETE /api/verify-author-password` with `set_id` in the body
+**and** the server returns HTTP 200 with `Set-Cookie: subenai_edu_author=; Max-Age=0; Path=/test/zostava/<setId>`
+**and** the cookie for that Path is removed in the browser
+**and** the next call to `/results-data` returns `no_session`
+
+### TC-13: Logout for a different set
+
+**Prerequisites**:
+- A cookie for `set-A` is active.
+
+**When** the user POSTs `DELETE /api/verify-author-password` with `set_id: "set-B"` in the body
+**Then** the server issues a Max-Age=0 cookie scoped to Path `/test/zostava/set-B`
+**and** the cookie for `set-A` remains intact (Paths are scoped independently)
+
+### TC-14: 50 parallel logins from 50 tabs
+
+**Risk reference:** "Resource exhaustion under burst"
+
+**Prerequisites**:
+- 50 tabs open at the same URL with the same correct password.
+
+**When** all 50 tabs submit at once
+**Then** the first 5 progress to 401/200 (rate limit allows 5 / 15 min)
+**and** the remaining 45 receive HTTP 429 `rate_limited`
+**and** no crash, no memory leak server-side
+
+### TC-15: Server failure — Supabase RPC returns 500
+
+**Prerequisites**:
+- The mock for `verify_test_set_password` returns 500 (timeout).
+
+**When** the user submits any password
+**Then** the server returns HTTP 500 with `{"error":"rpc_failed"}`
+**and** the UI shows "Chyba pri overovaní hesla. Skús to prosím znova."
+**and** no attempt is added to the rate-limit counter (penalize success/failure, not server error)
+
+### TC-16: JWT_SECRET rotation while a session is active
+
+**Risk reference:** "Secret rotation breaks active sessions"
+
+**Prerequisites**:
+- A cookie was issued with the old secret.
+- CF Pages env var `JWT_SECRET` was changed to a new secret 1 minute ago.
+
+**When** the user calls `POST /api/results-data`
+**Then** verification with the new secret fails → `bad_signature`
+**and** the server returns 401 and the UI returns to the gate
+**and** _operational note: secret rotation forces every author to log in again — document in the ops runbook_
 
 ### TC-17: Show/hide password toggle
 
 **Prerequisites**:
-- Otvorený password gate.
+- The password gate is open.
 
-**When** zadáš heslo `Tajne123`
-**and** klikneš tlačidlo „Zobraziť"
-**Then** input type sa zmení z `password` na `text`
-**and** heslo je viditeľné v plain text-e
-**and** klik „Skryť" vráti späť na `password` type
-**and** keď klik počas typing-u, focus zostáva v inpute (žiadne flicker)
+**When** the user types `Tajne123` in the password field
+**and** clicks the toggle labelled "Zobraziť"
+**Then** the input `type` switches from `password` to `text`
+**and** the password becomes plain-text visible
+**and** clicking "Skryť" reverts to `password` type
+**and** focus stays in the input during the toggle (no flicker)
 
-### TC-18: Klávesnicový flow (a11y)
+### TC-18: Keyboard-only flow (a11y)
 
 **Prerequisites**:
-- Password gate s focus na prvom prvku.
+- The password gate has focus on the first element.
 
-**When** prejdeš formulárom iba klávesnicou (Tab → input, Space na show/hide, Enter na submit)
-**Then** všetky prvky sú dosiahnuteľné Tab-om
-**and** Enter v password input-e odošle formulár (default form behaviour)
-**and** screen reader (axe-core) nehlási žiadne WCAG AA porušenia
+**When** the user navigates using only the keyboard (Tab to input, Space to toggle show/hide, Enter to submit)
+**Then** every interactive element is reachable via Tab
+**and** Enter inside the password input submits the form (default form behaviour)
+**and** an axe-core scan reports no WCAG AA violations
 
 ### TC-19: Browser autofill (password manager)
 
 **Prerequisites**:
-- Password manager s uloženým heslom pre subenai.sk.
+- A password manager has a saved entry for subenai.sk.
 
-**When** otvoríš password gate
-**Then** browser auto-fill vyplní pole (input má `autocomplete="current-password"`)
-**and** submit s autofill-nutým heslom funguje rovnako ako manuálny vstup
+**When** the user opens the password gate
+**Then** the browser auto-fills the field (input has `autocomplete="current-password"`)
+**and** submitting with the autofilled value behaves identically to manual entry
 
-### TC-20: Slovenské diakritiky v hesle
-
-**Prerequisites**:
-- Edu set s heslom `Žofiine-heslo123!`.
-
-**When** zadáš presne `Žofiine-heslo123!` (s `Ž` a `í`)
-**Then** UTF-8 encoding cez WebCrypto / fetch je preserve-uté
-**and** bcrypt comparison na server side uspeje
-**and** dashboard sa otvorí
-
-### TC-21: Stripe Customer Portal cookie nie je zameniteľný
+### TC-20: Slovak diacritics in the password
 
 **Prerequisites**:
-- Klient má valídny `__Host-stripe-portal-session` cookie zo `/spravovat-podporu`.
+- An edu set with the password `Žofiine-heslo123!`.
 
-**When** ručne premenuješ cookie na `subenai_edu_author` a navštíviš `/test/zostava/<setId>/vysledky`
-**Then** server skúsi parse JWT → fail (Stripe cookie format != HS256)
-**and** vráti `token_malformed` 401
-**and** žiadne side effecty z Stripe cookie sa neaplikujú
+**When** the user types exactly `Žofiine-heslo123!` (with `Ž` and `í`)
+**Then** UTF-8 encoding survives the WebCrypto / fetch path
+**and** bcrypt comparison succeeds server-side
+**and** the dashboard opens
+
+### TC-21: Stripe Customer Portal cookie cannot impersonate the author session
+
+**Prerequisites**:
+- The browser holds a valid `__Host-stripe-portal-session` cookie from `/spravovat-podporu`.
+
+**When** the user manually renames the cookie to `subenai_edu_author` and visits `/test/zostava/<setId>/vysledky`
+**Then** the server attempts to parse it as a JWT → fails (Stripe cookie format ≠ HS256)
+**and** returns `token_malformed` 401
+**and** no side effect from the Stripe cookie is applied
 
 ---
 
 ## Open questions
 
-- **Per-set globálny rate-limit cap** (poriešený TC-05) — chceme to pridať proti distribuovanému útoku? Cost-benefit analýza pred E12 v2.
-- **Trim password v UI?** Aktuálne kód ne-trim-uje (TC-06). Užívateľská prívetivosť vs bezpečnosť (heslo s medzerami zámerné?).
-- **Cookie SameSite=Strict** namiesto `Lax` po stabilizácii flow — bráni cross-site `<a>` linkom otvárať dashboard so session, ale možno zlomí legitímne use-case (napr. e-mail link do GMailu).
+- **Per-set global rate-limit cap** (raised in TC-05) — should we add it to defend against IP-rotation attacks? Cost-benefit before E12 v2.
+- **Trim password in the UI?** Currently the code does not trim (TC-06). User-friendliness vs strictness — was the leading/trailing space intentional?
+- **Cookie SameSite=Strict** instead of `Lax` after the flow stabilizes — prevents cross-site `<a>` links from opening the dashboard with an existing session, but may break legitimate use cases (e.g. an e-mail link from GMail).

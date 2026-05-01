@@ -68,8 +68,10 @@ is not marked ✅ Done until **all four** are satisfied:
 - [ ] **Senior-level code style** per `.claude/CLAUDE.md` north star —
       smallest correct change, no speculative scaffolding, no comments
       that restate code.
-- [ ] **Slovak in UI strings** / English in code identifiers (per
-      `.claude/CLAUDE.md` § Style).
+- [ ] **Language rule respected** (per `.claude/CLAUDE.md` § Style):
+      Slovak ONLY in production UI content; everything else (code,
+      comments, tests, plans, docs, commit messages) in English. When
+      tests / plans cite a Slovak UI string, quote it verbatim.
 - [ ] **No `// TODO`, `// FIXME`, `console.log`, `debugger`** left in
       the PR (CI grep at merge time).
 - [ ] **No new ESLint warnings** — `npm run lint` ends 0/0.

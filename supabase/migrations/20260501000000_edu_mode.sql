@@ -1,29 +1,30 @@
--- E12.1 — Education mode schema (autori zbierajú odpovede študentov).
+-- E12.1 — Education mode schema (authors collect student responses).
 --
--- Pridáva PII k `attempts` (meno + email respondenta) keď je test_set
--- v edu móde (`collects_responses = true`). RLS striktne oddeľuje:
---   * non-edu rows (respondent_name IS NULL): anon môže SELECT (existing
---     /r/$shareId share-link flow zostáva nezmenený).
---   * edu rows (respondent_name IS NOT NULL): anon NEMÔŽE SELECT vôbec.
---     Autor pristupuje cez password-verified dashboard (E12.4) so
---     service-role tokenom z CF Pages Function.
+-- Adds PII to `attempts` (respondent name + email) when the test_set is
+-- in edu mode (`collects_responses = true`). RLS strictly separates:
+--   * non-edu rows (respondent_name IS NULL): anon may SELECT (the
+--     existing /r/$shareId share-link flow is unchanged).
+--   * edu rows (respondent_name IS NOT NULL): anon CANNOT SELECT at all.
+--     The author accesses these via the password-verified dashboard
+--     (E12.4) using the service-role token from a CF Pages Function.
 --
--- Heslo autora je bcrypt cez pgcrypto crypt(...,gen_salt('bf',10)).
--- Verifikácia v RPC `verify_test_set_password` (SECURITY DEFINER, brute
--- force protekcia v rate-limiteri E12.4 CF Function — nie tu).
+-- Author password is bcrypt via pgcrypto crypt(...,gen_salt('bf',10)).
+-- Verification in RPC `verify_test_set_password` (SECURITY DEFINER;
+-- brute-force protection lives in the E12.4 CF Function rate limiter,
+-- not here).
 --
--- Retencia: 12 mesiacov. Po expirácii `purge_expired_respondent_pii`
--- nullify-uje meno + email, ale skóre + answers ostávajú pre štatistiky
--- autora.
+-- Retention: 12 months. After expiry, `purge_expired_respondent_pii`
+-- nullifies name + email; score + answers remain for the author's
+-- aggregate statistics.
 
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
--- 1. attempts: pridať respondent_* + check constraints.
+-- 1. attempts: add respondent_* + check constraints.
 ALTER TABLE public.attempts
   ADD COLUMN IF NOT EXISTS respondent_name TEXT,
   ADD COLUMN IF NOT EXISTS respondent_email TEXT;
 
--- Drop pre re-runnability (migration môže byť spustená opakovane v dev).
+-- Drop for re-runnability (the migration may be executed repeatedly in dev).
 ALTER TABLE public.attempts
   DROP CONSTRAINT IF EXISTS attempts_respondent_email_format;
 ALTER TABLE public.attempts
@@ -50,7 +51,7 @@ CREATE INDEX IF NOT EXISTS attempts_test_set_id_created_at_idx
   ON public.attempts (test_set_id, created_at DESC)
   WHERE test_set_id IS NOT NULL;
 
--- 2. RLS — zúžiť anon SELECT len na non-edu rows.
+-- 2. RLS — narrow anon SELECT to non-edu rows only.
 DROP POLICY IF EXISTS "Anyone can read attempts" ON public.attempts;
 
 CREATE POLICY "Anon read non-edu attempts"
@@ -58,9 +59,10 @@ CREATE POLICY "Anon read non-edu attempts"
   TO anon, authenticated
   USING (respondent_name IS NULL);
 
--- 3. Defense-in-depth: public view ktorá vyhadzuje respondent_* stĺpce.
--- Klienti čo chcú agregáty môžu čítať z `attempts_anon` namiesto attempts.
--- Aj keby anon SELECT politika niekedy povolila edu row, view ich nezobrazí.
+-- 3. Defense-in-depth: public view that drops respondent_* columns.
+-- Clients that want aggregates can read from `attempts_anon` instead of
+-- attempts. Even if the anon SELECT policy ever allowed an edu row, the
+-- view would not expose it.
 CREATE OR REPLACE VIEW public.attempts_anon
 WITH (security_invoker = true) AS
 SELECT
@@ -84,8 +86,9 @@ WHERE respondent_name IS NULL;
 
 GRANT SELECT ON public.attempts_anon TO anon, authenticated;
 
--- 4. Aktualizovať immutability trigger: `respondent_*` po INSERT zamknuté.
--- Autor nesmie meniť meno respondenta a respondent nesmie meniť svoje skóre.
+-- 4. Update the immutability trigger: `respondent_*` is locked after INSERT.
+-- The author must not change a respondent's name and the respondent must
+-- not change their score.
 CREATE OR REPLACE FUNCTION public.forbid_attempt_score_changes()
 RETURNS trigger
 LANGUAGE plpgsql
@@ -106,8 +109,9 @@ BEGIN
      OR NEW.share_id IS DISTINCT FROM OLD.share_id
      OR NEW.test_set_id IS DISTINCT FROM OLD.test_set_id
      OR NEW.created_at IS DISTINCT FROM OLD.created_at
-     -- Edu PII smie zmeniť IBA na NULL (anonymizácia po retencii). Nikdy
-     -- z NULL na hodnotu (zabraňuje retroactive PII injection do starých rows).
+     -- Edu PII may change ONLY to NULL (anonymization after retention).
+     -- Never from NULL to a value (prevents retroactive PII injection
+     -- into old rows).
      OR (NEW.respondent_name IS DISTINCT FROM OLD.respondent_name
          AND NOT (OLD.respondent_name IS NOT NULL AND NEW.respondent_name IS NULL))
      OR (NEW.respondent_email IS DISTINCT FROM OLD.respondent_email
@@ -119,11 +123,12 @@ BEGIN
 END;
 $$;
 
--- 5. RPC pre hash + verify hesla autora (bcrypt cez pgcrypto bf).
--- Hashovanie hesla beží na strane Postgresu — CF Pages Function (E12.2)
--- volá `hash_test_set_password` cez service role pri vytváraní test_setu.
--- Verifikácia v `verify_test_set_password` je verejná pre anon (s rate
--- limitom v E12.4 CF Function — 5 pokusov / 15 min / IP / set_id).
+-- 5. RPC for hashing + verifying the author password (bcrypt via pgcrypto bf).
+-- Password hashing runs on the Postgres side — the CF Pages Function
+-- (E12.2) calls `hash_test_set_password` via service role when creating
+-- a test_set. Verification in `verify_test_set_password` is public for
+-- anon (rate-limited in the E12.4 CF Function — 5 attempts / 15 min /
+-- IP / set_id).
 
 CREATE OR REPLACE FUNCTION public.hash_test_set_password(password TEXT)
 RETURNS TEXT
@@ -140,7 +145,7 @@ END;
 $$;
 
 REVOKE ALL ON FUNCTION public.hash_test_set_password(TEXT) FROM PUBLIC, anon, authenticated;
--- service_role má EXECUTE cez default; CF Function používa service-role token.
+-- service_role has EXECUTE by default; the CF Function uses the service-role token.
 
 CREATE OR REPLACE FUNCTION public.verify_test_set_password(set_id UUID, password TEXT)
 RETURNS BOOLEAN
@@ -166,9 +171,9 @@ $$;
 
 GRANT EXECUTE ON FUNCTION public.verify_test_set_password(UUID, TEXT) TO anon, authenticated;
 
--- 6. Retention — 12-mes. anonymizácia respondent PII.
--- Skóre a answers ostávajú (nie sú PII bez mena/emailu) — autor stále
--- vidí agregáty po expirácii.
+-- 6. Retention — 12-month anonymization of respondent PII.
+-- Score and answers stay (they are not PII without name/email) — the
+-- author still sees aggregates after expiry.
 CREATE OR REPLACE FUNCTION public.purge_expired_respondent_pii()
 RETURNS integer
 LANGUAGE plpgsql
@@ -190,8 +195,8 @@ $$;
 
 REVOKE ALL ON FUNCTION public.purge_expired_respondent_pii() FROM PUBLIC, anon, authenticated;
 
--- Cron 03:35 UTC daily (offset od purge_unused_test_sets/attempts aby
--- sa nelockoval súčasne na rovnakých riadkoch).
+-- Cron 03:35 UTC daily (offset from purge_unused_test_sets/attempts
+-- to avoid concurrent locks on the same rows).
 DO $$
 BEGIN
   IF EXISTS (SELECT 1 FROM pg_extension WHERE extname = 'pg_cron') THEN
