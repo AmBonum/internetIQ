@@ -1,5 +1,13 @@
 # PLAN — Rast & vzdelávanie (2026-04-25)
 
+> ## ✅ Plán kompletne hotový (2026-05-01)
+>
+> Všetky stories vo všetkých 6 epicoch (E1, E2, E3, E4, E5, E6) sú v stave
+> ✅ Done. Tento dokument zostáva ako historický záznam — nové práce idú
+> do [PLAN-2026-04-26](./PLAN-2026-04-26-custom-tests-sponsorship.md).
+>
+> Súhrn stavov všetkých stories: [tasks/stories/README.md](./stories/README.md).
+
 > **Source request**: pridať rastové prieskumové otázky do post-test
 > formuláru, povoliť používateľovi prezerať si svoje odpovede po teste
 > s rovnakým hodnotením, doplniť edukačný "data-trap" popup,
