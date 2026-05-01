@@ -309,13 +309,27 @@ CREATE TABLE IF NOT EXISTS public.test_sets (
   CONSTRAINT test_sets_threshold_chk CHECK (passing_threshold BETWEEN 50 AND 90),
   CONSTRAINT test_sets_max_consistent CHECK (max_questions = array_length(question_ids, 1)),
   CONSTRAINT test_sets_label_len CHECK (creator_label IS NULL OR length(creator_label) <= 80),
-  CONSTRAINT test_sets_question_id_len CHECK (
-    NOT EXISTS (SELECT 1 FROM unnest(question_ids) AS q WHERE length(q) > 64)
-  ),
   CONSTRAINT test_sets_pwd_required_when_collecting CHECK (
     collects_responses = false OR author_password_hash IS NOT NULL
   )
+  -- Per-element question_id length cap (64 chars) is enforced via the
+  -- trigger below — CHECK constraints cannot contain subqueries.
 );
+
+CREATE OR REPLACE FUNCTION public.check_test_sets_question_id_len()
+RETURNS trigger LANGUAGE plpgsql AS $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM unnest(NEW.question_ids) AS q WHERE length(q) > 64) THEN
+    RAISE EXCEPTION 'question_ids elements must be at most 64 characters';
+  END IF;
+  RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS test_sets_question_id_len_trg ON public.test_sets;
+CREATE TRIGGER test_sets_question_id_len_trg
+  BEFORE INSERT OR UPDATE ON public.test_sets
+  FOR EACH ROW EXECUTE FUNCTION public.check_test_sets_question_id_len();
 
 CREATE INDEX IF NOT EXISTS test_sets_created_at_idx ON public.test_sets (created_at DESC);
 

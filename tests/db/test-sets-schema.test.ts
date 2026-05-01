@@ -37,12 +37,24 @@ describe("E8.1 — test_sets schema", () => {
       "test_sets_threshold_chk",
       "test_sets_max_consistent",
       "test_sets_label_len",
-      "test_sets_question_id_len",
       "test_sets_pwd_required_when_collecting",
     ];
     for (const name of expectedConstraints) {
       expect(DEPLOY_SQL).toContain(name);
       expect(MIGRATION_SQL).toContain(name);
+    }
+  });
+
+  it("per-element question_id length cap is enforced via trigger (not CHECK with subquery)", () => {
+    // Original 20260428000000 used a CHECK with NOT EXISTS (SELECT ...) which
+    // Postgres rejects (error 0A000: cannot use subquery in check constraint).
+    // Hotfix: BEFORE INSERT/UPDATE trigger calling check_test_sets_question_id_len.
+    for (const sql of [DEPLOY_SQL, MIGRATION_SQL]) {
+      expect(sql).toContain("check_test_sets_question_id_len");
+      expect(sql).toMatch(/CREATE TRIGGER test_sets_question_id_len_trg[\s\S]+BEFORE INSERT/);
+      expect(sql).not.toMatch(
+        /CONSTRAINT test_sets_question_id_len CHECK[\s\S]*?NOT EXISTS \(SELECT/,
+      );
     }
   });
 
