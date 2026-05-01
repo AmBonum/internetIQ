@@ -13,6 +13,16 @@ export default defineConfig({
       // The plugin invalidates the module itself — external watch causes the loop.
       ignored: ["**/routeTree.gen.ts"],
     },
+    // Local dev: forward /api/* to `wrangler pages dev` running in a second
+    // terminal on port 8788. Without this, Vite returns 404 for API calls
+    // (functions/api/*.ts only run inside the CF Pages runtime, not Vite).
+    // Start order: 1) `npm run dev:api` (wrangler), 2) `npm run dev` (vite).
+    proxy: {
+      "/api": {
+        target: "http://localhost:8788",
+        changeOrigin: true,
+      },
+    },
   },
   resolve: {
     alias: {

@@ -1,5 +1,6 @@
 {
   "version": 1,
-  "include": ["/*"],
-  "exclude": ["/assets/*"]
+  "description": "Functions handle /api/*; everything else is served as static SPA (with index.html fallback for client-side routing).",
+  "include": ["/api/*"],
+  "exclude": []
 }

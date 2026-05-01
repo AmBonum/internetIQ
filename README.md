@@ -87,6 +87,26 @@ The goal is simple:
 
 ---
 
+## 🧑‍💻 Local development
+
+The app is split into a Vite SPA (`src/`) and Cloudflare Pages Functions (`functions/`). Vite alone cannot serve `/api/*` — those run inside the CF runtime.
+
+**Two-terminal workflow:**
+
+```bash
+# Terminal 1 — start the API server (rebuilds + wrangler on :8788)
+npm run dev:api
+
+# Terminal 2 — start Vite (HMR + UI on :8080, proxies /api/* to :8788)
+npm run dev
+```
+
+Then open **http://localhost:8080**.
+
+`/api/*` calls from the browser are auto-proxied to wrangler — you get hot-reload for the UI and a real CF runtime for functions, with secrets read from `.dev.vars` (gitignored). When you change a function file, restart Terminal 1 (no HMR for functions).
+
+If you only need the UI (no edu / Stripe / portal flows), `npm run dev` alone works fine — `/api/*` calls will return 504 from the proxy.
+
 ## 🛠️ Project status
 
 🚧 Early-stage project — actively being developed
