@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
-import { ManualShareCard } from "@/components/quiz/ManualShareCard";
+import { ManualShareCard } from "@/components/quiz/share/ManualShareCard";
 
 const url = "https://subenai.eu/r/ABC12345";
 const text = "Som Internet Ninja na subenai — 75/100. Zvládneš to lepšie? 👇";

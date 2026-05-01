@@ -18,8 +18,8 @@
  *   }, [isAllowed("analytics")]);
  */
 
-import type { ConsentRecord } from "./consent";
-import { hasConsent } from "./consent";
+import type { ConsentRecord } from "@/lib/consent";
+import { hasConsent } from "@/lib/consent";
 
 export interface TrackEvent {
   name: string;

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { getTestQuestions, QUESTIONS } from "@/lib/quiz/questions";
+import { getTestQuestions, QUESTIONS } from "@/lib/quiz/bank/questions";
 
 describe("getTestQuestions", () => {
   it("returns exactly 15 questions", () => {

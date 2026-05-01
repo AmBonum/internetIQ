@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
 import type { ComponentProps, ReactNode } from "react";
-import type { AnswerRecord, ScoreResult } from "@/lib/quiz/scoring";
+import type { AnswerRecord, ScoreResult } from "@/lib/quiz/score/scoring";
 import { ConsentProvider } from "@/hooks/useConsent";
 
 vi.mock("@/integrations/supabase/client", () => ({
@@ -16,15 +16,15 @@ vi.mock("@tanstack/react-router", () => ({
   ),
 }));
 
-vi.mock("@/lib/quiz/share-image", () => ({
+vi.mock("@/lib/quiz/og-image/index", () => ({
   drawIgStoryToCanvas: vi.fn(),
 }));
 
-vi.mock("@/components/quiz/SurveyCard", () => ({
+vi.mock("@/components/quiz/survey/SurveyCard", () => ({
   SurveyCard: () => null,
 }));
 
-import { ResultsView } from "@/components/quiz/ResultsView";
+import { ResultsView } from "@/components/quiz/results/ResultsView";
 
 function makeAnswer(i: number): AnswerRecord {
   return {

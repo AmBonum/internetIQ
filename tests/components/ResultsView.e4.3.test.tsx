@@ -1,9 +1,9 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, fireEvent, act } from "@testing-library/react";
 import { ConsentProvider } from "@/hooks/useConsent";
-import { ResultsView } from "@/components/quiz/ResultsView";
+import { ResultsView } from "@/components/quiz/results/ResultsView";
 import { TRAP_SEEN_STORAGE_KEY } from "@/lib/data-trap/copy";
-import type { AnswerRecord, ScoreResult } from "@/lib/quiz/scoring";
+import type { AnswerRecord, ScoreResult } from "@/lib/quiz/score/scoring";
 
 // Mock Link component to avoid RouterProvider requirement
 vi.mock("@tanstack/react-router", async () => {
@@ -37,7 +37,7 @@ vi.mock("@/integrations/supabase/client", () => ({
 }));
 
 // Mock tracking to avoid async issues in tests
-vi.mock("@/lib/tracking", () => ({
+vi.mock("@/lib/browser/tracking", () => ({
   track: vi.fn(),
 }));
 

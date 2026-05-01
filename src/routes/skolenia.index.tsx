@@ -4,10 +4,10 @@ import { Search, X } from "lucide-react";
 import { COURSES } from "@/content/courses";
 import type { CourseCategory } from "@/content/courses";
 import { CourseCard } from "@/components/courses/CourseCard";
-import { Footer } from "@/components/Footer";
+import { Footer } from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
 import { SITE_ORIGIN } from "@/config/site";
-import { searchCourses } from "@/lib/course-search";
+import { searchCourses } from "@/lib/courses/search";
 
 const CATEGORY_LABEL: Record<CourseCategory, string> = {
   sms: "SMS",

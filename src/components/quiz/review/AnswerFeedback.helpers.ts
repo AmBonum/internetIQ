@@ -1,4 +1,4 @@
-import type { Question } from "@/lib/quiz/questions";
+import type { Question } from "@/lib/quiz/bank/questions";
 
 export type AnswerFeedbackState = "correct" | "wrong" | "timeout";
 export type AnswerFeedbackMode = "live" | "review";

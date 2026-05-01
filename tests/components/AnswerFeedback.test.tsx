@@ -1,8 +1,8 @@
 import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { AnswerFeedback } from "@/components/quiz/AnswerFeedback";
-import { deriveState } from "@/components/quiz/AnswerFeedback.helpers";
-import type { Question } from "@/lib/quiz/questions";
+import { AnswerFeedback } from "@/components/quiz/review/AnswerFeedback";
+import { deriveState } from "@/components/quiz/review/AnswerFeedback.helpers";
+import type { Question } from "@/lib/quiz/bank/questions";
 
 function makeQuestion(): Question {
   return {

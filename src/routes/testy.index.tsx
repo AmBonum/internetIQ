@@ -3,7 +3,7 @@ import { useMemo, useState } from "react";
 import { listPublishedPacks, type Industry } from "@/content/test-packs";
 import { INDUSTRY_LABEL } from "@/lib/seo/quiz-jsonld";
 import { TestPackCard } from "@/components/test-packs/TestPackCard";
-import { Footer } from "@/components/Footer";
+import { Footer } from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
 import { SITE_ORIGIN } from "@/config/site";
 

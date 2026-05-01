@@ -9,7 +9,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { copyToClipboard } from "@/lib/clipboard";
+import { copyToClipboard } from "@/lib/browser/clipboard";
 
 interface Props {
   publicUrl: string;

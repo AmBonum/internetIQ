@@ -65,7 +65,7 @@ vi.mock("@/content/test-packs", async () => {
   };
 });
 
-vi.mock("@/components/quiz/TestFlow", () => ({
+vi.mock("@/components/quiz/flow/TestFlow", () => ({
   TestFlow: (props: { config: { kind: string; questions: unknown[] } }) => {
     mocks.testFlowProps = props;
     return <div data-testid="test-flow">started:{props.config.kind}</div>;
@@ -75,12 +75,12 @@ vi.mock("@/components/quiz/TestFlow", () => ({
 const clipboardMock = vi.hoisted(() => ({
   write: vi.fn<(text: string) => Promise<boolean>>(async () => true),
 }));
-vi.mock("@/lib/clipboard", () => ({
+vi.mock("@/lib/browser/clipboard", () => ({
   copyToClipboard: (text: string) => clipboardMock.write(text),
 }));
 
 import { ComposerPage } from "@/routes/test.zostav";
-import { QUESTIONS } from "@/lib/quiz/questions";
+import { QUESTIONS } from "@/lib/quiz/bank/questions";
 import { encodeConfig } from "@/lib/quiz/composer";
 
 const realIds = QUESTIONS.slice(0, 12).map((q) => q.id);

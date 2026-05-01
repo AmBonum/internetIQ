@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
-import { SurveyQuestion } from "@/components/quiz/SurveyQuestion";
+import { SurveyQuestion } from "@/components/quiz/survey/SurveyQuestion";
 
 const opts = [
   { id: "a", label: "Option A" },

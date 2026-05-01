@@ -1,14 +1,14 @@
 import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react";
 import { createFileRoute, Link, useNavigate, useSearch } from "@tanstack/react-router";
-import { Footer } from "@/components/Footer";
-import { PackPreloadChips } from "@/components/composer/PackPreloadChips";
-import { QuestionPicker } from "@/components/composer/QuestionPicker";
-import { ComposerSettings } from "@/components/composer/ComposerSettings";
-import { EduSettings, EDU_PASSWORD_MIN_LEN } from "@/components/composer/EduSettings";
-import { EduSuccessDialog } from "@/components/composer/EduSuccessDialog";
-import { TestFlow } from "@/components/quiz/TestFlow";
+import { Footer } from "@/components/layout/Footer";
+import { PackPreloadChips } from "@/components/composer/build/PackPreloadChips";
+import { QuestionPicker } from "@/components/composer/build/QuestionPicker";
+import { ComposerSettings } from "@/components/composer/build/ComposerSettings";
+import { EduSettings, EDU_PASSWORD_MIN_LEN } from "@/components/composer/edu/intake/EduSettings";
+import { EduSuccessDialog } from "@/components/composer/edu/intake/EduSuccessDialog";
+import { TestFlow } from "@/components/quiz/flow/TestFlow";
 import { listPublishedPacks, getPackBySlug } from "@/content/test-packs";
-import { QUESTIONS, getQuestionById } from "@/lib/quiz/questions";
+import { QUESTIONS, getQuestionById } from "@/lib/quiz/bank/questions";
 import {
   COMPOSER_LIMITS,
   computeHoneypotRatio,
@@ -19,7 +19,7 @@ import {
   type ComposerConfig,
 } from "@/lib/quiz/composer";
 import { ROUTES } from "@/config/routes";
-import { copyToClipboard } from "@/lib/clipboard";
+import { copyToClipboard } from "@/lib/browser/clipboard";
 
 /**
  * Decode an incoming `?config=` URL into a usable composer config,

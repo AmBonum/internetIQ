@@ -1,6 +1,6 @@
-import { getQuestionById } from "@/lib/quiz/questions";
-import type { AnswerRecordPersisted } from "@/lib/quiz/schema";
-import { AnswerReviewCard } from "./AnswerReviewCard";
+import { getQuestionById } from "@/lib/quiz/bank/questions";
+import type { AnswerRecordPersisted } from "@/lib/quiz/bank/schema";
+import { AnswerReviewCard } from "@/components/quiz/review/AnswerReviewCard";
 
 interface Props {
   answers: AnswerRecordPersisted[];

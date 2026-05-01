@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { createFileRoute, Link, useParams } from "@tanstack/react-router";
-import { Footer } from "@/components/Footer";
-import { TestFlow } from "@/components/quiz/TestFlow";
+import { Footer } from "@/components/layout/Footer";
+import { TestFlow } from "@/components/quiz/flow/TestFlow";
 import { Button } from "@/components/ui/button";
 import {
   RespondentIntakeForm,
   type RespondentIntakeOk,
-} from "@/components/composer/RespondentIntakeForm";
+} from "@/components/composer/edu/intake/RespondentIntakeForm";
 import { supabase } from "@/integrations/supabase/client";
 import { resolveQuestions } from "@/lib/quiz/composer";
 import { ROUTES } from "@/config/routes";

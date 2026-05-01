@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { getQuestionTimeLimit, type Question } from "@/lib/quiz/questions";
-import { VisualBlock } from "./VisualBlock";
-import { AnswerFeedback } from "./AnswerFeedback";
+import { getQuestionTimeLimit, type Question } from "@/lib/quiz/bank/questions";
+import { VisualBlock } from "@/components/quiz/flow/VisualBlock";
+import { AnswerFeedback } from "@/components/quiz/review/AnswerFeedback";
 
 interface Props {
   question: Question;

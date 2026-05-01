@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
   CATEGORY_TO_COURSE_SLUG,
   getRelatedCourseForCategory,
-} from "@/lib/quiz/category-course-map";
+} from "@/lib/quiz/score/category-course-map";
 import { COURSES } from "@/content/courses";
 
 describe("category-course-map", () => {

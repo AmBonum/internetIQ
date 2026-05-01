@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { computeScore, type AnswerRecord } from "@/lib/quiz/scoring";
+import { computeScore, type AnswerRecord } from "@/lib/quiz/score/scoring";
 
 const correct = (difficulty: AnswerRecord["difficulty"] = "medium"): AnswerRecord => ({
   questionId: `q-${Math.random()}`,

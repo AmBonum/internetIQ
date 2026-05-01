@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import type { ReactNode } from "react";
-import type { AnswerRecord, ScoreResult } from "@/lib/quiz/scoring";
+import type { AnswerRecord, ScoreResult } from "@/lib/quiz/score/scoring";
 import { ConsentProvider } from "@/hooks/useConsent";
 
 const insertSpy = vi.fn();
@@ -16,15 +16,15 @@ vi.mock("@tanstack/react-router", () => ({
   Link: ({ children }: { children: ReactNode }) => <a>{children}</a>,
 }));
 
-vi.mock("@/lib/quiz/share-image", () => ({
+vi.mock("@/lib/quiz/og-image/index", () => ({
   drawIgStoryToCanvas: vi.fn(),
 }));
 
-vi.mock("@/components/quiz/SurveyCard", () => ({
+vi.mock("@/components/quiz/survey/SurveyCard", () => ({
   SurveyCard: () => null,
 }));
 
-import { ResultsView } from "@/components/quiz/ResultsView";
+import { ResultsView } from "@/components/quiz/results/ResultsView";
 
 function makeAnswer(i: number): AnswerRecord {
   return {

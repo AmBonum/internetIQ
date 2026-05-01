@@ -14,7 +14,7 @@ vi.mock("@tanstack/react-router", () => ({
 }));
 
 import { ConsentProvider, useConsent } from "@/hooks/useConsent";
-import { ConsentPreferencesDialog } from "@/components/ConsentPreferencesDialog";
+import { ConsentPreferencesDialog } from "@/components/consent/ConsentPreferencesDialog";
 import { CONSENT_STORAGE_KEY } from "@/lib/consent";
 
 function Harness() {

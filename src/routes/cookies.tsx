@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
-import { Footer } from "@/components/Footer";
+import { Footer } from "@/components/layout/Footer";
 import { useConsent } from "@/hooks/useConsent";
 import { CONSENT_VERSION } from "@/lib/consent";
 

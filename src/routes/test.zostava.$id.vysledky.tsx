@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
 import { createFileRoute, Link, useParams } from "@tanstack/react-router";
-import { Footer } from "@/components/Footer";
+import { Footer } from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
-import { AuthorPasswordGate } from "@/components/composer/AuthorPasswordGate";
-import { AggregateStats } from "@/components/composer/AggregateStats";
-import { RespondentsTable } from "@/components/composer/RespondentsTable";
+import { AuthorPasswordGate } from "@/components/composer/edu/dashboard/AuthorPasswordGate";
+import { AggregateStats } from "@/components/composer/edu/dashboard/AggregateStats";
+import { RespondentsTable } from "@/components/composer/edu/dashboard/RespondentsTable";
 import { rowsToCsv, type ResultsDataPayload } from "@/lib/edu/types";
 import { ROUTES } from "@/config/routes";
 

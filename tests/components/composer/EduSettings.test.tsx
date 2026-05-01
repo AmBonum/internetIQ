@@ -5,7 +5,7 @@ import {
   EduSettings,
   EDU_PASSWORD_MIN_LEN,
   EDU_PASSWORD_MAX_LEN,
-} from "@/components/composer/EduSettings";
+} from "@/components/composer/edu/intake/EduSettings";
 
 describe("EduSettings — toggle + password input", () => {
   function setup(initial?: { collects?: boolean; pw?: string }) {

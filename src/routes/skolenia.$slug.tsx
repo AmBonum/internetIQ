@@ -5,7 +5,7 @@ import { CourseHero } from "@/components/courses/CourseHero";
 import { CourseSectionView } from "@/components/courses/sections/CourseSections";
 import { RelatedCourses } from "@/components/courses/RelatedCourses";
 import { Button } from "@/components/ui/button";
-import { Footer } from "@/components/Footer";
+import { Footer } from "@/components/layout/Footer";
 import { buildCourseJsonLd } from "@/lib/seo/course-jsonld";
 import { SITE_ORIGIN } from "@/config/site";
 const COPYRIGHT_HOLDER = "subenai";

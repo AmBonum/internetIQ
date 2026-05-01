@@ -1,9 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { EduSuccessDialog } from "@/components/composer/EduSuccessDialog";
+import { EduSuccessDialog } from "@/components/composer/edu/intake/EduSuccessDialog";
 
-vi.mock("@/lib/clipboard", () => ({
+vi.mock("@/lib/browser/clipboard", () => ({
   copyToClipboard: vi.fn(async () => true),
 }));
 
@@ -51,7 +51,7 @@ describe("EduSuccessDialog — author copy-out flow", () => {
   });
 
   it("clicking a copy button calls clipboard with the right value", async () => {
-    const clipboardMod = await import("@/lib/clipboard");
+    const clipboardMod = await import("@/lib/browser/clipboard");
     const { user } = setup();
     const passwordCopy = screen.getByRole("button", { name: /Skopírovať Heslo/i });
     await user.click(passwordCopy);
