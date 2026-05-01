@@ -30,9 +30,9 @@ describe("getTestQuestions", () => {
     }
   });
 
-  it("question bank has at least 64 honeypot items after E9.1 + E9.2 (+30 URL, +20 SMS)", () => {
+  it("question bank has at least 94 honeypot items after E9.1 + E9.2 + E9.4 (+30 URL, +20 SMS, +30 honeypot)", () => {
     const honeypotInBank = QUESTIONS.filter((q) => q.category === "honeypot").length;
-    expect(honeypotInBank).toBeGreaterThanOrEqual(64);
+    expect(honeypotInBank).toBeGreaterThanOrEqual(94);
   });
 
   it("E9.2 legit-SMS bank has exactly 20 questions (8 pošta + 6 banky + 4 úrady + 2 borderline)", () => {
@@ -50,5 +50,29 @@ describe("getTestQuestions", () => {
       const wrongOpts = q.options.filter((o) => !o.correct);
       for (const o of wrongOpts) expect(o.severity).toBe("minor");
     }
+  });
+
+  it("E9.3 industry-specific scams cover all 7 buckets per AC-1", () => {
+    const ids = QUESTIONS.map((q) => q.id);
+    const buckets = {
+      eshop: ids.filter((id) => id.startsWith("p-eshop-") || id.startsWith("s-eshop-")),
+      gastro: ids.filter((id) => id.startsWith("p-gastro-") || id.startsWith("s-gastro-")),
+      auto: ids.filter(
+        (id) => id.startsWith("p-auto-") || id.startsWith("p-pneu-") || id.startsWith("s-auto-"),
+      ),
+      itdev: ids.filter((id) => id.startsWith("p-it-") || id.startsWith("s-it-")),
+      zdrav: ids.filter((id) => id.startsWith("p-zdrav-") || id.startsWith("s-zdrav-")),
+      skoly: ids.filter(
+        (id) => id === "p-email-school-ms-1" || id === "s-school-qr-1" || id === "p-email-uni-1",
+      ),
+      disp: ids.filter((id) => id.startsWith("p-disp-") || id.startsWith("s-disp-")),
+    };
+    expect(buckets.eshop.length).toBeGreaterThanOrEqual(4);
+    expect(buckets.gastro.length).toBeGreaterThanOrEqual(3);
+    expect(buckets.auto.length).toBeGreaterThanOrEqual(3);
+    expect(buckets.itdev.length).toBeGreaterThanOrEqual(3);
+    expect(buckets.zdrav.length).toBeGreaterThanOrEqual(3);
+    expect(buckets.skoly.length).toBeGreaterThanOrEqual(2);
+    expect(buckets.disp.length).toBeGreaterThanOrEqual(2);
   });
 });
