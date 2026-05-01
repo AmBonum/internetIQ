@@ -4,7 +4,9 @@
   "sideEffects": false,
   "type": "module",
   "scripts": {
-    "dev": "vite dev",
+    "dev": "vite dev --port 8080",
+    "dev:api": "npm run build && wrangler pages dev dist/client --compatibility-date=2024-09-01 --port 8788",
+    "dev:cf": "npm run build && wrangler pages dev dist/client --compatibility-date=2024-09-01 --port 8788",
     "build": "node scripts/parse-changelog.mjs && node scripts/generate-sitemap.mjs && vite build",
     "sitemap": "node scripts/generate-sitemap.mjs",
     "changelog": "node scripts/parse-changelog.mjs",
