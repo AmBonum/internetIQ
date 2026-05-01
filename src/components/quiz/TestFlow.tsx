@@ -18,6 +18,18 @@ type Phase = "intro" | "playing" | "done";
  * list with custom passing threshold and a label rendered as the
  * „Vyhovuje pre {label}" badge in ResultsView.
  */
+/**
+ * Edu mode context — present iff respondent passed the intake form.
+ * The token is the gate to /api/finish-edu-attempt; without it the
+ * browser cannot persist the result (anon INSERT of PII rows is
+ * blocked by RLS).
+ */
+export interface EduContext {
+  token: string;
+  respondentName: string;
+  respondentEmail: string;
+}
+
 export type TestFlowConfig =
   | { kind: "default" }
   | {
@@ -32,6 +44,7 @@ export type TestFlowConfig =
       passingThreshold: number;
       label: string;
       testSetId: string;
+      edu?: EduContext;
     };
 
 const RESULT_STORAGE_KEY_PREFIX = "iiq_last_result_v1";
@@ -163,6 +176,7 @@ export function TestFlow({ config = { kind: "default" } }: { config?: TestFlowCo
         onRestart={restart}
         passingThreshold={passingThreshold}
         passLabel={passLabel}
+        edu={config.kind === "composer" ? config.edu : undefined}
       />
     );
   }

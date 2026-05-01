@@ -19,6 +19,12 @@ import { TrapDialog } from "./TrapDialog";
 
 const AnswerReviewSection = lazy(() => import("./AnswerReviewSection"));
 
+interface EduContextProp {
+  token: string;
+  respondentName: string;
+  respondentEmail: string;
+}
+
 interface Props {
   result: ScoreResult;
   answers: AnswerRecord[];
@@ -27,6 +33,10 @@ interface Props {
    *  „Vyhovuje pre {label}" badge if score crosses the threshold. */
   passingThreshold?: number;
   passLabel?: string;
+  /** When present, persistResult routes through /api/finish-edu-attempt
+   *  with the JWT instead of doing a direct anon Supabase INSERT
+   *  (RLS blocks anon INSERT of respondent_* rows since E12.3). */
+  edu?: EduContextProp;
 }
 
 function genShareId(): string {
@@ -38,7 +48,14 @@ function genShareId(): string {
   return s;
 }
 
-export function ResultsView({ result, answers, onRestart, passingThreshold, passLabel }: Props) {
+export function ResultsView({
+  result,
+  answers,
+  onRestart,
+  passingThreshold,
+  passLabel,
+  edu,
+}: Props) {
   const passes =
     typeof passingThreshold === "number" && !!passLabel && result.finalScore >= passingThreshold;
   const { record } = useConsent();
@@ -140,6 +157,41 @@ export function ResultsView({ result, answers, onRestart, passingThreshold, pass
     setSavingShare(true);
     const id = genShareId();
     try {
+      if (edu) {
+        // Edu mode — route through CF Function so the JWT validates the
+        // respondent fields server-side and the row gets INSERTed via
+        // service role (anon INSERT of respondent_* is blocked by RLS).
+        const response = await fetch("/api/finish-edu-attempt", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({
+            token: edu.token,
+            share_id: id,
+            final_score: result.finalScore,
+            base_score: result.baseScore,
+            total_penalty: result.totalPenalty,
+            percentile: result.percentile,
+            personality: result.personality,
+            breakdown: result.breakdown,
+            insights: result.insights,
+            stats: result.stats,
+            flags: result.flags,
+            answers,
+            total_time_ms: result.stats.totalTimeMs,
+          }),
+        });
+        if (!response.ok) {
+          if (import.meta.env.DEV) {
+            const text = await response.text();
+            console.error("finish-edu-attempt failed", response.status, text);
+          }
+          return;
+        }
+        setShareId(id);
+        setShareUrl(`${window.location.origin}/r/${id}`);
+        return;
+      }
+
       const { error } = await supabase.from("attempts").insert({
         share_id: id,
         nickname: null,
