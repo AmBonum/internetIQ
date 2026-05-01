@@ -65,11 +65,51 @@ Required structure of every browser spec:
 2. **One `test.describe(...)`** named after the plan title (`<plan title>` minus the `— test plan` suffix). For long plans you MAY split into multiple `describe` groups along the plan's own `## Happy paths` / `## Edge cases` axes — but the file as a whole still maps 1:1 to one plan.
 3. **`test.beforeEach`** for shared setup (consent, viewport, route mocks). Never use `test.beforeAll` to share state across tests — Playwright runs tests in parallel and shared state breaks isolation.
 4. **One `test(...)` per TC** with the title `"TC-NN: <imperative title from the plan>"`. The TC number must match the plan exactly.
-5. **A leading comment `// TC-NN: <title>`** above each test. Helps grep + matches the planner agent's output style.
-6. **Translate `Prerequisites / When / and / Then / and` directly**:
-   - Prerequisites → fixture setup, mocks, viewport, navigation.
-   - `When` → user actions on POM methods or `page.*` calls.
-   - `Then` → `await expect(...)` assertions, one per `Then`/`and` clause.
+5. **`test.step(...)` wraps every meaningful action and verification.** Each step has an English imperative title that mirrors the plan's `When` / `and` / `Then` clauses 1:1. Steps make Playwright reports self-documenting and let the healer pinpoint failures without reading the full test body. Pattern:
+
+   ```ts
+   test("TC-04: Mobile hamburger opens a Sheet with every nav item", async ({ page, header }) => {
+     await test.step("Set mobile viewport (375×667) and open the home page", async () => {
+       await page.setViewportSize({ width: 375, height: 667 });
+       await page.goto("/");
+     });
+
+     await test.step("Verify desktop nav is hidden and hamburger is visible", async () => {
+       await expect(header.desktopNav).toBeHidden();
+       await expect(header.hamburgerTrigger).toBeVisible();
+     });
+
+     await test.step("Open the mobile sheet", async () => {
+       await header.openMobileMenu();
+     });
+
+     await test.step("Verify the sheet shows every nav link plus the CTA", async () => {
+       await expect(header.sheetNavLink("testy")).toBeVisible();
+       await expect(header.sheetNavLink("skolenia")).toBeVisible();
+       await expect(header.sheetNavLink("podpora")).toBeVisible();
+       await expect(header.sheetNavLink("kontakt")).toBeVisible();
+       await expect(header.sheetCtaLink).toBeVisible();
+     });
+
+     await test.step("Close the sheet via the close button", async () => {
+       await header.closeMobileMenu();
+       await expect(header.hamburgerTrigger).toBeVisible();
+     });
+   });
+   ```
+
+   Step-naming rules:
+   - **Imperative English, present-tense, no period at the end.** "Open the mobile sheet", not "Opens the mobile sheet" or "Opens the mobile sheet.".
+   - **Mirror the plan's clauses** — a `When the user clicks "Spustiť test"` clause becomes a `test.step("Click the 'Spustiť test' CTA", …)` call.
+   - **Group related expects** under a single "Verify …" step (one step = one observable outcome). Don't put each `expect` in its own step — the report becomes noise.
+   - **No bare assertions outside a step** — even a single-line check goes in `test.step("Verify …", async () => { await expect(…).toBeVisible(); })`.
+   - **Prerequisites become the first step** named "Set up …" or "Open …" so the report shows the entry point.
+
+6. **A leading comment `// TC-NN: <title>`** above each test. Helps grep + matches the planner agent's output style.
+7. **Translate `Prerequisites / When / and / Then / and` directly**:
+   - Prerequisites → first `test.step("Set up …")` block.
+   - Each `When` / `and` clause → its own `test.step("…", async () => { … })` block with the user action.
+   - Each `Then` / `and` clause → a `test.step("Verify …", async () => { await expect(…) })` block, or merged with the most recent action step when the action and the verification are tightly coupled (one round-trip, e.g. click + URL change).
 
 Required structure of every integration spec:
 
@@ -347,6 +387,7 @@ A generated spec file ships when:
 - ✅ **POMs reused or extended** — no inline `page.locator(...)` chains where a POM method would do.
 - ✅ **`primeConsent` called in `beforeEach`** for browser specs that aren't testing the consent banner itself.
 - ✅ **Every element the spec asserts on has a `data-testid`** — added to the source component if it didn't exist yet (§ 4). Falling back to role + name "to avoid touching the component" is a fail.
+- ✅ **Every test body is built from `test.step(...)` blocks** (§ 2 step 5). No bare actions or assertions outside a step. Step titles mirror the plan's `When` / `Then` clauses in English imperative.
 
 If any of these fail: fix before reporting "done". The generator does not ship half-passing tests — that's the user trying to debug your output instead of reviewing it.
 
