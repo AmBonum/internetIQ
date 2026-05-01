@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as ZmenyRouteImport } from './routes/zmeny'
 import { Route as SpravovatPodporuRouteImport } from './routes/spravovat-podporu'
 import { Route as SponzoriRouteImport } from './routes/sponzori'
+import { Route as SkolyRouteImport } from './routes/skoly'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as PodporaRouteImport } from './routes/podpora'
 import { Route as OProjekteRouteImport } from './routes/o-projekte'
@@ -28,6 +29,7 @@ import { Route as SkoleniaSlugRouteImport } from './routes/skolenia.$slug'
 import { Route as RShareIdRouteImport } from './routes/r.$shareId'
 import { Route as PodakovanieSessionIdRouteImport } from './routes/podakovanie.$sessionId'
 import { Route as TestZostavaIdRouteImport } from './routes/test.zostava.$id'
+import { Route as TestZostavaIdVysledkyRouteImport } from './routes/test.zostava.$id.vysledky'
 
 const ZmenyRoute = ZmenyRouteImport.update({
   id: '/zmeny',
@@ -42,6 +44,11 @@ const SpravovatPodporuRoute = SpravovatPodporuRouteImport.update({
 const SponzoriRoute = SponzoriRouteImport.update({
   id: '/sponzori',
   path: '/sponzori',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SkolyRoute = SkolyRouteImport.update({
+  id: '/skoly',
+  path: '/skoly',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PrivacyRoute = PrivacyRouteImport.update({
@@ -124,6 +131,11 @@ const TestZostavaIdRoute = TestZostavaIdRouteImport.update({
   path: '/test/zostava/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TestZostavaIdVysledkyRoute = TestZostavaIdVysledkyRouteImport.update({
+  id: '/vysledky',
+  path: '/vysledky',
+  getParentRoute: () => TestZostavaIdRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -132,6 +144,7 @@ export interface FileRoutesByFullPath {
   '/o-projekte': typeof OProjekteRoute
   '/podpora': typeof PodporaRoute
   '/privacy': typeof PrivacyRoute
+  '/skoly': typeof SkolyRoute
   '/sponzori': typeof SponzoriRouteWithChildren
   '/spravovat-podporu': typeof SpravovatPodporuRoute
   '/zmeny': typeof ZmenyRoute
@@ -144,7 +157,8 @@ export interface FileRoutesByFullPath {
   '/skolenia/': typeof SkoleniaIndexRoute
   '/test/': typeof TestIndexRoute
   '/testy/': typeof TestyIndexRoute
-  '/test/zostava/$id': typeof TestZostavaIdRoute
+  '/test/zostava/$id': typeof TestZostavaIdRouteWithChildren
+  '/test/zostava/$id/vysledky': typeof TestZostavaIdVysledkyRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -153,6 +167,7 @@ export interface FileRoutesByTo {
   '/o-projekte': typeof OProjekteRoute
   '/podpora': typeof PodporaRoute
   '/privacy': typeof PrivacyRoute
+  '/skoly': typeof SkolyRoute
   '/sponzori': typeof SponzoriRouteWithChildren
   '/spravovat-podporu': typeof SpravovatPodporuRoute
   '/zmeny': typeof ZmenyRoute
@@ -165,7 +180,8 @@ export interface FileRoutesByTo {
   '/skolenia': typeof SkoleniaIndexRoute
   '/test': typeof TestIndexRoute
   '/testy': typeof TestyIndexRoute
-  '/test/zostava/$id': typeof TestZostavaIdRoute
+  '/test/zostava/$id': typeof TestZostavaIdRouteWithChildren
+  '/test/zostava/$id/vysledky': typeof TestZostavaIdVysledkyRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -175,6 +191,7 @@ export interface FileRoutesById {
   '/o-projekte': typeof OProjekteRoute
   '/podpora': typeof PodporaRoute
   '/privacy': typeof PrivacyRoute
+  '/skoly': typeof SkolyRoute
   '/sponzori': typeof SponzoriRouteWithChildren
   '/spravovat-podporu': typeof SpravovatPodporuRoute
   '/zmeny': typeof ZmenyRoute
@@ -187,7 +204,8 @@ export interface FileRoutesById {
   '/skolenia/': typeof SkoleniaIndexRoute
   '/test/': typeof TestIndexRoute
   '/testy/': typeof TestyIndexRoute
-  '/test/zostava/$id': typeof TestZostavaIdRoute
+  '/test/zostava/$id': typeof TestZostavaIdRouteWithChildren
+  '/test/zostava/$id/vysledky': typeof TestZostavaIdVysledkyRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -198,6 +216,7 @@ export interface FileRouteTypes {
     | '/o-projekte'
     | '/podpora'
     | '/privacy'
+    | '/skoly'
     | '/sponzori'
     | '/spravovat-podporu'
     | '/zmeny'
@@ -211,6 +230,7 @@ export interface FileRouteTypes {
     | '/test/'
     | '/testy/'
     | '/test/zostava/$id'
+    | '/test/zostava/$id/vysledky'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -219,6 +239,7 @@ export interface FileRouteTypes {
     | '/o-projekte'
     | '/podpora'
     | '/privacy'
+    | '/skoly'
     | '/sponzori'
     | '/spravovat-podporu'
     | '/zmeny'
@@ -232,6 +253,7 @@ export interface FileRouteTypes {
     | '/test'
     | '/testy'
     | '/test/zostava/$id'
+    | '/test/zostava/$id/vysledky'
   id:
     | '__root__'
     | '/'
@@ -240,6 +262,7 @@ export interface FileRouteTypes {
     | '/o-projekte'
     | '/podpora'
     | '/privacy'
+    | '/skoly'
     | '/sponzori'
     | '/spravovat-podporu'
     | '/zmeny'
@@ -253,6 +276,7 @@ export interface FileRouteTypes {
     | '/test/'
     | '/testy/'
     | '/test/zostava/$id'
+    | '/test/zostava/$id/vysledky'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -262,6 +286,7 @@ export interface RootRouteChildren {
   OProjekteRoute: typeof OProjekteRoute
   PodporaRoute: typeof PodporaRoute
   PrivacyRoute: typeof PrivacyRoute
+  SkolyRoute: typeof SkolyRoute
   SponzoriRoute: typeof SponzoriRouteWithChildren
   SpravovatPodporuRoute: typeof SpravovatPodporuRoute
   ZmenyRoute: typeof ZmenyRoute
@@ -273,7 +298,7 @@ export interface RootRouteChildren {
   SkoleniaIndexRoute: typeof SkoleniaIndexRoute
   TestIndexRoute: typeof TestIndexRoute
   TestyIndexRoute: typeof TestyIndexRoute
-  TestZostavaIdRoute: typeof TestZostavaIdRoute
+  TestZostavaIdRoute: typeof TestZostavaIdRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
@@ -297,6 +322,13 @@ declare module '@tanstack/react-router' {
       path: '/sponzori'
       fullPath: '/sponzori'
       preLoaderRoute: typeof SponzoriRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/skoly': {
+      id: '/skoly'
+      path: '/skoly'
+      fullPath: '/skoly'
+      preLoaderRoute: typeof SkolyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/privacy': {
@@ -411,6 +443,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TestZostavaIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/test/zostava/$id/vysledky': {
+      id: '/test/zostava/$id/vysledky'
+      path: '/vysledky'
+      fullPath: '/test/zostava/$id/vysledky'
+      preLoaderRoute: typeof TestZostavaIdVysledkyRouteImport
+      parentRoute: typeof TestZostavaIdRoute
+    }
   }
 }
 
@@ -426,6 +465,18 @@ const SponzoriRouteWithChildren = SponzoriRoute._addFileChildren(
   SponzoriRouteChildren,
 )
 
+interface TestZostavaIdRouteChildren {
+  TestZostavaIdVysledkyRoute: typeof TestZostavaIdVysledkyRoute
+}
+
+const TestZostavaIdRouteChildren: TestZostavaIdRouteChildren = {
+  TestZostavaIdVysledkyRoute: TestZostavaIdVysledkyRoute,
+}
+
+const TestZostavaIdRouteWithChildren = TestZostavaIdRoute._addFileChildren(
+  TestZostavaIdRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CookiesRoute: CookiesRoute,
@@ -433,6 +484,7 @@ const rootRouteChildren: RootRouteChildren = {
   OProjekteRoute: OProjekteRoute,
   PodporaRoute: PodporaRoute,
   PrivacyRoute: PrivacyRoute,
+  SkolyRoute: SkolyRoute,
   SponzoriRoute: SponzoriRouteWithChildren,
   SpravovatPodporuRoute: SpravovatPodporuRoute,
   ZmenyRoute: ZmenyRoute,
@@ -444,7 +496,7 @@ const rootRouteChildren: RootRouteChildren = {
   SkoleniaIndexRoute: SkoleniaIndexRoute,
   TestIndexRoute: TestIndexRoute,
   TestyIndexRoute: TestyIndexRoute,
-  TestZostavaIdRoute: TestZostavaIdRoute,
+  TestZostavaIdRoute: TestZostavaIdRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

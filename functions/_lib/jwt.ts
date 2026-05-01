@@ -116,6 +116,75 @@ export async function verifyEduAttemptToken(token: string, secret: string): Prom
   return { ok: true, claims };
 }
 
+// ----- Author session tokens (E12.4) -----------------------------------
+// Same HMAC machinery, separate claim shape so we can never accidentally
+// mistake a respondent ticket for an author session (or vice-versa). Both
+// share EDU_JWT_SECRET — rotation rotates everything together.
+
+export interface EduAuthorClaims {
+  set_id: string;
+  role: "author";
+  iat: number;
+  exp: number;
+}
+
+export async function signEduAuthorToken(
+  setId: string,
+  secret: string,
+  ttlSeconds = 60 * 60,
+): Promise<string> {
+  const now = Math.floor(Date.now() / 1000);
+  const payload: EduAuthorClaims = {
+    set_id: setId,
+    role: "author",
+    iat: now,
+    exp: now + ttlSeconds,
+  };
+  const payloadB64 = base64UrlEncode(new TextEncoder().encode(JSON.stringify(payload)));
+  const signing = `${HEADER_B64}.${payloadB64}`;
+  const signature = await sign(secret, signing);
+  return `${signing}.${signature}`;
+}
+
+export type VerifyAuthorResult =
+  | { ok: true; claims: EduAuthorClaims }
+  | { ok: false; reason: "malformed" | "bad_signature" | "expired" | "wrong_role" };
+
+export async function verifyEduAuthorToken(
+  token: string,
+  secret: string,
+): Promise<VerifyAuthorResult> {
+  const parts = token.split(".");
+  if (parts.length !== 3) return { ok: false, reason: "malformed" };
+  const [header, payload, signature] = parts;
+  if (header !== HEADER_B64) return { ok: false, reason: "malformed" };
+  const valid = await verify(secret, `${header}.${payload}`, signature);
+  if (!valid) return { ok: false, reason: "bad_signature" };
+  let claims: EduAuthorClaims;
+  try {
+    const json = new TextDecoder().decode(base64UrlDecode(payload));
+    claims = JSON.parse(json) as EduAuthorClaims;
+  } catch {
+    return { ok: false, reason: "malformed" };
+  }
+  if (
+    typeof claims.set_id !== "string" ||
+    typeof claims.iat !== "number" ||
+    typeof claims.exp !== "number"
+  ) {
+    return { ok: false, reason: "malformed" };
+  }
+  if (claims.role !== "author") {
+    return { ok: false, reason: "wrong_role" };
+  }
+  if (Math.floor(Date.now() / 1000) >= claims.exp) {
+    return { ok: false, reason: "expired" };
+  }
+  return { ok: true, claims };
+}
+
+export const EDU_AUTHOR_COOKIE_NAME = "subenai_edu_author";
+
 export const __test__ = {
   base64UrlEncode,
   base64UrlDecode,

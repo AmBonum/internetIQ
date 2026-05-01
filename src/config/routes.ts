@@ -5,6 +5,8 @@ export const ROUTES = {
   testySlug: "/testy/$slug",
   zostav: "/test/zostav",
   zostava: "/test/zostava/$id",
+  zostavaVysledky: "/test/zostava/$id/vysledky",
+  skoly: "/skoly",
   skolenia: "/skolenia",
   skoleniaSlug: "/skolenia/$slug",
   podpora: "/podpora",
