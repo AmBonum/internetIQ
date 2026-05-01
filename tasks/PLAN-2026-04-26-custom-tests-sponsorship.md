@@ -295,7 +295,7 @@ zlyhajú na nepriamych voľbách.
 | story | title | effort | priority | status | deps |
 |---|---|---|---|---|---|
 | [E9.1](./stories/E9.1-legit-url-questions.md) | +30 legitimate URL examples (banking, e-shop, eGov) | S | P1 | ✅ Done | — |
-| [E9.2](./stories/E9.2-legit-sms-borderline.md) | +20 legit SMS + borderline-suspicious-but-OK | S | P1 | 🟡 Ready | — |
+| [E9.2](./stories/E9.2-legit-sms-borderline.md) | +20 legit SMS + borderline-suspicious-but-OK | S | P1 | ✅ Done | — |
 | [E9.3](./stories/E9.3-industry-specific-scams.md) | +20 industry-specific scam scenarios | S | P2 | 🟡 Partial (15/20, commit 18ec867) | — |
 | [E9.4](./stories/E9.4-honeypot-extension.md) | +30 honeypot / „vyzerá podozrivo, ale nie je" | S | P2 | 🟡 Partial (cap only) | — |
 

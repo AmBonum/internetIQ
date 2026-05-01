@@ -30,8 +30,25 @@ describe("getTestQuestions", () => {
     }
   });
 
-  it("question bank has at least 42 honeypot items after E9.1 (+30 legit URLs)", () => {
+  it("question bank has at least 64 honeypot items after E9.1 + E9.2 (+30 URL, +20 SMS)", () => {
     const honeypotInBank = QUESTIONS.filter((q) => q.category === "honeypot").length;
-    expect(honeypotInBank).toBeGreaterThanOrEqual(42);
+    expect(honeypotInBank).toBeGreaterThanOrEqual(64);
+  });
+
+  it("E9.2 legit-SMS bank has exactly 20 questions (8 pošta + 6 banky + 4 úrady + 2 borderline)", () => {
+    const e92 = QUESTIONS.filter(
+      (q) =>
+        q.id.startsWith("h-sms-posta-legit-") ||
+        q.id.startsWith("h-sms-bank-legit-") ||
+        q.id.startsWith("h-sms-urad-legit-") ||
+        q.id.startsWith("h-sms-border-"),
+    );
+    expect(e92).toHaveLength(20);
+    for (const q of e92) {
+      expect(q.category).toBe("honeypot");
+      expect(q.visual?.kind).toBe("sms");
+      const wrongOpts = q.options.filter((o) => !o.correct);
+      for (const o of wrongOpts) expect(o.severity).toBe("minor");
+    }
   });
 });

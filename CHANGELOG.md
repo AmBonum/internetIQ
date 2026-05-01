@@ -25,6 +25,7 @@ Verzie idú od najnovšej. Drobné úpravy textov a interné práce neuvádzame.
 - **FAQ sekcia** na úvodnej stránke s odpoveďami na najčastejšie otázky o teste, anonymite a podpore.
 - Po dokončení testu sa **úvodný titulok prispôsobuje skóre** — pre slabší výsledok motivačný tón, pre vysoký pochvalný.
 - **15 nových otázok** zameraných na konkrétne odvetvia a vekové skupiny (študenti, seniori, žiaci).
+- **20 nových otázok pre rozpoznávanie legitímnych SMS** od Slovenskej pošty, bánk a úradov (BalikoBOX kódy, 3D Secure, OTP, slovensko.sk, ePN) — učia rozlíšiť pravú správu od scamu, aby si neodignoroval/a dôležité doručenie.
 - Stránka **Kontakt** s priamym linkom na `subenai.podpora@gmail.com` a 6 prednastavenými témami (technická pomoc, GDPR, sponzorstvo, spolupráca…). Odpovedáme typicky do 2 pracovných dní.
 
 ### Zmenené
