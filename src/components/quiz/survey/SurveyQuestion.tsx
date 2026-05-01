@@ -1,4 +1,4 @@
-import type { SurveyOption } from "@/lib/quiz/survey-options";
+import type { SurveyOption } from "@/lib/quiz/survey/index";
 
 /**
  * Declarative survey question — covers the four shapes our growth survey

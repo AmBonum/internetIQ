@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { SocialShareGrid } from "@/components/quiz/SocialShareGrid";
+import { SocialShareGrid } from "@/components/quiz/share/SocialShareGrid";
 
 const url = "https://subenai.eu/r/ABC12345";
 const text = "Som Internet Ninja na subenai — 75/100. Zvládneš to lepšie? 👇";

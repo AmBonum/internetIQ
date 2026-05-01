@@ -6,13 +6,13 @@ import {
   PERSONALITIES,
   pickPersonalityVariant,
   type ScoreResult,
-} from "@/lib/quiz/scoring";
-import { parseAnswers, type AnswerRecordPersisted } from "@/lib/quiz/schema";
+} from "@/lib/quiz/score/scoring";
+import { parseAnswers, type AnswerRecordPersisted } from "@/lib/quiz/bank/schema";
 import { buildShareCaption } from "@/lib/share/intents";
-import { SocialShareGrid } from "@/components/quiz/SocialShareGrid";
-import { ManualShareCard } from "@/components/quiz/ManualShareCard";
+import { SocialShareGrid } from "@/components/quiz/share/SocialShareGrid";
+import { ManualShareCard } from "@/components/quiz/share/ManualShareCard";
 
-const AnswerReviewSection = lazy(() => import("@/components/quiz/AnswerReviewSection"));
+const AnswerReviewSection = lazy(() => import("@/components/quiz/review/AnswerReviewSection"));
 
 export const Route = createFileRoute("/r/$shareId")({
   head: ({ params }) => ({
@@ -161,7 +161,7 @@ export function SharePage({ shareId }: { shareId: string }) {
     if (!attempt) return;
     setDownloadingImg(true);
     try {
-      const { drawIgStoryToCanvas } = await import("@/lib/quiz/share-image");
+      const { drawIgStoryToCanvas } = await import("@/lib/quiz/og-image/index");
       const blob = await drawIgStoryToCanvas({
         score: attempt.final_score,
         percentile: attempt.percentile,

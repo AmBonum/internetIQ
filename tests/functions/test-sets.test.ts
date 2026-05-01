@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 
 import { onRequestPost } from "../../functions/api/test-sets";
 import { __test__ as security__test__ } from "../../functions/_lib/security";
-import { QUESTIONS } from "@/lib/quiz/questions";
+import { QUESTIONS } from "@/lib/quiz/bank/questions";
 
 const realIds = QUESTIONS.slice(0, 6).map((q) => q.id);
 

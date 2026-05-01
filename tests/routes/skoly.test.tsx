@@ -21,7 +21,7 @@ vi.mock("@tanstack/react-router", async () => {
 
 // Footer pulls in real ConsentProvider hooks via SponsorsManager — stub it
 // out so this test doesn't need the world.
-vi.mock("@/components/Footer", () => ({
+vi.mock("@/components/layout/Footer", () => ({
   Footer: () => null,
 }));
 

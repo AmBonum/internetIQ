@@ -15,7 +15,7 @@ vi.mock("@tanstack/react-router", () => ({
   },
 }));
 
-import { RespondentIntakeForm } from "@/components/composer/RespondentIntakeForm";
+import { RespondentIntakeForm } from "@/components/composer/edu/intake/RespondentIntakeForm";
 
 beforeEach(() => {
   vi.restoreAllMocks();

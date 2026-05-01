@@ -1,4 +1,4 @@
-import type { Category, Question, Severity } from "./questions";
+import type { Category, Question, Severity } from "@/lib/quiz/bank/questions";
 
 export interface AnswerRecord {
   questionId: string;

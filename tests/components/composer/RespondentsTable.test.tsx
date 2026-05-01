@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
-import { RespondentsTable } from "@/components/composer/RespondentsTable";
+import { RespondentsTable } from "@/components/composer/edu/dashboard/RespondentsTable";
 import type { RespondentRow } from "@/lib/edu/types";
 
 const makeRow = (over: Partial<RespondentRow> = {}): RespondentRow => ({

@@ -5,7 +5,7 @@ import {
   HAS_BEEN_SCAMMED_VALUES,
   REFERRAL_SOURCE_VALUES,
   TOP_FEAR_VALUES,
-} from "@/lib/quiz/survey-options";
+} from "@/lib/quiz/survey/index";
 import type { Database } from "@/integrations/supabase/types";
 
 type AttemptInsert = Database["public"]["Tables"]["attempts"]["Insert"];

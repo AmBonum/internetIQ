@@ -4,7 +4,7 @@ import {
   AnswersPersistedSchema,
   parseAnswers,
   type AnswerRecordPersisted,
-} from "@/lib/quiz/schema";
+} from "@/lib/quiz/bank/schema";
 
 function sampleAnswer(overrides: Partial<AnswerRecordPersisted> = {}): AnswerRecordPersisted {
   return {

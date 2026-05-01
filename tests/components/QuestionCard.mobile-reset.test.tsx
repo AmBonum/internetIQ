@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen, act } from "@testing-library/react";
-import { QuestionCard } from "@/components/quiz/QuestionCard";
-import type { Question } from "@/lib/quiz/questions";
+import { QuestionCard } from "@/components/quiz/flow/QuestionCard";
+import type { Question } from "@/lib/quiz/bank/questions";
 
 // Two minimal questions. Identical option layout (a/b/c) — that's the
 // whole point: mobile users tap the same DOM-position button across

@@ -1,4 +1,4 @@
-import type { Category } from "./questions";
+import type { Category } from "@/lib/quiz/bank/questions";
 import { COURSES, type Course } from "@/content/courses";
 
 /**

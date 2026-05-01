@@ -1,9 +1,9 @@
 import { Link } from "@tanstack/react-router";
-import { getQuestionTimeLimit, type Question, type Category } from "@/lib/quiz/questions";
-import type { AnswerRecordPersisted } from "@/lib/quiz/schema";
-import { getRelatedCourseForCategory } from "@/lib/quiz/category-course-map";
-import { AnswerFeedback } from "./AnswerFeedback";
-import { VisualBlock } from "./VisualBlock";
+import { getQuestionTimeLimit, type Question, type Category } from "@/lib/quiz/bank/questions";
+import type { AnswerRecordPersisted } from "@/lib/quiz/bank/schema";
+import { getRelatedCourseForCategory } from "@/lib/quiz/score/category-course-map";
+import { AnswerFeedback } from "@/components/quiz/review/AnswerFeedback";
+import { VisualBlock } from "@/components/quiz/flow/VisualBlock";
 
 function RelatedCourseCta({ category }: { category: Category }) {
   const course = getRelatedCourseForCategory(category);

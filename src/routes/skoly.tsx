@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Footer } from "@/components/Footer";
+import { Footer } from "@/components/layout/Footer";
 import { CONTACT_EMAIL, SITE_ORIGIN } from "@/config/site";
 import { ROUTES } from "@/config/routes";
 

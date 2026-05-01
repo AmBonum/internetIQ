@@ -9,7 +9,7 @@ import {
   validateComposerConfig,
   type ComposerConfig,
 } from "@/lib/quiz/composer";
-import { QUESTIONS } from "@/lib/quiz/questions";
+import { QUESTIONS } from "@/lib/quiz/bank/questions";
 
 const realIds = QUESTIONS.slice(0, 6).map((q) => q.id);
 

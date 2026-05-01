@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Footer } from "@/components/Footer";
+import { Footer } from "@/components/layout/Footer";
 import { SITE_ORIGIN, CONTACT_EMAIL } from "@/config/site";
 import { ROUTES } from "@/config/routes";
 const PAGE_URL = `${SITE_ORIGIN}/spravovat-podporu`;

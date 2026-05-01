@@ -1,5 +1,9 @@
-import type { Question } from "@/lib/quiz/questions";
-import { deriveState, HEADLINES, type AnswerFeedbackMode } from "./AnswerFeedback.helpers";
+import type { Question } from "@/lib/quiz/bank/questions";
+import {
+  deriveState,
+  HEADLINES,
+  type AnswerFeedbackMode,
+} from "@/components/quiz/review/AnswerFeedback.helpers";
 
 interface Props {
   question: Question;

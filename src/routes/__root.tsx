@@ -1,9 +1,9 @@
 import { Outlet, Link, createRootRoute } from "@tanstack/react-router";
 
-import { ConsentBanner } from "@/components/ConsentBanner";
-import { ConsentPreferencesDialog } from "@/components/ConsentPreferencesDialog";
-import { GoogleAnalyticsManager } from "@/components/GoogleAnalyticsManager";
-import { SiteHeader } from "@/components/SiteHeader";
+import { ConsentBanner } from "@/components/consent/ConsentBanner";
+import { ConsentPreferencesDialog } from "@/components/consent/ConsentPreferencesDialog";
+import { GoogleAnalyticsManager } from "@/components/analytics/GoogleAnalyticsManager";
+import { SiteHeader } from "@/components/layout/SiteHeader";
 
 function NotFoundComponent() {
   return (

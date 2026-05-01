@@ -1,8 +1,8 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { QuestionPicker } from "@/components/composer/QuestionPicker";
-import type { Question } from "@/lib/quiz/questions";
+import { QuestionPicker } from "@/components/composer/build/QuestionPicker";
+import type { Question } from "@/lib/quiz/bank/questions";
 
 function fixtureQuestion(overrides: Partial<Question> & { id: string }): Question {
   return {

@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import type { ComponentProps, ReactNode } from "react";
-import type { AnswerRecordPersisted } from "@/lib/quiz/schema";
+import type { AnswerRecordPersisted } from "@/lib/quiz/bank/schema";
 
 const maybeSingleSpy = vi.fn();
 

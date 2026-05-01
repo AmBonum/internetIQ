@@ -1,5 +1,5 @@
 import type { TestPack, Industry } from "./_schema";
-import { QUESTIONS } from "@/lib/quiz/questions";
+import { QUESTIONS } from "@/lib/quiz/bank/questions";
 // `_template` is imported only to keep the schema compile-checked
 // against a concrete sample; intentionally NOT registered in TEST_PACKS.
 import "./_template";

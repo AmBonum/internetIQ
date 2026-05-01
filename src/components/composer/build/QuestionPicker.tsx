@@ -1,5 +1,5 @@
 import { useMemo, useState, type ChangeEvent } from "react";
-import type { Category, Difficulty, Question } from "@/lib/quiz/questions";
+import type { Category, Difficulty, Question } from "@/lib/quiz/bank/questions";
 import { COMPOSER_LIMITS } from "@/lib/quiz/composer";
 
 const CATEGORY_LABELS: Record<Category, string> = {

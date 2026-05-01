@@ -1,5 +1,5 @@
 import { z } from "zod";
-import type { Visual } from "@/lib/quiz/questions";
+import type { Visual } from "@/lib/quiz/bank/questions";
 
 export type CourseCategory =
   | "sms"

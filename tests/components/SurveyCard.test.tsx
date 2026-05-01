@@ -17,7 +17,7 @@ vi.mock("@/integrations/supabase/client", () => {
   };
 });
 
-import { SurveyCard } from "@/components/quiz/SurveyCard";
+import { SurveyCard } from "@/components/quiz/survey/SurveyCard";
 
 beforeEach(() => {
   updateSpy.mockReset();

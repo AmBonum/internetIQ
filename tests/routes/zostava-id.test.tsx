@@ -19,7 +19,7 @@ vi.mock("@/hooks/useConsent", () => ({
   useConsent: () => ({ openPreferences: vi.fn(), record: null }),
 }));
 
-vi.mock("@/components/quiz/TestFlow", () => ({
+vi.mock("@/components/quiz/flow/TestFlow", () => ({
   TestFlow: ({ config }: { config: { kind: string; testSetId?: string } }) => (
     <div data-testid="test-flow">
       started:{config.kind}:{config.testSetId ?? ""}
@@ -60,7 +60,7 @@ vi.mock("@/integrations/supabase/client", () => {
 });
 
 import { ZostavaView } from "@/routes/test.zostava.$id";
-import { QUESTIONS } from "@/lib/quiz/questions";
+import { QUESTIONS } from "@/lib/quiz/bank/questions";
 
 const realIds = QUESTIONS.slice(0, 6).map((q) => q.id);
 

@@ -8,7 +8,7 @@
 // The DB path is the primary; the URL path is a fallback that keeps
 // the composer useful even if Supabase is unreachable.
 
-import { QUESTIONS, type Question } from "./questions";
+import { QUESTIONS, type Question } from "@/lib/quiz/bank/questions";
 
 export const COMPOSER_LIMITS = {
   minQuestions: 5,

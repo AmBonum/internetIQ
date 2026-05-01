@@ -1,5 +1,20 @@
 # PLAN — Custom tests + Sponsorship (2026-04-26)
 
+> ## 🟡 Plán z 95 % hotový (k 2026-05-01)
+>
+> **5 zo 6 epicov ✅ Done; 1 epic má 2 stories pending.**
+>
+> | Epic | Stav |
+> |---|---|
+> | E7 — Industry test packs | 4/6 stories ✅ — chýba [E7.3](./stories/E7.3-industry-packs-batch-b.md) (5 packov B), [E7.4](./stories/E7.4-industry-packs-batch-c.md) (5 packov C) |
+> | E8 — Composer | ✅ |
+> | E9 — Question bank +100 | ✅ |
+> | E10 — Sponsorship infra | ✅ |
+> | E11 — Sponsorship UI + invoicing | ✅ |
+> | E12 — Education mode | ✅ |
+>
+> Po dokončení E7.3 a E7.4 bude celý plán 100 %. Detailný overview všetkých stories: [tasks/stories/README.md](./stories/README.md).
+
 > **Source request**: (a) používateľ chce vyskladať si test na mieru — buď
 > z predefinovaných sád pre rôzne firemné zamerania (strojová výroba,
 > dispečing, softvérový vývoj, verejné služby, e-shop, servis, gastro,

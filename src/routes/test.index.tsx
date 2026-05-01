@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { lazy, Suspense } from "react";
 
 const TestFlow = lazy(() =>
-  import("@/components/quiz/TestFlow").then((m) => ({ default: m.TestFlow })),
+  import("@/components/quiz/flow/TestFlow").then((m) => ({ default: m.TestFlow })),
 );
 
 export const Route = createFileRoute("/test/")({

@@ -1,5 +1,5 @@
 import type { CourseSection } from "@/content/courses";
-import { VisualBlock } from "@/components/quiz/VisualBlock";
+import { VisualBlock } from "@/components/quiz/flow/VisualBlock";
 import { Check, X, AlertTriangle } from "lucide-react";
 
 function SectionFrame({

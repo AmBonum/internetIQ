@@ -1,10 +1,10 @@
-import type { Visual } from "@/lib/quiz/questions";
-import { SmsScreen } from "./screenshots/SmsScreen";
-import { EmailScreen } from "./screenshots/EmailScreen";
-import { UrlBar } from "./screenshots/UrlBar";
-import { InstagramAd } from "./screenshots/InstagramAd";
-import { AdListing } from "./screenshots/AdListing";
-import { CallScreen } from "./screenshots/CallScreen";
+import type { Visual } from "@/lib/quiz/bank/questions";
+import { SmsScreen } from "@/components/quiz/screenshots/mobile/SmsScreen";
+import { EmailScreen } from "@/components/quiz/screenshots/web/EmailScreen";
+import { UrlBar } from "@/components/quiz/screenshots/web/UrlBar";
+import { InstagramAd } from "@/components/quiz/screenshots/mobile/InstagramAd";
+import { AdListing } from "@/components/quiz/screenshots/web/AdListing";
+import { CallScreen } from "@/components/quiz/screenshots/mobile/CallScreen";
 
 /**
  * Visual context for a quiz question (SMS, email, URL bar, IG ad, listing,

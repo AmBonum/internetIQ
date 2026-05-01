@@ -1,10 +1,10 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useState, useMemo } from "react";
 import { getPackBySlug, type TestPack } from "@/content/test-packs";
-import { getQuestionById, type Question } from "@/lib/quiz/questions";
-import { TestFlow } from "@/components/quiz/TestFlow";
+import { getQuestionById, type Question } from "@/lib/quiz/bank/questions";
+import { TestFlow } from "@/components/quiz/flow/TestFlow";
 import { Button } from "@/components/ui/button";
-import { Footer } from "@/components/Footer";
+import { Footer } from "@/components/layout/Footer";
 import { buildPackQuizJsonLd, INDUSTRY_LABEL } from "@/lib/seo/quiz-jsonld";
 import { SITE_ORIGIN } from "@/config/site";
 const COPYRIGHT_HOLDER = "am.bonum s. r. o.";

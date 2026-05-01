@@ -7,7 +7,7 @@ vi.mock("@/hooks/useConsent", () => ({
   useConsent: () => useConsentMock(),
 }));
 
-import { GoogleAnalyticsManager } from "@/components/GoogleAnalyticsManager";
+import { GoogleAnalyticsManager } from "@/components/analytics/GoogleAnalyticsManager";
 
 function getCalls(): unknown[][] {
   return (window.dataLayer ?? []) as unknown[][];

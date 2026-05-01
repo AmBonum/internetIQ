@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { SurveyQuestion } from "./SurveyQuestion";
+import { SurveyQuestion } from "@/components/quiz/survey/SurveyQuestion";
 import {
   HAS_BEEN_SCAMMED_LABELS,
   HAS_BEEN_SCAMMED_VALUES,
@@ -15,7 +15,7 @@ import {
   type ReferralSource,
   type SurveyOption,
   type TopFear,
-} from "@/lib/quiz/survey-options";
+} from "@/lib/quiz/survey/index";
 import { ROUTES } from "@/config/routes";
 
 interface Props {

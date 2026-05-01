@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { getTestQuestions, type Question } from "@/lib/quiz/questions";
+import { getTestQuestions, type Question } from "@/lib/quiz/bank/questions";
 import {
   buildAnswerRecord,
   computeScore,
   type AnswerRecord,
   type ScoreResult,
-} from "@/lib/quiz/scoring";
-import { QuestionCard } from "./QuestionCard";
-import { ResultsView } from "./ResultsView";
+} from "@/lib/quiz/score/scoring";
+import { QuestionCard } from "@/components/quiz/flow/QuestionCard";
+import { ResultsView } from "@/components/quiz/results/ResultsView";
 
 type Phase = "intro" | "playing" | "done";
 

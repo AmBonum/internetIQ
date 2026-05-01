@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Footer } from "@/components/Footer";
+import { Footer } from "@/components/layout/Footer";
 import changelog from "@/content/changelog.generated.json";
 import { SITE_ORIGIN } from "@/config/site";
 const PAGE_URL = `${SITE_ORIGIN}/zmeny`;

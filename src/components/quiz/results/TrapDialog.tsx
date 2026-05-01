@@ -23,7 +23,7 @@ import {
 } from "@/lib/data-trap/copy";
 import { matchers, type TrapFieldId } from "@/lib/data-trap/matchers";
 import { useConsent } from "@/hooks/useConsent";
-import { track } from "@/lib/tracking";
+import { track } from "@/lib/browser/tracking";
 
 interface Props {
   open: boolean;

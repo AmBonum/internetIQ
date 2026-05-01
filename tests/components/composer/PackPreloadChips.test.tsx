@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { PackPreloadChips } from "@/components/composer/PackPreloadChips";
+import { PackPreloadChips } from "@/components/composer/build/PackPreloadChips";
 import type { TestPack } from "@/content/test-packs";
 
 const fixturePacks: TestPack[] = [

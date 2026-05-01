@@ -12,9 +12,9 @@ vi.mock("@tanstack/react-router", async () => {
   };
 });
 
-import { AnswerReviewCard } from "@/components/quiz/AnswerReviewCard";
-import type { Question } from "@/lib/quiz/questions";
-import type { AnswerRecordPersisted } from "@/lib/quiz/schema";
+import { AnswerReviewCard } from "@/components/quiz/review/AnswerReviewCard";
+import type { Question } from "@/lib/quiz/bank/questions";
+import type { AnswerRecordPersisted } from "@/lib/quiz/bank/schema";
 
 function makeQuestion(): Question {
   return {

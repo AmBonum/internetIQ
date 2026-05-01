@@ -6,18 +6,18 @@ import {
   pickPersonalityVariant,
   type AnswerRecord,
   type ScoreResult,
-} from "@/lib/quiz/scoring";
+} from "@/lib/quiz/score/scoring";
 import { supabase } from "@/integrations/supabase/client";
 import { buildShareCaption } from "@/lib/share/intents";
 import { TRAP_SEEN_STORAGE_KEY } from "@/lib/data-trap/copy";
 import { useConsent } from "@/hooks/useConsent";
-import { track } from "@/lib/tracking";
-import { SurveyCard } from "./SurveyCard";
-import { SocialShareGrid } from "./SocialShareGrid";
-import { ManualShareCard } from "./ManualShareCard";
-import { TrapDialog } from "./TrapDialog";
+import { track } from "@/lib/browser/tracking";
+import { SurveyCard } from "@/components/quiz/survey/SurveyCard";
+import { SocialShareGrid } from "@/components/quiz/share/SocialShareGrid";
+import { ManualShareCard } from "@/components/quiz/share/ManualShareCard";
+import { TrapDialog } from "@/components/quiz/results/TrapDialog";
 
-const AnswerReviewSection = lazy(() => import("./AnswerReviewSection"));
+const AnswerReviewSection = lazy(() => import("@/components/quiz/review/AnswerReviewSection"));
 
 interface EduContextProp {
   token: string;
@@ -250,7 +250,7 @@ export function ResultsView({
   async function handleDownloadStory() {
     setDownloadingImg(true);
     try {
-      const { drawIgStoryToCanvas } = await import("@/lib/quiz/share-image");
+      const { drawIgStoryToCanvas } = await import("@/lib/quiz/og-image/index");
       const blob = await drawIgStoryToCanvas({
         score: result.finalScore,
         percentile: result.percentile,
