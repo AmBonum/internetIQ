@@ -34,5 +34,16 @@ export default tseslint.config(
       "react-refresh/only-export-components": "off",
     },
   },
+  {
+    // Playwright fixtures use a destructured `use` callback that the
+    // react-hooks plugin mistakes for a React hook. e2e/ has no React
+    // — disable both react-* rule sets for the entire Playwright tree.
+    files: ["e2e/**/*.{ts,tsx}"],
+    rules: {
+      "react-hooks/rules-of-hooks": "off",
+      "react-hooks/exhaustive-deps": "off",
+      "react-refresh/only-export-components": "off",
+    },
+  },
   eslintPluginPrettier,
 );
