@@ -2837,6 +2837,273 @@ export const QUESTIONS: Question[] = [
       "Slovenský dopravca s SI (slovinský) IBAN a `.icu` doménou je takmer vždy scam. CMR PDF sa dá ľahko sfalšovať. Vlastníka vozidla SPZ BL-129XY si over cez orsr.sk a zavolaj na číslo z webu firmy, nie z mailu.",
   },
 
+  // ----- E9.3 finish (cont.) — 4× e-shop + 3× gastro + 3× autoservis + 3× IT/dev -----
+  // 4× e-shop
+  {
+    id: "p-eshop-fake-order-1",
+    category: "phishing",
+    difficulty: "medium",
+    prompt: "Si majiteľ e-shopu. Príde objednávka cez e-mail (nie cez admin panel). Reakcia?",
+    visual: {
+      kind: "email",
+      from: "Roman Kováč",
+      fromEmail: "roman.kovac.firma@outlook.com",
+      subject: "Hromadná objednávka — 25× notebook ASUS, súrne",
+      body: "Dobrý deň, sme firma z DE, potrebujeme 25 ks notebookov ASUS na zajtra. Súrne, klient čaká. Pošlite faktúru a údaje na úhradu. PO bude poslané neskôr.",
+      cta: "Odpovedať s IBAN",
+    },
+    options: [
+      bad("a", "Pošlem faktúru a IBAN — veľká objednávka, šéf bude rád", "critical"),
+      ok("b", "Odmietnem — objednávky idú cez e-shop, žiadnu B2B robím cez ORSR-overený subjekt"),
+    ],
+    explanation:
+      'Klasický B2B advance-fee scam: „súrne", „veľká objednávka", obíde admin panel. „Firma" buď neexistuje alebo má clean shell. Pravidlo: každú firemnú objednávku over v ORSR/FinStat pred odoslaním tovaru. „PO príde neskôr" = červená vlajka, faktúru vystavuj len po prijatí podpísanej objednávky a kreditnej previerke.',
+  },
+  {
+    id: "p-eshop-fake-refund-1",
+    category: "phishing",
+    difficulty: "hard",
+    prompt: "Customer-care e-mail v admin paneli e-shopu. Akcia?",
+    visual: {
+      kind: "email",
+      from: "Anna Novakova",
+      fromEmail: "anna.novak1991@gmail.com",
+      subject: "Reklamácia objednávky #45821 — chýbajúce položky",
+      body: "Dobrý deň, v zásielke chýbajú 2 položky (mobilný kryt + kábel). Mám fotku. Prosím refund 47,80 EUR na nový IBAN SK00 0900 ... — pôvodný účet je zablokovaný. Faktúru pošlite e-mailom.",
+      cta: "Vrátiť peniaze",
+    },
+    options: [
+      bad("a", "Pošlem refund na nový IBAN — zákazník má nárok", "critical"),
+      ok("b", "Refund len na pôvodný IBAN použitý pri platbe; požiadam o doloženie zo skladu"),
+    ],
+    explanation:
+      "Account-takeover scam: útočník ukradol email reálnej zákazníčky a snaží sa presmerovať refund na svoj účet. Pravidlo: refund výlučne na rovnakú metódu ako platba (§ 7 zákona č. 102/2014). Nikdy nemeň IBAN na základe e-mailovej požiadavky — over telefonicky cez číslo z objednávky a skontroluj pickup foto skladu.",
+  },
+  {
+    id: "p-eshop-iban-switch-1",
+    category: "phishing",
+    difficulty: "hard",
+    prompt: "E-mail od dodávateľa s aktualizovanou faktúrou. Reakcia?",
+    visual: {
+      kind: "email",
+      from: "Účtovníctvo — Logistika SK",
+      fromEmail: "uctovnictvo@logistika-sk.com",
+      subject: "Aktualizovaná faktúra č. 2026/0428 — zmena bankového účtu",
+      body: "Dobrý deň, prikladám aktualizovanú faktúru. Prosíme o úhradu na NOVÝ IBAN: SK56 1100 ... (pôvodný účet bol zrušený kvôli reorganizácii). Splatnosť zostáva 5 dní.",
+      cta: "Otvoriť faktúru.pdf",
+    },
+    options: [
+      bad("a", "Zmením IBAN v účtovnom systéme a zaplatím", "critical"),
+      ok("b", "Zavolám dodávateľa na číslo z webu a osobne overím zmenu IBAN"),
+    ],
+    explanation:
+      "BEC (Business Email Compromise) IBAN-switch je top 3 finančný útok na SK firmy podľa NCKB 2025. Útočník kompromituje mailový účet dodávateľa (alebo si zaregistruje look-alike doménu — `logistika-sk.com` namiesto `logistika.sk`) a posiela falošnú faktúru. Pravidlo: každú zmenu IBAN over telefonicky na číslo z webu (NIE z e-mailu) a vyžaduj písomné potvrdenie podpísané konateľom.",
+  },
+  {
+    id: "p-eshop-admin-takeover-1",
+    category: "phishing",
+    difficulty: "medium",
+    prompt: "E-mail od „Shoptetu“ administrátorovi e-shopu. Akcia?",
+    visual: {
+      kind: "email",
+      from: "Shoptet Security",
+      fromEmail: "security@shoptet-admin-sk.com",
+      subject: "Detegované neoprávnené prihlásenie — overte konto do 24h",
+      body: "Dobrý deň, váš admin účet bude pozastavený do 24h kvôli podozrivému prihláseniu. Pre obnovu sa prihláste tu a potvrďte 2FA.",
+      cta: "Overiť konto",
+    },
+    options: [
+      bad("a", "Prihlásim sa cez link — nechcem prísť o e-shop", "critical"),
+      ok(
+        "b",
+        "Ignorujem link; otvorím Shoptet ručne cez záložku a skontrolujem aktívne prihlásenia",
+      ),
+    ],
+    explanation:
+      "Shoptet (a podobné platformy) komunikujú výlučne z `shoptet.sk` / `shoptet.cz`. Doména `shoptet-admin-sk.com` patrí útočníkovi. Phishing cieli na admin credentials e-shopu — po prihlásení útočník zmení IBAN pre payouts, presmeruje objednávky a poškodí brand. Pravidlo: do admin panelu chodíš len cez záložku a 2FA cez TOTP appku, nikdy cez link v e-maili.",
+  },
+
+  // 3× gastro / HORECA
+  {
+    id: "p-gastro-fake-rsvp-1",
+    category: "phishing",
+    difficulty: "medium",
+    prompt: "Reštaurácia dostane email s veľkou skupinovou rezerváciou. Otvoríš prílohu?",
+    visual: {
+      kind: "email",
+      from: "Eventes Bratislava",
+      fromEmail: "events@eventes-bratislava.online",
+      subject: "Rezervácia 50 osôb — firemná oslava 15.05.2026",
+      body: "Dobrý deň, chceme rezervovať celú reštauráciu pre 50 osôb. V prílohe menu_preferences.docx s našimi požiadavkami a kontakt na koordinátora.",
+      cta: "Otvoriť menu_preferences.docx",
+    },
+    options: [
+      bad("a", "Otvorím prílohu — chcem si pozrieť požiadavky", "critical"),
+      ok("b", "Odpíšem s prosbou o telefonický kontakt; prílohu neotvorím bez overenia"),
+    ],
+    explanation:
+      "Macro-malware v Word/Excel prílohe je klasický vector pre HORECA — útočník vie, že prevádzkar otvára neznáme prílohy zákazníkov. Doména `.online` + neznáma firma + súbor `.docx` so zapnutými makrami = ransomware risk. Pravidlo: rezervácie nad 10 osôb potvrdzuj len telefonicky alebo cez vlastný booking systém, prílohy otváraj v Google Docs viewer (sandboxed).",
+  },
+  {
+    id: "p-gastro-pos-update-1",
+    category: "phishing",
+    difficulty: "hard",
+    prompt: "Volanie pre prevádzkara reštaurácie. Reakcia?",
+    visual: {
+      kind: "call",
+      caller: "„Technik Verifone“",
+      number: "neznáme číslo",
+      hint: "Tvrdí, že je nutná diaľková aktualizácia POS terminálu — potrebuje ID terminálu a PIN správcu, inak prestane fungovať.",
+    },
+    options: [
+      bad("a", "Diktovám ID a PIN — bez POS nemôžem fungovať", "critical"),
+      ok("b", "Položím a zavolám Verifone na číslo z faktúry / web stránky výrobcu"),
+    ],
+    explanation:
+      "Útočníci cielia na gastro lebo POS terminál je živá brána ku kartám zákazníkov. Verifone / Ingenico / SIA nikdy nepýtajú správcovský PIN telefónom — aktualizácie chodia automaticky cez šifrovaný kanál. Po zadaní PINu útočník skimuje karty zákazníkov a zničí dôveru reštaurácie.",
+  },
+  {
+    id: "p-gastro-supplier-spoof-1",
+    category: "phishing",
+    difficulty: "medium",
+    prompt: "Nový dodávateľ čerstvých produktov pre kuchyňu pošle e-mail. Reakcia?",
+    visual: {
+      kind: "email",
+      from: "Bio Farma Záhorie",
+      fromEmail: "objednavky@biofarma-zahorie.shop",
+      subject: "Špeciálna ponuka — bio mäso o 30 % lacnejšie",
+      body: "Dobrý deň, sme nová bio farma so Záhoria. Ponúkame mäso o 30 % lacnejšie ako konkurencia. Stačí poslať objednávku a IČO/DIČ na predfaktúru — tovar dovezieme do 48h.",
+      cta: "Objednať",
+    },
+    options: [
+      bad("a", "Pošlem IČO/DIČ a objednám — výhodná cena", "critical"),
+      ok("b", "Overím farmu cez ORSR + štátny veterinárny register pred akoukoľvek komunikáciou"),
+    ],
+    explanation:
+      "30 % pod trh + nová neoverená firma + `.shop` doména = takmer vždy fake-supplier scam. Po zaplatení predfaktúry tovar nikdy nepríde. Pravidlo: dodávateľov potravín overuj v ORSR + štátnom veterinárnom registri (svps.sk) — bio farma musí mať certifikát od BIOKONT/Naturalis. Bez certifikátu nesmie predávať mäso prevádzke s gastro povolením.",
+  },
+
+  // 3× autoservis / pneuservis
+  {
+    id: "p-auto-vin-check-1",
+    category: "phishing",
+    difficulty: "medium",
+    prompt: "Email pre autoservis od „klienta“. Reakcia?",
+    visual: {
+      kind: "email",
+      from: "Peter — kupujúci",
+      fromEmail: "kupujem.skoda@protonmail.com",
+      subject: "Žiadosť o overenie histórie servisu — VIN TMBJG7NE5L0123456",
+      body: "Dobrý deň, kupujem ojazdené auto a chcel by som overiť, či bolo servisované u vás. Pošlite prosím všetky záznamy o servise + meno predávajúceho a jeho telefón.",
+    },
+    options: [
+      bad("a", "Pošlem históriu — kupujúci má právo vedieť", "critical"),
+      ok(
+        "b",
+        "Odmietnem — záznamy posielam len overenému majiteľovi (občiansky + technický preukaz)",
+      ),
+    ],
+    explanation:
+      "Servisná história + meno + telefón majiteľa = perfektný recept pre auto-scam: útočník kontaktuje skutočného majiteľa, vystupuje ako kupujúci, dohodne predaj „mimo Bazoš“ a ukradne auto alebo zálohu. Servisné záznamy sú osobný údaj (GDPR čl. 6) — vydávaj ich len osobne na základe občianskeho a technického preukazu k vozidlu, nie e-mailom.",
+  },
+  {
+    id: "p-pneu-fake-order-1",
+    category: "phishing",
+    difficulty: "easy",
+    prompt: "Pneuservisu napíše neznáme číslo na WhatsApp.",
+    visual: {
+      kind: "sms",
+      sender: "+44 7700 900882",
+      body: "Dobry den, potrebujem 4 ks letnych pneu Continental 205/55 R16 na zajtra. Plat predfakturou. Postlite IBAN.",
+    },
+    options: [
+      bad("a", "Pošlem IBAN — predfaktúra je v pohode", "critical"),
+      ok("b", "Odmietnem WhatsApp objednávky; len osobne, alebo cez náš e-shop s 3DS platbou"),
+    ],
+    explanation:
+      "WhatsApp objednávka pneu zo zahraničného (UK +44) čísla bez ORSR identifikácie + návrh predfaktúry = scam-mode triangulating: útočník vyláka IBAN, prevedie ukradnutú kartu na tvoj účet (chargeback), pneu ti nezaplatí ani neprevezme. Pravidlo: B2B objednávky cez e-shop alebo podpísanú objednávku s IČO; pri preplate vždy 3DS overenie.",
+  },
+  {
+    id: "s-auto-fake-claim-1",
+    category: "scenario",
+    difficulty: "hard",
+    prompt: "Volanie autoservisu týždeň po veľkej oprave. Reakcia?",
+    visual: {
+      kind: "call",
+      caller: "„Klient — pán Horváth“",
+      number: "neznáme číslo",
+      hint: "Tvrdí, že po vašej oprave brzdí motorom narazil do iného auta. Druhý vodič žiada 2 800 EUR. „Klient“ chce, aby ste poslali peniaze priamo druhému vodičovi cez IBAN, vyhne sa tým súdu.",
+    },
+    options: [
+      bad("a", "Pošlem 2 800 EUR — nechcem mať problém", "critical"),
+      ok(
+        "b",
+        "Odmietnem — všetky reklamácie cez poistku a písomne, žiadne priame platby tretej strane",
+      ),
+    ],
+    explanation:
+      "„Súdu sa vyhneme priamou platbou“ = klasický extortion scam. Reálnu reklamáciu rieši poistka servisu (povinné poistenie zodpovednosti) cez znaleckú obhliadku a písomný protokol. Priama platba na cudzí účet nemá právny základ a útočník zopakuje finte mesiac neskôr. Pravidlo: každá reklamácia musí prísť písomne, s technickou dokumentáciou, cez poisťovaciu spoločnosť.",
+  },
+
+  // 3× IT / dev
+  {
+    id: "p-it-npm-supply-1",
+    category: "phishing",
+    difficulty: "hard",
+    prompt: "GitHub-bot e-mail vývojárovi. Reakcia?",
+    visual: {
+      kind: "email",
+      from: "npm support",
+      fromEmail: "support@npmjs-helpdesk.com",
+      subject: "You've been added as maintainer to package `react-utils-pro`",
+      body: "Hi, user `m4int4iner` has added you as a maintainer to react-utils-pro (12k weekly downloads). To accept and publish your first release, sign in here with your npm token.",
+      cta: "Accept maintainer role",
+    },
+    options: [
+      bad("a", "Prihlásim sa cez link — pekná dôvera v kolegu", "critical"),
+      ok("b", "Ignorujem; otvorím npmjs.com ručne cez záložku a skontrolujem invitations"),
+    ],
+    explanation:
+      "Supply-chain útok: útočník chce tvoj npm publish token, aby mohol vydať škodlivú verziu populárneho balíka. Doména `npmjs-helpdesk.com` nie je npm (pravá: `npmjs.com`). npm nikdy nepýta token cez e-mailový link — invitations vidíš na npmjs.com → Account → Packages. Pravidlo: publish-tokeny rotuj každé 90 dní, používaj `2FA: auth-and-writes`, nikdy ich nezadávaj cez link.",
+  },
+  {
+    id: "p-it-oauth-phish-1",
+    category: "phishing",
+    difficulty: "hard",
+    prompt: "GitHub OAuth consent obrazovka. Schváliš?",
+    visual: {
+      kind: "url",
+      url: "https://github.com/login/oauth/authorize?client_id=8a3d&scope=repo,workflow,delete_repo",
+      secure: true,
+    },
+    options: [
+      bad("a", "Schválim — je to github.com a chcem to skúsiť", "critical"),
+      ok("b", "Odmietnem — `delete_repo` + `workflow` scope na neznámu app je no-go"),
+    ],
+    explanation:
+      "Consent-phishing: aj keď URL je legitímne `github.com`, OAuth aplikácia tretej strany žiada nebezpečnú kombináciu permissions (`repo` = read+write všetkých repov, `workflow` = úpravy GitHub Actions, `delete_repo` = mazanie). Po schválení útočník inštaluje malicious workflow a kradne secrets. Pravidlo: pred schválením vždy čítaj `client_id` aj scopes; aktívne autorizácie revoke-uj v `github.com/settings/applications`.",
+  },
+  {
+    id: "p-it-fake-recruiter-1",
+    category: "phishing",
+    difficulty: "medium",
+    prompt: "LinkedIn DM od recruitera. Klikneš na repo s test assignmentom?",
+    visual: {
+      kind: "text",
+      label: "LinkedIn DM",
+      body: "Hi! We have a Senior Backend role at a US fintech ($120k–$160k remote). First round is a 90-min coding assignment — clone this repo and run `npm install && npm start`, then submit a PR. Repo: github.com/jobs-backend-tasks/payment-api-v2",
+    },
+    options: [
+      bad("a", "Klonujem a spustím — chcem prácu", "critical"),
+      ok(
+        "b",
+        "Najprv overím profil recruitera + spoločnosť cez LinkedIn s 2nd-degree connections; repo NEspúšťam bez sandboxu",
+      ),
+    ],
+    explanation:
+      "DPRK / Lazarus group + iné aktéri systematicky nasadzujú malware-laden „coding assignments“ cez fake recruiter accounts (aj cez populárne firmy v DM). `npm install` spustí postinstall script ktorý kradne SSH kľúče, `~/.aws/credentials`, browser cookies. Pravidlo: assignmenty od neoverených recruiterov spúšťaj výlučne v Docker sandboxe alebo VM bez prístupu k tvojim secret-om; profil recruitera over cez 2nd-degree connections + obvolaj firmu cez oficiálny web.",
+  },
+
   // ============ E9.4 — Honeypot extension (+30) ============
   // 10× emaily ktoré sa SPRÁVAJÚ ako phishing, ale sú legit
   {

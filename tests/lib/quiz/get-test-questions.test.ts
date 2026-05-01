@@ -30,8 +30,49 @@ describe("getTestQuestions", () => {
     }
   });
 
-  it("question bank has at least 42 honeypot items after E9.1 (+30 legit URLs)", () => {
+  it("question bank has at least 94 honeypot items after E9.1 + E9.2 + E9.4 (+30 URL, +20 SMS, +30 honeypot)", () => {
     const honeypotInBank = QUESTIONS.filter((q) => q.category === "honeypot").length;
-    expect(honeypotInBank).toBeGreaterThanOrEqual(42);
+    expect(honeypotInBank).toBeGreaterThanOrEqual(94);
+  });
+
+  it("E9.2 legit-SMS bank has exactly 20 questions (8 pošta + 6 banky + 4 úrady + 2 borderline)", () => {
+    const e92 = QUESTIONS.filter(
+      (q) =>
+        q.id.startsWith("h-sms-posta-legit-") ||
+        q.id.startsWith("h-sms-bank-legit-") ||
+        q.id.startsWith("h-sms-urad-legit-") ||
+        q.id.startsWith("h-sms-border-"),
+    );
+    expect(e92).toHaveLength(20);
+    for (const q of e92) {
+      expect(q.category).toBe("honeypot");
+      expect(q.visual?.kind).toBe("sms");
+      const wrongOpts = q.options.filter((o) => !o.correct);
+      for (const o of wrongOpts) expect(o.severity).toBe("minor");
+    }
+  });
+
+  it("E9.3 industry-specific scams cover all 7 buckets per AC-1", () => {
+    const ids = QUESTIONS.map((q) => q.id);
+    const buckets = {
+      eshop: ids.filter((id) => id.startsWith("p-eshop-") || id.startsWith("s-eshop-")),
+      gastro: ids.filter((id) => id.startsWith("p-gastro-") || id.startsWith("s-gastro-")),
+      auto: ids.filter(
+        (id) => id.startsWith("p-auto-") || id.startsWith("p-pneu-") || id.startsWith("s-auto-"),
+      ),
+      itdev: ids.filter((id) => id.startsWith("p-it-") || id.startsWith("s-it-")),
+      zdrav: ids.filter((id) => id.startsWith("p-zdrav-") || id.startsWith("s-zdrav-")),
+      skoly: ids.filter(
+        (id) => id === "p-email-school-ms-1" || id === "s-school-qr-1" || id === "p-email-uni-1",
+      ),
+      disp: ids.filter((id) => id.startsWith("p-disp-") || id.startsWith("s-disp-")),
+    };
+    expect(buckets.eshop.length).toBeGreaterThanOrEqual(4);
+    expect(buckets.gastro.length).toBeGreaterThanOrEqual(3);
+    expect(buckets.auto.length).toBeGreaterThanOrEqual(3);
+    expect(buckets.itdev.length).toBeGreaterThanOrEqual(3);
+    expect(buckets.zdrav.length).toBeGreaterThanOrEqual(3);
+    expect(buckets.skoly.length).toBeGreaterThanOrEqual(2);
+    expect(buckets.disp.length).toBeGreaterThanOrEqual(2);
   });
 });
