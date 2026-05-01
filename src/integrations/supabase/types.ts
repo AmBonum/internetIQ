@@ -28,6 +28,8 @@ export type Database = {
           percentile: number;
           personality: string;
           referral_source: string | null;
+          respondent_email: string | null;
+          respondent_name: string | null;
           self_caution: number | null;
           share_id: string;
           stats: Json;
@@ -58,6 +60,8 @@ export type Database = {
           percentile: number;
           personality: string;
           referral_source?: string | null;
+          respondent_email?: string | null;
+          respondent_name?: string | null;
           self_caution?: number | null;
           share_id: string;
           stats: Json;
@@ -88,6 +92,8 @@ export type Database = {
           percentile?: number;
           personality?: string;
           referral_source?: string | null;
+          respondent_email?: string | null;
+          respondent_name?: string | null;
           self_caution?: number | null;
           share_id?: string;
           stats?: Json;
@@ -281,9 +287,40 @@ export type Database = {
         };
         Relationships: [];
       };
+      attempts_anon: {
+        Row: {
+          id: string;
+          share_id: string;
+          nickname: string | null;
+          final_score: number;
+          base_score: number;
+          total_penalty: number;
+          percentile: number;
+          personality: string;
+          breakdown: Json;
+          insights: Json;
+          stats: Json;
+          flags: Json;
+          total_time_ms: number;
+          test_set_id: string | null;
+          created_at: string;
+        };
+        Relationships: [];
+      };
     };
     Functions: {
-      [_ in never]: never;
+      hash_test_set_password: {
+        Args: { password: string };
+        Returns: string;
+      };
+      verify_test_set_password: {
+        Args: { set_id: string; password: string };
+        Returns: boolean;
+      };
+      purge_expired_respondent_pii: {
+        Args: Record<string, never>;
+        Returns: number;
+      };
     };
     Enums: {
       [_ in never]: never;

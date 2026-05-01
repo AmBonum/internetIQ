@@ -30,7 +30,7 @@ function PrivacyPage() {
             Zásady ochrany súkromia
           </h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            Posledná aktualizácia: 27. apríla 2026 (verzia 1.2.1)
+            Posledná aktualizácia: 1. mája 2026 (verzia 1.3.0)
           </p>
         </header>
 
@@ -164,6 +164,13 @@ function PrivacyPage() {
                     </td>
                     <td className="py-2 pr-4">Plnenie zmluvy / čl. 6 ods. 1 písm. b GDPR</td>
                     <td className="py-2">12 mesiacov od vytvorenia</td>
+                  </tr>
+                  <tr className="border-b border-border/60">
+                    <td className="py-2 pr-4">
+                      Edu odpovede (meno + e-mail respondenta v opt-in režime „Education mode")
+                    </td>
+                    <td className="py-2 pr-4">Súhlas / čl. 6 ods. 1 písm. a GDPR</td>
+                    <td className="py-2">12 mesiacov, potom auto-anonymizácia</td>
                   </tr>
                   <tr className="border-b border-border/60">
                     <td className="py-2 pr-4">Analytika a vylepšovanie produktu</td>
@@ -397,17 +404,77 @@ function PrivacyPage() {
           </section>
 
           <section className="space-y-2">
-            <h2 className="text-xl font-semibold">8. Bezpečnosť</h2>
+            <h2 className="text-xl font-semibold">8. Education mode (zber edu odpovedí)</h2>
+            <p className="text-sm leading-relaxed text-muted-foreground">
+              Od mája 2026 si autori vzdelávacích testov (učitelia, lektori, HR) môžu pri tvorbe
+              vlastnej zostavy v Composeri zapnúť možnosť{" "}
+              <strong>zbierať odpovede s menom a e-mailom respondenta</strong>. Cieľ: učiteľ chce
+              vidieť, ako sa konkrétny študent zlepšuje. Tento režim je <strong>opt-in</strong> —
+              predvolene je vypnutý a nedotýka sa štandardných anonymných testov na{" "}
+              <code>/test</code> ani firemných zostáv bez tejto voľby.
+            </p>
+            <ul className="list-disc space-y-2 pl-5 text-sm leading-relaxed text-muted-foreground">
+              <li>
+                <strong>Aké údaje:</strong> meno respondenta, e-mail, skóre, detail odpovedí
+                (rovnaké stĺpce ako pri anonymnom teste).
+              </li>
+              <li>
+                <strong>Komu sú prístupné:</strong> autorovi testu cez password-protected dashboard
+                (heslo si autor zvolil pri vytváraní zostavy, hash uložený cez bcrypt). Naše servery
+                dáta hostujú; mimo dashboardu k nim nikto nepristupuje.
+              </li>
+              <li>
+                <strong>Účel:</strong> hodnotenie testu autorom (učiteľom, HR).
+              </li>
+              <li>
+                <strong>Právna rola:</strong> v tomto scenári je{" "}
+                <strong>autor testu kontrolór</strong> (čl. 4 ods. 7 GDPR) — určuje účel a
+                prostriedky spracúvania osobných údajov respondenta.{" "}
+                <strong>am.bonum s. r. o. je sprostredkovateľ</strong> podľa čl. 28 GDPR — dáta
+                hostuje a spracúva výlučne na pokyn autora. Šablónu zmluvy o sprostredkovaní (DPA)
+                poskytneme na vyžiadanie e-mailom na{" "}
+                <code className="rounded bg-muted px-1 py-0.5 text-xs">
+                  subenai.podpora@gmail.com
+                </code>
+                .
+              </li>
+              <li>
+                <strong>Právny základ:</strong> súhlas respondenta podľa čl. 6 ods. 1 písm. a GDPR.
+                Súhlas je vyžadovaný explicitne na intake formulári pred začatím testu; bez neho
+                test nepokračuje.
+              </li>
+              <li>
+                <strong>Doba uchovávania: 12 mesiacov</strong> od vytvorenia záznamu, potom
+                automaticky meno a e-mail anonymizujeme (skóre + odpovede zostávajú pre štatistiku
+                autora). Autor môže konkrétneho respondenta vymazať skôr cez dashboard.
+              </li>
+            </ul>
+            <div className="mt-3 rounded-md border border-border bg-muted/30 p-3 text-sm leading-relaxed text-muted-foreground">
+              <strong className="text-foreground">Ak ste respondent edu testu:</strong> primárny
+              kontakt pre uplatnenie vašich GDPR práv (čl. 15–22 — prístup, oprava, vymazanie,
+              prenos) je <strong>autor testu</strong>, nie my. My ako sprostredkovateľ vaše dáta len
+              hostujeme a po pokyne autora ich vymažeme. Ak neviete, kto je autor, alebo nemá
+              odpoveď, kontaktujte nás na{" "}
+              <code className="rounded bg-muted px-1 py-0.5 text-xs">
+                subenai.podpora@gmail.com
+              </code>{" "}
+              — pomôžeme vám autora identifikovať a postúpime žiadosť.
+            </div>
+          </section>
+
+          <section className="space-y-2">
+            <h2 className="text-xl font-semibold">9. Bezpečnosť</h2>
             <p className="text-sm leading-relaxed text-muted-foreground">
               Komunikácia prebieha cez HTTPS (TLS 1.3), údaje v Supabase sú šifrované at-rest aj
               in-transit, prístup k databáze je chránený Row Level Security politikami.
               Stripe-hostované formuláre kartových údajov sú PCI DSS Level 1 certifikované — naše
-              servery žiadne kartové údaje nikdy nevidia.
+              servery žiadne kartové údaje nikdy nevidia. Heslá autorov edu zostáv ukladáme výlučne
+              ako bcrypt hashe (pgcrypto, cost factor 10) — pôvodné heslo neukladáme nikde.
             </p>
           </section>
 
           <section className="space-y-2">
-            <h2 className="text-xl font-semibold">9. Zmeny týchto zásad</h2>
+            <h2 className="text-xl font-semibold">10. Zmeny týchto zásad</h2>
             <p className="text-sm leading-relaxed text-muted-foreground">
               Pri podstatnej zmene zásad ti zobrazíme nový cookie banner so žiadosťou o nový súhlas
               (zvýšením verzie záznamu). Drobné jazykové úpravy zverejňujeme bez upozornenia.
@@ -416,7 +483,7 @@ function PrivacyPage() {
           </section>
 
           <section className="space-y-2">
-            <h2 className="text-xl font-semibold">10. Súvisiace dokumenty</h2>
+            <h2 className="text-xl font-semibold">11. Súvisiace dokumenty</h2>
             <p className="text-sm leading-relaxed text-muted-foreground">
               Detailný zoznam cookies a úložiska je v{" "}
               <Link to={ROUTES.cookies} className="underline underline-offset-2">

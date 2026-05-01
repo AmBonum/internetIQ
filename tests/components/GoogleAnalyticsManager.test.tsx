@@ -52,7 +52,7 @@ describe("GoogleAnalyticsManager", () => {
     useConsentMock.mockReturnValue({
       hydrated: true,
       record: {
-        version: "1.2.1",
+        version: "1.3.0",
         timestamp: "2026-04-28T00:00:00.000Z",
         categories: {
           necessary: true,
@@ -85,7 +85,7 @@ describe("GoogleAnalyticsManager", () => {
     useConsentMock.mockReturnValue({
       hydrated: true,
       record: {
-        version: "1.2.1",
+        version: "1.3.0",
         timestamp: "2026-04-28T00:00:00.000Z",
         categories: {
           necessary: true,
