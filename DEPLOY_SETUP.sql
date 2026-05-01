@@ -528,6 +528,18 @@ BEGIN
 END $$;
 
 -- ============================================================================
+-- E12.3 + E12.7 — Lock down anon INSERT for edu attempts.
+-- Anon môže INSERT iba non-edu rows (respondent_* NULL). Edu rows
+-- zapisuje výlučne /api/finish-edu-attempt CF Function cez service-role.
+-- ============================================================================
+
+DROP POLICY IF EXISTS "Anyone can insert attempts" ON public.attempts;
+
+CREATE POLICY "Anon insert non-edu attempts only"
+  ON public.attempts FOR INSERT TO anon, authenticated
+  WITH CHECK (respondent_name IS NULL AND respondent_email IS NULL);
+
+-- ============================================================================
 -- HOTOVO!
 -- Teraz choď do Settings -> API a skopíruj si:
 --   - Project URL  (napr. https://abcdef.supabase.co)

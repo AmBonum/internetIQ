@@ -3,6 +3,10 @@ import { createFileRoute, Link, notFound, useParams } from "@tanstack/react-rout
 import { Footer } from "@/components/Footer";
 import { TestFlow } from "@/components/quiz/TestFlow";
 import { Button } from "@/components/ui/button";
+import {
+  RespondentIntakeForm,
+  type RespondentIntakeOk,
+} from "@/components/composer/RespondentIntakeForm";
 import { supabase } from "@/integrations/supabase/client";
 import { resolveQuestions } from "@/lib/quiz/composer";
 import { ROUTES } from "@/config/routes";
@@ -16,6 +20,7 @@ interface TestSetDto {
   max_questions: number;
   creator_label: string | null;
   source_pack_slugs: string[] | null;
+  collects_responses: boolean;
   created_at: string;
 }
 
@@ -42,6 +47,7 @@ export function ZostavaView({ id }: Props) {
   const [status, setStatus] = useState<Status>("loading");
   const [testSet, setTestSet] = useState<TestSetDto | null>(null);
   const [started, setStarted] = useState(false);
+  const [eduIntake, setEduIntake] = useState<RespondentIntakeOk | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -49,7 +55,7 @@ export function ZostavaView({ id }: Props) {
       const { data, error } = await supabase
         .from("test_sets")
         .select(
-          "id, question_ids, passing_threshold, max_questions, creator_label, source_pack_slugs, created_at",
+          "id, question_ids, passing_threshold, max_questions, creator_label, source_pack_slugs, collects_responses, created_at",
         )
         .eq("id", id)
         .maybeSingle();
@@ -120,8 +126,49 @@ export function ZostavaView({ id }: Props) {
             passingThreshold: testSet.passing_threshold,
             label: "tento test",
             testSetId: testSet.id,
+            edu: eduIntake
+              ? {
+                  token: eduIntake.token,
+                  respondentName: eduIntake.name,
+                  respondentEmail: eduIntake.email,
+                }
+              : undefined,
           }}
         />
+      </div>
+    );
+  }
+
+  // Edu mode — intake form precedes the test. Without a successful intake
+  // we never call setStarted(true), so this gate is the entry point.
+  if (testSet.collects_responses && !eduIntake) {
+    return (
+      <div className="min-h-screen bg-background">
+        <main className="mx-auto max-w-2xl px-4 pb-12 pt-12 sm:pt-16">
+          <header className="text-center md:text-left">
+            <Link to={ROUTES.home} className="text-sm text-muted-foreground hover:text-foreground">
+              ← Späť na domov
+            </Link>
+            <h1 className="mt-4 text-3xl font-black tracking-tight text-foreground sm:text-4xl">
+              {testSet.creator_label?.trim() || "Pripravený test pre teba"}
+            </h1>
+            <p className="mt-3 text-base text-muted-foreground sm:text-lg">
+              📋 {resolved.questions.length} otázok · vyhovenie pri skóre ≥{" "}
+              {testSet.passing_threshold} %
+            </p>
+          </header>
+          <div className="mt-8">
+            <RespondentIntakeForm
+              setId={testSet.id}
+              authorLabel={testSet.creator_label?.trim() || null}
+              onReady={(ok) => {
+                setEduIntake(ok);
+                setStarted(true);
+              }}
+            />
+          </div>
+          <Footer />
+        </main>
       </div>
     );
   }

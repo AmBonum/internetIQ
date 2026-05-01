@@ -4,6 +4,8 @@ import { Footer } from "@/components/Footer";
 import { PackPreloadChips } from "@/components/composer/PackPreloadChips";
 import { QuestionPicker } from "@/components/composer/QuestionPicker";
 import { ComposerSettings } from "@/components/composer/ComposerSettings";
+import { EduSettings, EDU_PASSWORD_MIN_LEN } from "@/components/composer/EduSettings";
+import { EduSuccessDialog } from "@/components/composer/EduSuccessDialog";
 import { TestFlow } from "@/components/quiz/TestFlow";
 import { listPublishedPacks, getPackBySlug } from "@/content/test-packs";
 import { QUESTIONS, getQuestionById } from "@/lib/quiz/questions";
@@ -96,11 +98,18 @@ export function ComposerPage() {
     initial?.config.maxQuestions ?? COMPOSER_LIMITS.defaultMax,
   );
   const [creatorLabel, setCreatorLabel] = useState(initial?.config.creatorLabel ?? "");
+  const [collectsResponses, setCollectsResponses] = useState(false);
+  const [authorPassword, setAuthorPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [staleNotice, setStaleNotice] = useState<string | null>(null);
   const [selfRunning, setSelfRunning] = useState(false);
   const [shareToast, setShareToast] = useState<string | null>(null);
+  const [eduSuccess, setEduSuccess] = useState<{
+    publicUrl: string;
+    resultsUrl: string;
+    password: string;
+  } | null>(null);
 
   const packs = useMemo(() => listPublishedPacks(), []);
   const honeypotRatio = useMemo(() => computeHoneypotRatio(Array.from(selectedIds)), [selectedIds]);
@@ -215,8 +224,13 @@ export function ComposerPage() {
   const selectedCount = selectedIds.size;
   const meetsMin = selectedCount >= COMPOSER_LIMITS.minQuestions;
   const meetsMax = selectedCount <= COMPOSER_LIMITS.maxQuestions && selectedCount <= maxQuestions;
-  const canRun = meetsMin && meetsMax && !submitting;
-  const canShareUrl = canRun && !shouldUseDbShare(selectedCount);
+  const eduPasswordOk = !collectsResponses || authorPassword.length >= EDU_PASSWORD_MIN_LEN;
+  const canRun = meetsMin && meetsMax && eduPasswordOk && !submitting;
+  // Edu mode forces DB save (no URL share for password-protected sets) and
+  // strictly disables the "spustiť pre seba" preview (would skip the
+  // intake form and create an attempt without consent).
+  const canShareUrl = canRun && !collectsResponses && !shouldUseDbShare(selectedCount);
+  const canSelfRun = canRun && !collectsResponses;
 
   const runForSelf = useCallback(() => {
     if (!canRun) return;
@@ -261,11 +275,29 @@ export function ComposerPage() {
           max_questions: ids.length,
           creator_label: creatorLabel.trim() || undefined,
           source_pack_slugs: selectedPackSlugs.size > 0 ? Array.from(selectedPackSlugs) : undefined,
+          collects_responses: collectsResponses || undefined,
+          author_password: collectsResponses ? authorPassword : undefined,
         }),
       });
-      const payload = (await response.json()) as { id?: string; error?: string };
+      const payload = (await response.json()) as {
+        id?: string;
+        url?: string;
+        results_url?: string;
+        error?: string;
+      };
       if (!response.ok || !payload.id) {
         setError(payload.error ?? "submit_failed");
+        setSubmitting(false);
+        return;
+      }
+      // Edu mode: open the success dialog so the author copies BOTH links
+      // and the password before navigating away. Plain navigate() would lose
+      // the password the moment the dialog disappears.
+      if (collectsResponses) {
+        const origin = typeof window !== "undefined" ? window.location.origin : "";
+        const publicUrl = `${origin}${payload.url ?? `/test/zostava/${payload.id}`}`;
+        const resultsUrl = `${origin}${payload.results_url ?? `${payload.url}/vysledky`}`;
+        setEduSuccess({ publicUrl, resultsUrl, password: authorPassword });
         setSubmitting(false);
         return;
       }
@@ -384,6 +416,12 @@ export function ComposerPage() {
               creatorLabel={creatorLabel}
               onCreatorLabelChange={setCreatorLabel}
             />
+            <EduSettings
+              collectsResponses={collectsResponses}
+              onToggle={setCollectsResponses}
+              authorPassword={authorPassword}
+              onPasswordChange={setAuthorPassword}
+            />
           </section>
 
           {error ? (
@@ -422,7 +460,9 @@ export function ComposerPage() {
             >
               {!meetsMin
                 ? `Vyber aspoň ${COMPOSER_LIMITS.minQuestions} otázok (zostáva ${COMPOSER_LIMITS.minQuestions - selectedCount})`
-                : `Vybraných: ${selectedCount} · prah ${passingThreshold} %`}
+                : !eduPasswordOk
+                  ? `Heslo musí mať aspoň ${EDU_PASSWORD_MIN_LEN} znakov`
+                  : `Vybraných: ${selectedCount} · prah ${passingThreshold} %${collectsResponses ? " · edu mód" : ""}`}
             </p>
             <div className="flex flex-wrap items-center gap-2">
               <button
@@ -436,7 +476,12 @@ export function ComposerPage() {
               <button
                 type="button"
                 onClick={runForSelf}
-                disabled={!canRun}
+                disabled={!canSelfRun}
+                title={
+                  collectsResponses
+                    ? "Edu mód s heslom: zostavu treba zdieľať tímu cez link, nie spustiť tu (preskočil by sa intake formulár)."
+                    : undefined
+                }
                 className="rounded-xl border border-primary/40 bg-card px-4 py-2 text-sm font-semibold text-foreground transition-colors hover:border-primary disabled:cursor-not-allowed disabled:opacity-50"
               >
                 Spustiť pre seba
@@ -450,7 +495,11 @@ export function ComposerPage() {
                 disabled={!canRun}
                 className="inline-flex items-center justify-center gap-2 rounded-xl bg-accent-gradient px-4 py-2 text-sm font-bold text-primary-foreground shadow-glow transition-transform hover:scale-[1.02] active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:scale-100"
               >
-                {submitting ? "Ukladám…" : "Zdieľať s tímom"}
+                {submitting
+                  ? "Ukladám…"
+                  : collectsResponses
+                    ? "Vytvoriť edu test"
+                    : "Zdieľať s tímom"}
                 <span aria-hidden="true">→</span>
               </button>
             </div>
@@ -469,6 +518,20 @@ export function ComposerPage() {
           ) : null}
         </div>
       </div>
+
+      {eduSuccess ? (
+        <EduSuccessDialog
+          publicUrl={eduSuccess.publicUrl}
+          resultsUrl={eduSuccess.resultsUrl}
+          password={eduSuccess.password}
+          onClose={() => {
+            setEduSuccess(null);
+            // Wipe edu state so next test in this session starts clean.
+            setCollectsResponses(false);
+            setAuthorPassword("");
+          }}
+        />
+      ) : null}
     </div>
   );
 }
