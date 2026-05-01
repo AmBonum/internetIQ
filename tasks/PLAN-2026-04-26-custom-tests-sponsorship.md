@@ -331,12 +331,12 @@ zlyhajú na nepriamych voľbách.
 
 | story | title | effort | priority | status | deps |
 |---|---|---|---|---|---|
-| [E12.1](./stories/E12.1-edu-schema.md) | Schema rozšírenie: `test_sets` author password + `attempts` respondent name/email + RLS | S | P2 | ⛔ Blocked | E8.1 |
-| [E12.2](./stories/E12.2-composer-edu-toggle.md) | Composer UI: „Zbierať odpovede s menom a emailom" toggle + heslo authora | M | P2 | ⛔ Blocked | E12.1, E8.2 |
-| [E12.3](./stories/E12.3-respondent-intake.md) | Test intro form pre respondenta (name + email + GDPR consent) keď collects_responses=true | S | P2 | ⛔ Blocked | E12.1 |
-| [E12.4](./stories/E12.4-results-dashboard.md) | `/test/zostava/$id/vysledky` dashboard s password gate + agregáty + tabuľka | M | P2 | ⛔ Blocked | E12.1, E12.3 |
+| [E12.1](./stories/E12.1-edu-schema.md) | Schema rozšírenie: `test_sets` author password + `attempts` respondent name/email + RLS | S | P2 | ✅ Done | — |
+| [E12.2](./stories/E12.2-composer-edu-toggle.md) | Composer UI: „Zbierať odpovede s menom a emailom" toggle + heslo authora | M | P2 | 🟡 Ready | E8.2 |
+| [E12.3](./stories/E12.3-respondent-intake.md) | Test intro form pre respondenta (name + email + GDPR consent) keď collects_responses=true | S | P2 | 🟡 Ready | — |
+| [E12.4](./stories/E12.4-results-dashboard.md) | `/test/zostava/$id/vysledky` dashboard s password gate + agregáty + tabuľka | M | P2 | ⛔ Blocked | E12.3 |
 | [E12.5](./stories/E12.5-edu-author-guide.md) | Autor guide: ako vytvoriť test, zdieľať, pozerať výsledky | S | P2 | ⛔ Blocked | E12.4 |
-| [E12.6](./stories/E12.6-edu-privacy.md) | Privacy update + CONSENT_VERSION 1.3.0 (nová kategória „edu odpovede") | S | P1 | ⛔ Blocked | E12.1 |
+| [E12.6](./stories/E12.6-edu-privacy.md) | Privacy update + CONSENT_VERSION 1.3.0 (nová kategória „edu odpovede") | S | P1 | ✅ Done | — |
 | [E12.7](./stories/E12.7-anti-spam.md) | Email format validation + per-pack anti-spam (rate limit + honey-trap field) | S | P2 | ⛔ Blocked | E12.3 |
 
 **Total: 32 stories** (6 + 3 + 4 + 5 + 8 + 7).

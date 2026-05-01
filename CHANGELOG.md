@@ -29,9 +29,11 @@ Verzie idú od najnovšej. Drobné úpravy textov a interné práce neuvádzame.
 - **13 nových otázok pre konkrétne odvetvia** — e-shopy (BEC, IBAN-switch, fake reklamácia, account takeover), gastro (kompromitovaný POS terminál, fake supplier, malware v prílohe rezervácie), autoservisy (fake VIN check, fake reklamácia po oprave), pneuservisy (WhatsApp predfaktúra) a IT/dev (npm supply-chain, OAuth phishing, fake recruiter assignment).
 - **30 honeypot otázok „vyzerá podozrivo, ale je legit"** — emaily od bánk, hovory polície / fraud teamu / lekára, pozostalostné inzeráty, transakčné SMS od Boltu / Woltu / Apple. Učia rozoznať, kedy je urgentný tón naozaj legitímny.
 - Stránka **Kontakt** s priamym linkom na `subenai.podpora@gmail.com` a 6 prednastavenými témami (technická pomoc, GDPR, sponzorstvo, spolupráca…). Odpovedáme typicky do 2 pracovných dní.
+- **Education mode (príprava)** — autori vzdelávacích testov si v Composeri budú môcť opt-in zapnúť zber odpovedí s menom a e-mailom respondenta a chrániť výsledky vlastným heslom. Schéma + privacy update sú už nasadené; UI toggle a respondent intake doplníme v ďalších sprintoch. *Ako respondent edu testu: kontrolórom tvojich údajov je autor testu, my (am.bonum) sme len sprostredkovateľ podľa čl. 28 GDPR.*
 
 ### Zmenené
 - **Identifikácia prevádzkovateľa** v zásadách ochrany súkromia — projekt teraz transparentne vystupuje ako am.bonum s. r. o. (predtým fyzická osoba). Cookie banner sa znova zobrazil, aby si mohol/a aktualizovať svoj súhlas pod správnu entitu.
+- **Súkromie** — pridaná samostatná sekcia *„Education mode"* (zber edu odpovedí, role kontrolór/sprostredkovateľ, doba uchovávania 12 mesiacov). Cookie banner sa znova zobrazí, aby si súhlas potvrdil/a pod novú verziu zásad (1.3.0).
 - Texty na stránkach **O projekte**, **Cookies** a **Súkromie** o trackingu: sformulované tak, aby boli zrozumiteľné a konzistentné s tým, čo cookie banner naozaj robí — analytika a marketing sa zapnú **iba so súhlasom**.
 - V hlavičke stránky pribudol odkaz **Podporiť projekt**; v päte stránky **Sponzori**, **Zmeny** a **Kontakt**.
 - Firemné testy presunuté z `/test/firma/...` na kratší a zrozumiteľnejší **`/testy/...`**. Staré linky redirectujú.

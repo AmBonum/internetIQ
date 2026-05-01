@@ -36,9 +36,9 @@ export function ConsentBanner() {
             </span>
           </p>
           <p id="consent-banner-description" className="mt-1 text-muted-foreground">
-            Aktualizovali sme zásady o sponzorských platbách (Stripe). Používame nevyhnutné úložisko
-            pre fungovanie testu. Voliteľné kategórie (analytika, marketing) zapneme len s tvojím
-            súhlasom.{" "}
+            Pridali sme možnosť autorom zbierať odpovede pre edukačné účely (opt-in, s heslom
+            autora). Privacy sme aktualizovali. Používame nevyhnutné úložisko pre fungovanie testu;
+            voliteľné kategórie (analytika, marketing) zapneme len s tvojím súhlasom.{" "}
             <Link to="/cookies" className="underline underline-offset-2 hover:text-foreground">
               Cookies
             </Link>
