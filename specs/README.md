@@ -24,12 +24,24 @@ The Playwright **planner** agent (`.claude/agents/playwright-test-planner.md`) r
 
 ---
 
+## Plans are grounded in user stories
+
+Before writing a plan, the planner reads `tasks/stories/E<N>.<m>-*.md` for the relevant feature. The plan's header `**Source stories:**` field links every story whose AC the plan covers. Inside the plan, every TC references its origin:
+
+- `**AC reference:** AC-3` — TC implements Acceptance Criterion 3 from the source story.
+- `**Risk reference:** "<risk text>"` — TC covers a row from the source story's `Riziká` table.
+
+This gives reviewers a mechanical traceability check: every AC must have at least one TC; every Risk row must have at least one TC. Plans without `Source stories` (or without AC references when stories exist) fail the planner's quality bar.
+
 ## Required test-case format
 
 Every test case in every plan uses **exactly** this Gherkin-style shape:
 
 ```
 ### TC-<NN>: <imperative-mood title in Slovak>
+
+**AC reference:** AC-N    ← cite the source story's AC (omit if N/A)
+**Risk reference:** "..." ← cite the source story's Risk row (only for edge-case TCs that originate from a Risk)
 
 **Prerequisites**:
 - <pre-condition #1>

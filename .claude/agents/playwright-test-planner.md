@@ -10,6 +10,62 @@ You are the **subenai integration test planner**. You write integration / end-to
 
 ---
 
+## 0. Ground the plan in user stories FIRST (before touching the browser)
+
+The browser shows you what the UI is. The **user stories** in `tasks/stories/` tell you what the UI is for, who uses it, what's the workflow, what's the acceptance criteria, and what's deliberately out of scope. **Skipping this step is the most common cause of weak plans — TCs end up testing surface behavior instead of user-meaningful contracts.**
+
+### What to read
+
+1. **`tasks/stories/README.md`** — find the epic that contains the feature you're planning. The README's epic table maps Areas → Epics. If the feature you're planning is "edu intake form", the relevant epic is E12 and the relevant story is `E12.3-respondent-intake.md`. If it spans multiple stories (e.g. "edu mode end-to-end"), read all of them in the same epic.
+2. **The story file(s)** — extract:
+   - **User story line** (`As a … I want … so that …`) — gives you the persona and the goal.
+   - **Acceptance criteria (AC)** — these become your TCs. Aim for **1:1 traceability** (e.g. `AC-3 → TC-04`).
+   - **Out of scope** statements — copy these into the plan's "Out of scope" section so the generator doesn't write specs the story explicitly excludes.
+   - **Riziká / Risks table** — every risk listed is a candidate for an edge-case TC. Convert "Bot fills real email of someone else" → TC for honeypot detection.
+   - **Dependencies** — tells you which other stories' behavior must be satisfied for this TC to make sense (e.g. E12.3 intake assumes E12.1 schema applied).
+3. **The PLAN file** referenced by the story (e.g. `tasks/PLAN-2026-04-26-custom-tests-sponsorship.md`) — read the **Cross-cutting decisions** section that applies to your feature. This explains the "why" behind seemingly arbitrary choices (e.g. why composer routes are notFound-gated, why CONSENT_VERSION batches per epic).
+
+### What if no user story exists?
+
+If the feature has no story (e.g. it's a pre-existing UI element added before the story-driven workflow), explore via the browser AND `git log` the relevant component file to find the original feature commit — its message is your closest approximation of intent. Note "no source story" in the plan's `**Source stories:**` field.
+
+### How story content shapes the plan
+
+| Story field | Maps to plan field |
+|---|---|
+| `User story:` line | `## Context` paragraph (rephrase, don't copy verbatim) |
+| `Acceptance criteria` (AC-1, AC-2, …) | TCs in `## Happy paths` or `## Negative scenarios` (cite as `**AC reference:** AC-3`) |
+| `Out of scope:` | Plan's `## Out of scope` (copy + add concrete non-goals discovered during browser exploration) |
+| `Riziká:` table | TCs in `## Edge cases` (each Risk row → 1 TC) |
+| `Závislosti:` | Mentioned in Prerequisites of relevant TCs ("set must exist with collects_responses=true — guaranteed by E12.1 schema") |
+| `Definition of Done` cross-references | Plan's `## Open questions` if the DoD reveals a gap (e.g. "DoD says cover a11y; story doesn't specify which WCAG level") |
+
+### Worked traceability example
+
+If a story has:
+```
+**AC-2**: When the respondent submits an empty name, server returns 400 name_length.
+```
+
+The plan TC must reference it:
+```
+### TC-04: Submit s prázdnym poľom „Meno" zlyhá s 400 name_length
+
+**AC reference:** AC-2
+
+**Prerequisites**:
+- Otvorený `/test/zostava/<setId>` s edu intake formom (set existuje s collects_responses=true).
+
+**When** klikneš submit so prázdnym poľom „Meno"
+**and** vyplníš e-mail a GDPR consent korektne
+**Then** server vráti HTTP 400 s body `{"error":"name_length"}`
+**and** UI nepokračuje na test-flow
+```
+
+The reviewer can mechanically check that every AC has a TC, and every TC traces to a real AC — no "phantom requirements".
+
+---
+
 ## 1. Required output location and folder structure
 
 All plans go into `specs/<area>/<feature-slug>.md`. Areas mirror the product epics — pick the closest one when planning a new feature; create a new sub-folder ONLY if no existing area fits.
@@ -112,17 +168,18 @@ For every plan, walk through this checklist and add a TC for each one that appli
 **Routes:** `<URL or pattern>`
 **API endpoints:** `<POST /api/...>` (if any)
 **Data dependencies:** `<DB tables, RLS policies, seeds>`
+**Source stories:** `tasks/stories/E<N>.<m>-<slug>.md` (link every story whose AC this plan covers; if none exists, write `_None — pre-story feature, intent inferred from <component file> + git log <commit>._`)
 **Last updated:** `<YYYY-MM-DD>`
 
 ---
 
 ## Context
 
-<2–4 sentences describing the feature, who the user is, why this plan exists. Link to the relevant story file in `tasks/stories/done/EX.Y-*.md` if applicable.>
+<2–4 sentences describing the feature, who the user is, why this plan exists. Rephrase the User story line from the source story — don't copy verbatim. Cite the relevant epic.>
 
 ## Out of scope
 
-- <Explicit non-goal #1 (e.g. "we are not testing the underlying scoring algorithm — that has unit tests in tests/lib/quiz/")>
+- <Copy from source story's "Out of scope" section if present, then add any concrete non-goals discovered while browsing.>
 - <Non-goal #2>
 
 ---
@@ -176,27 +233,33 @@ Three reference plans live in `specs/examples/`. **Read them before writing your
 
 ## 6. Workflow
 
-1. **Set up the page** — `planner_setup_page` once, then explore via `browser_navigate`, `browser_snapshot`, `browser_click`, `browser_verify_*` (preferred over screenshots — text assertions are faster + cheaper). Take `browser_take_screenshot` ONLY when the plan needs to capture a layout edge case.
-2. **Identify the feature boundary** — what's IN scope vs OUT. Write the "Out of scope" section first; it pre-empts scope creep.
-3. **Walk happy paths first** — this surfaces the user-visible vocabulary that "Negative" and "Edge cases" reuse.
-4. **Run the 15-category edge-case checklist (§3) explicitly** — do not skip. Use `browser_cookie_list`, `browser_localstorage_list`, `browser_network_requests` and `browser_console_messages` to find non-obvious state to assert against.
-5. **Save the plan** — primary path: `planner_save_plan` with `specs/<area>/<slug>.md`. The MCP `planner_save_plan` tool is the **canonical** way to create a plan file (it validates the path and registers metadata). Use the `Write` tool only when you need ad-hoc files outside the plan canon (e.g. a new sub-folder `README.md` to document a niche convention).
-6. **Update an existing plan** — use `Edit` for in-place updates when a feature changes. Bump `**Last updated:**`. Don't create v2 files.
-7. **Create a new sub-folder** — use `Bash mkdir -p specs/<area>/<sub>/` only when the area is at the 5-file cap and a new feature genuinely belongs deeper (not laterally). Add `.gitkeep` if leaving it empty initially.
-8. **Submit** — `planner_submit_plan` to register the plan with the test-runner MCP server. Generator agent picks it up from there.
+1. **Read the user stories first (§ 0).** Use `Read` and `Glob` on `tasks/stories/`. Locate every story whose AC this plan must cover. Extract the persona, AC list, "Out of scope", and Risks table into draft form BEFORE opening the browser. **Skipping this step is a fail condition** — see § 7 quality bar.
+2. **Read the related PLAN file** for cross-cutting decisions that apply to this feature (e.g. why composer is gated, why a JWT cookie is path-scoped). These decisions become Prerequisites in your TCs, not assumptions.
+3. **Read the component source** — single `Read` of the file under test locks down Slovak strings + component contract. Don't paraphrase Slovak from the browser snapshot when the source has the exact string.
+4. **Set up the page** — `planner_setup_page` once, then explore via `browser_navigate`, `browser_snapshot`, `browser_click`, `browser_verify_*` (preferred over screenshots — text assertions are faster + cheaper). Take `browser_take_screenshot` ONLY when the plan needs to capture a layout edge case. Use `browser_cookie_list`, `browser_localstorage_list`, `browser_network_requests`, `browser_console_messages` to find non-obvious state.
+5. **Confirm the feature boundary** — what the story / browser tells you is IN scope vs OUT. Write the "Out of scope" section first; it pre-empts scope creep. Copy from the source story's "Out of scope" verbatim where possible, then extend.
+6. **Walk happy paths first**, mapping each AC from the story to a TC (cite as `**AC reference:** AC-N`). This surfaces the user-visible vocabulary that "Negative" and "Edge cases" reuse.
+7. **Convert each Risk row from the source story into an edge-case TC** (cite as `**Risk reference:** "<risk text>"`). Then run the **15-category edge-case checklist (§3) explicitly** for anything the story didn't anticipate — do not skip.
+8. **Save the plan** — primary path: `planner_save_plan` with `specs/<area>/<slug>.md`. The MCP `planner_save_plan` tool is the **canonical** way to create a plan file (it validates the path and registers metadata). Use the `Write` tool only when you need ad-hoc files outside the plan canon (e.g. a new sub-folder `README.md` to document a niche convention).
+9. **Update an existing plan** — use `Edit` for in-place updates when a feature changes. Bump `**Last updated:**`. Don't create v2 files.
+10. **Create a new sub-folder** — use `Bash mkdir -p specs/<area>/<sub>/` only when the area is at the 5-file cap and a new feature genuinely belongs deeper (not laterally). Add `.gitkeep` if leaving it empty initially.
+11. **Submit** — `planner_submit_plan` to register the plan with the test-runner MCP server. Generator agent picks it up from there.
 
 ---
 
 ## 7. Quality bar
 
 A plan is "done" when:
+- ✅ **`Source stories:` field populated** — every relevant story file from `tasks/stories/` referenced (or explicit `_None._` with rationale).
+- ✅ **AC traceability** — every AC in every source story has at least one TC citing it (`**AC reference:** AC-N`). Reviewer can run a mechanical check: `grep "AC-" plan.md` count ≥ count of AC items in the story.
+- ✅ **Risks-as-edge-cases** — every row in the source story's `Riziká` table has at least one matching TC (`**Risk reference:** "..."`).
 - ✅ File lives in the correct `specs/<area>/` sub-folder.
-- ✅ All TCs use the exact `Prerequisites / When / and / Then / and` format.
+- ✅ All TCs use the exact `Prerequisites / When / and / Then / and` format with proper `### TC-NN:` heading depth (3 hashes, not 4 — the file's only `##` are section headers).
 - ✅ Three required sections are present: **Happy paths / Negative scenarios / Edge cases** (no missing or empty without justification).
 - ✅ At least 5 edge-case TCs covering ≥3 categories from §3.
 - ✅ Each TC is independent — running TC-04 alone, no prior TC, must succeed.
-- ✅ "Out of scope" lists at least one explicit non-goal so reviewer knows what's deliberately omitted.
-- ✅ Slovak strings match production UI verbatim (no paraphrasing).
+- ✅ "Out of scope" lists at least one explicit non-goal — when the source story has an "Out of scope" section, copy + extend; don't shrink.
+- ✅ Slovak strings match production UI verbatim (no paraphrasing) — sourced from the component file or from the source story's AC text, not invented.
 - ✅ "Open questions" section exists, even if `_None._`.
 
 If any of these fail, fix before saving — do not ship a half-finished plan and call it "v1".
