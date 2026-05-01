@@ -6,7 +6,7 @@ import { signEduAuthorToken } from "../../functions/_lib/jwt";
 const env = {
   SUPABASE_URL: "https://stub.supabase.co",
   SUPABASE_SERVICE_ROLE_KEY: "service_role_stub",
-  EDU_JWT_SECRET: "test-secret",
+  JWT_SECRET: "test-secret",
 };
 
 interface ServerState {
@@ -108,7 +108,7 @@ describe("POST /api/results-data — auth + payload", () => {
   });
 
   it("403 set_mismatch when body set_id != cookie set_id", async () => {
-    const cookieToken = await signEduAuthorToken("set-cookie", env.EDU_JWT_SECRET);
+    const cookieToken = await signEduAuthorToken("set-cookie", env.JWT_SECRET);
     const r = await onRequestPost({
       request: buildRequest({ set_id: "set-other" }, cookieToken),
       env,
@@ -149,7 +149,7 @@ describe("POST /api/results-data — auth + payload", () => {
         },
       ],
     });
-    const cookieToken = await signEduAuthorToken("set-1", env.EDU_JWT_SECRET);
+    const cookieToken = await signEduAuthorToken("set-1", env.JWT_SECRET);
     const r = await onRequestPost({
       request: buildRequest({ set_id: "set-1" }, cookieToken),
       env,
@@ -167,7 +167,7 @@ describe("POST /api/results-data — auth + payload", () => {
 
   it("404 set_not_found when test_set missing", async () => {
     mockSupabase({ setRow: null });
-    const cookieToken = await signEduAuthorToken("set-1", env.EDU_JWT_SECRET);
+    const cookieToken = await signEduAuthorToken("set-1", env.JWT_SECRET);
     const r = await onRequestPost({
       request: buildRequest({ set_id: "set-1" }, cookieToken),
       env,

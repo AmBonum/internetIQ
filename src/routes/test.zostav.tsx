@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react";
-import { createFileRoute, Link, notFound, useNavigate, useSearch } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate, useSearch } from "@tanstack/react-router";
 import { Footer } from "@/components/Footer";
 import { PackPreloadChips } from "@/components/composer/PackPreloadChips";
 import { QuestionPicker } from "@/components/composer/QuestionPicker";
@@ -59,9 +59,6 @@ interface ZostavSearch {
 }
 
 export const Route = createFileRoute("/test/zostav")({
-  beforeLoad: () => {
-    throw notFound();
-  },
   validateSearch: (search: Record<string, unknown>): ZostavSearch => ({
     config: typeof search.config === "string" ? search.config : undefined,
   }),

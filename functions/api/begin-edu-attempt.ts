@@ -7,7 +7,7 @@
 //      email regex, look up the test_set, refuse if it isn't an edu set,
 //      reject duplicates per (set_id, email).
 //   4. Issue an HS256 JWT containing { set_id, name, email, exp=+60min }
-//      signed with EDU_JWT_SECRET. Client holds it in memory; on test
+//      signed with JWT_SECRET. Client holds it in memory; on test
 //      finish it goes to /api/finish-edu-attempt.
 //
 // Anon Supabase INSERT for rows with respondent_* is blocked by the
@@ -20,7 +20,7 @@ import { signEduAttemptToken } from "../_lib/jwt";
 interface Env {
   SUPABASE_URL: string;
   SUPABASE_SERVICE_ROLE_KEY: string;
-  EDU_JWT_SECRET: string;
+  JWT_SECRET: string;
   EDU_BEGIN_PER_IP_PER_5MIN?: string;
   EDU_BEGIN_PER_SET_PER_HOUR?: string;
 }
@@ -67,7 +67,7 @@ function redactEmail(email: string): string {
 export async function onRequestPost(ctx: RequestContext): Promise<Response> {
   const { request, env } = ctx;
 
-  if (!env.EDU_JWT_SECRET) {
+  if (!env.JWT_SECRET) {
     return jsonResponse(500, { error: "jwt_not_configured" });
   }
   if (!env.SUPABASE_URL || !env.SUPABASE_SERVICE_ROLE_KEY) {
@@ -165,7 +165,7 @@ export async function onRequestPost(ctx: RequestContext): Promise<Response> {
     return jsonResponse(409, { error: "already_attempted" });
   }
 
-  const token = await signEduAttemptToken({ set_id: setId, name, email }, env.EDU_JWT_SECRET);
+  const token = await signEduAttemptToken({ set_id: setId, name, email }, env.JWT_SECRET);
 
   return jsonResponse(200, { token });
 }

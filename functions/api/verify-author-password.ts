@@ -12,7 +12,7 @@ import { signEduAuthorToken, EDU_AUTHOR_COOKIE_NAME } from "../_lib/jwt";
 interface Env {
   SUPABASE_URL: string;
   SUPABASE_SERVICE_ROLE_KEY: string;
-  EDU_JWT_SECRET: string;
+  JWT_SECRET: string;
   EDU_AUTHOR_PER_KEY_PER_15MIN?: string;
 }
 
@@ -60,7 +60,7 @@ function buildCookie(setId: string, token: string, ttl: number): string {
 export async function onRequestPost(ctx: RequestContext): Promise<Response> {
   const { request, env } = ctx;
 
-  if (!env.EDU_JWT_SECRET) {
+  if (!env.JWT_SECRET) {
     return jsonResponse(500, { error: "jwt_not_configured" });
   }
   if (!env.SUPABASE_URL || !env.SUPABASE_SERVICE_ROLE_KEY) {
@@ -107,7 +107,7 @@ export async function onRequestPost(ctx: RequestContext): Promise<Response> {
     return jsonResponse(401, { error: "unauthorized" });
   }
 
-  const token = await signEduAuthorToken(setId, env.EDU_JWT_SECRET, SESSION_TTL_SECONDS);
+  const token = await signEduAuthorToken(setId, env.JWT_SECRET, SESSION_TTL_SECONDS);
   return jsonResponse(200, { ok: true }, buildCookie(setId, token, SESSION_TTL_SECONDS));
 }
 

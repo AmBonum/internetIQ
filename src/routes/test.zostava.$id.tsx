@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { createFileRoute, Link, notFound, useParams } from "@tanstack/react-router";
+import { createFileRoute, Link, useParams } from "@tanstack/react-router";
 import { Footer } from "@/components/Footer";
 import { TestFlow } from "@/components/quiz/TestFlow";
 import { Button } from "@/components/ui/button";
@@ -25,9 +25,6 @@ interface TestSetDto {
 }
 
 export const Route = createFileRoute("/test/zostava/$id")({
-  beforeLoad: () => {
-    throw notFound();
-  },
   head: () => ({
     meta: [{ title: "Zdieľaný test — subenai" }, { name: "robots", content: "noindex, nofollow" }],
   }),

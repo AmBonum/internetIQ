@@ -7,7 +7,7 @@ import { signEduAttemptToken } from "../../functions/_lib/jwt";
 const env = {
   SUPABASE_URL: "https://stub.supabase.co",
   SUPABASE_SERVICE_ROLE_KEY: "service_role_stub",
-  EDU_JWT_SECRET: "test-secret",
+  JWT_SECRET: "test-secret",
 };
 
 interface InsertCapture {
@@ -65,7 +65,7 @@ beforeEach(() => {
 
 describe("POST /api/finish-edu-attempt", () => {
   async function freshToken(setId = "set-1", email = "jana@skola.sk", name = "Jana") {
-    return signEduAttemptToken({ set_id: setId, name, email }, env.EDU_JWT_SECRET);
+    return signEduAttemptToken({ set_id: setId, name, email }, env.JWT_SECRET);
   }
 
   it("inserts via service role with respondent_* taken from JWT (not body)", async () => {
@@ -113,7 +113,7 @@ describe("POST /api/finish-edu-attempt", () => {
     mockSupabase({ id: "_", share_id: "_" });
     const expired = await signEduAttemptToken(
       { set_id: "set-1", name: "x", email: "x@x.sk" },
-      env.EDU_JWT_SECRET,
+      env.JWT_SECRET,
       -1,
     );
     const r = await onRequestPost({

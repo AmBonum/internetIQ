@@ -15,7 +15,7 @@ import type { Database, Json } from "../../src/integrations/supabase/types";
 interface Env {
   SUPABASE_URL: string;
   SUPABASE_SERVICE_ROLE_KEY: string;
-  EDU_JWT_SECRET: string;
+  JWT_SECRET: string;
   EDU_FINISH_PER_IP_PER_5MIN?: string;
 }
 
@@ -63,7 +63,7 @@ function isJson(value: unknown): value is Json {
 export async function onRequestPost(ctx: RequestContext): Promise<Response> {
   const { request, env } = ctx;
 
-  if (!env.EDU_JWT_SECRET) {
+  if (!env.JWT_SECRET) {
     return jsonResponse(500, { error: "jwt_not_configured" });
   }
   if (!env.SUPABASE_URL || !env.SUPABASE_SERVICE_ROLE_KEY) {
@@ -87,7 +87,7 @@ export async function onRequestPost(ctx: RequestContext): Promise<Response> {
     return jsonResponse(400, { error: "missing_token" });
   }
 
-  const verification = await verifyEduAttemptToken(body.token, env.EDU_JWT_SECRET);
+  const verification = await verifyEduAttemptToken(body.token, env.JWT_SECRET);
   if (!verification.ok) {
     return jsonResponse(401, { error: `token_${verification.reason}` });
   }
