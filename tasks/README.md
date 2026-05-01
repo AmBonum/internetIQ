@@ -1,16 +1,16 @@
 # Tasks
 
-Tento adresár obsahuje **plánovací backlog** pre subenai —
-epicy, user stories, ich rozpad na implementačné, testovacie,
-dokumentačné a review úlohy.
+This directory holds the **planning backlog** for subenai — epics, user
+stories, and their breakdown into implementation, test, documentation
+and review subtasks.
 
-## Štruktúra
+## Structure
 
 ```
 tasks/
-├── README.md                                    ← konvencie + DoR/DoD (tento súbor)
-├── PLAN-2026-04-25-rast-a-vzdelavanie.md       ← index plánu (epic mapa, exec order, open questions)
-└── stories/                                     ← jeden súbor = jedna user story
+├── README.md                                    ← conventions + DoR/DoD pointer (this file)
+├── PLAN-2026-04-25-rast-a-vzdelavanie.md       ← plan index (epic map, exec order, open questions)
+└── stories/                                     ← one file = one user story
     ├── E1.1-consent-link-closes-dialog.md
     ├── E2.1-attempts-schema-growth-fields.md
     ├── E2.2-survey-question-component.md
@@ -36,67 +36,70 @@ tasks/
     └── E5.13-navigation-links.md
 ```
 
-## Konvencie
+## Conventions
 
-- **Každá user story je INVEST**: Independent, Negotiable, Valuable,
-  Estimable, Small, Testable. Story čo sa nedá splniť za 1–3 dni
-  vývoja treba rozbiť na menšie.
-- **Každá story má štyri subtasky**: `Implementation`, `Tests`,
-  `Documentation`, `Code review`. Žiadna sa neoznačí ako hotová
-  bez všetkých štyroch.
-- **Code review** beží vo **fresh kontexte** (subagent / iný
-  developer). Reviewer nepozná premise — story prompt musí stáť
-  sám o sebe.
-- **Štítky efforty**:
-  - `XS` ≤ 2h · `S` ≤ ½ dňa · `M` ≤ 2 dni · `L` ≤ 1 týždeň ·
-    `XL` rozbiť na menšie
-- **Priority**:
-  - `P0` (blocker, fix dnes) · `P1` (must) ·
+- **Every user story is INVEST**: Independent, Negotiable, Valuable,
+  Estimable, Small, Testable. A story that cannot be completed in
+  1–3 days of development must be split into smaller ones.
+- **Every story has four subtasks**: `Implementation`, `Tests`,
+  `Documentation`, `Code review`. None ship as done without all four.
+- **Code review** runs in **fresh context** (subagent / another
+  developer). The reviewer does not know the premise — the story
+  prompt must stand on its own.
+- **Effort labels**:
+  - `XS` ≤ 2h · `S` ≤ ½ day · `M` ≤ 2 days · `L` ≤ 1 week ·
+    `XL` split into smaller
+- **Priorities**:
+  - `P0` (blocker, fix today) · `P1` (must) ·
     `P2` (should) · `P3` (nice)
-- **Závislosti**: explicitne v `Závislosti:` sekcii každej story
-  (story IDs).
-- **Story ID schéma**: `EPIC-{n}.{m}` — `n` je epic, `m` poradové
-  číslo v rámci epicu. Po splnení sa nadpis zmení na
+- **Dependencies**: declared explicitly in the `Závislosti:` section
+  of each story (story IDs). _(Legacy stories use the Slovak
+  heading; new stories should use `Dependencies:`.)_
+- **Story ID scheme**: `EPIC-{n}.{m}` — `n` is the epic, `m` the
+  ordinal within the epic. After completion the heading becomes
   `~~ID Title~~ ✅`.
 - **Status emoji**: 🟡 Ready / ⛔ Blocked / 🚧 In progress /
   ✅ Done.
-- **Statické content súbory** (kurzy v `src/content/courses/`)
-  sú samé osebe dokumentáciou — netreba pre ne extra README.
+- **Static content files** (courses in `src/content/courses/`) are
+  documentation in themselves — they don't need an extra README.
 
-## Aktívne plány
+## Active plans
 
-| Súbor | Obsah | Status |
+| File | Contents | Status |
 |---|---|---|
-| [PLAN-2026-04-25-rast-a-vzdelavanie.md](./PLAN-2026-04-25-rast-a-vzdelavanie.md) | 5 epicov, 23 stories: consent bug, growth survey, answer review, data-trap edu popup, courses section | 🟡 Plán schválený, čaká na štart |
+| [PLAN-2026-04-25-rast-a-vzdelavanie.md](./PLAN-2026-04-25-rast-a-vzdelavanie.md) | 5 epics, 23 stories: consent bug, growth survey, answer review, data-trap edu popup, courses section | 🟡 Plan approved, awaiting kickoff |
 
-## Plánovací proces
+## Planning process
 
-1. **Discovery** — prečítať existujúci kód relevantný k feature-u.
-   Plán bez ukotvenia v reálnom kóde je odhad, nie plán.
-2. **Story breakdown** — feature → epicy → user stories → subtasky.
-3. **Schválenie product ownerom** — žiadna implementácia bez
-   explicitného OK na akceptačné kritériá.
-4. **Realizácia** — story za story, každá končí green CR + green
-   build. Žiadne batch-merge bez review.
-5. **Archív** — splnené plány idú do `tasks/done/{rok}/`.
+1. **Discovery** — read existing code relevant to the feature.
+   A plan not anchored in real code is a guess, not a plan.
+2. **Story breakdown** — feature → epics → user stories → subtasks.
+3. **Product owner approval** — no implementation without explicit
+   sign-off on acceptance criteria.
+4. **Execution** — story by story, each one ends with a green CR +
+   green build. No batch merges without review.
+5. **Archive** — completed plans move to `tasks/done/{year}/`.
 
 ## Definition of Ready / Definition of Done
 
-Kanonický kontrolný zoznam je v samostatnom súbore (anglicky, ako CLAUDE.md):
+The canonical checklist lives in a separate file (English, like
+CLAUDE.md):
 
-📋 **[`tasks/DEFINITION_OF_DONE.md`](./DEFINITION_OF_DONE.md)** — pokrýva:
+📋 **[`tasks/DEFINITION_OF_DONE.md`](./DEFINITION_OF_DONE.md)** — covers:
 
-- § 1 — Definition of Ready (pred štartom story)
+- § 1 — Definition of Ready (before starting a story)
 - § 2 — Story DoD (per-story: implementation, unit tests, docs, CR)
-- § 3 — Feature / Epic DoD (Playwright integration + e2e testy, schema +
-  secrets, privacy, a11y, perf, security review)
-- § 4 — test pyramída (čo patrí kam — Vitest vs Playwright integration vs e2e)
-- § 5 — Pre-merge gates (lint / test / build / e2e zelené)
-- § 6 — Post-merge verification (smoke check, migrácie, monitoring, rollback)
-- § 7 — Cross-cutting concerns (DB schema / nový API endpoint / nová route /
-  PII / tretí service)
-- § 8 — Quick reference scenáre
+- § 3 — Feature / Epic DoD (Playwright integration + e2e tests, schema
+  + secrets, privacy, a11y, perf, security review)
+- § 4 — test pyramid (what goes where — Vitest vs Playwright integration
+  vs e2e)
+- § 5 — Pre-merge gates (lint / test / build / e2e green)
+- § 6 — Post-merge verification (smoke check, migrations, monitoring,
+  rollback)
+- § 7 — Cross-cutting concerns (DB schema / new API endpoint / new
+  route / PII / third-party service)
+- § 8 — Quick reference scenarios
 - § 9 — Anti-patterns
 
-Všetky stories v `tasks/stories/` referujú tento dokument — žiadna story sa
-neoznačí ako ✅ Done bez splnenia § 2, žiadny epic sa nemerguje bez § 3.
+Every story in `tasks/stories/` references this document — no story is
+marked ✅ Done without satisfying § 2, and no epic merges without § 3.

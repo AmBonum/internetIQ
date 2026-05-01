@@ -33,12 +33,16 @@ Before writing a plan, the planner reads `tasks/stories/E<N>.<m>-*.md` for the r
 
 This gives reviewers a mechanical traceability check: every AC must have at least one TC; every Risk row must have at least one TC. Plans without `Source stories` (or without AC references when stories exist) fail the planner's quality bar.
 
+## Language
+
+Plans are written in **English** (per `.claude/CLAUDE.md` § Style). Slovak appears **only** when quoting a verbatim production UI string — button labels, error messages, page headings — sourced from the component file or live UI. Don't paraphrase, don't translate; quote inside `"…"`.
+
 ## Required test-case format
 
 Every test case in every plan uses **exactly** this Gherkin-style shape:
 
 ```
-### TC-<NN>: <imperative-mood title in Slovak>
+### TC-<NN>: <imperative-mood title in English>
 
 **AC reference:** AC-N    ← cite the source story's AC (omit if N/A)
 **Risk reference:** "..." ← cite the source story's Risk row (only for edge-case TCs that originate from a Risk)
@@ -47,7 +51,7 @@ Every test case in every plan uses **exactly** this Gherkin-style shape:
 - <pre-condition #1>
 - <pre-condition #2>
 
-**When** <user action — present tense Slovak>
+**When** <user action — present tense English>
 **and** <follow-up action>
 **Then** <observable outcome>
 **and** <additional observable outcome>
@@ -58,7 +62,7 @@ Rules:
 - `When / and / Then / and` are sentence-level (no nested bullets).
 - Multi-step flows: chain `and` after `When`, then a single `Then` with as many `and` follow-ups as needed.
 - TC numbering is sequential per file (TC-01, TC-02, …) — no gaps, no duplicates.
-- Slovak for user-visible strings. English allowed for technical terms.
+- Plan body is English; quoted UI strings are verbatim Slovak (in `"…"`).
 
 ## Required sections per plan
 
@@ -109,4 +113,4 @@ A plan ships when:
 - ≥ 5 edge-case TCs covering ≥ 3 categories.
 - Each TC runs independently (no implicit ordering).
 - "Out of scope" lists ≥ 1 explicit non-goal.
-- Slovak UI strings match production verbatim.
+- When the plan cites Slovak UI strings, they are verbatim quotes — not paraphrased or translated.

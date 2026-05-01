@@ -110,13 +110,13 @@ describe("SurveyQuestion — multi", () => {
 });
 
 describe("SurveyQuestion — yesno", () => {
-  it("renders a radiogroup with Áno + Nie", () => {
+  it('renders a radiogroup with "Áno" + "Nie"', () => {
     render(<SurveyQuestion type="yesno" label="Test" value={null} onChange={() => {}} />);
     expect(screen.getByRole("radio", { name: "Áno" })).toBeInTheDocument();
     expect(screen.getByRole("radio", { name: "Nie" })).toBeInTheDocument();
   });
 
-  it("calls onChange(true) for Áno and onChange(false) for Nie", () => {
+  it('calls onChange(true) for "Áno" and onChange(false) for "Nie"', () => {
     const onChange = vi.fn();
     render(<SurveyQuestion type="yesno" label="Test" value={null} onChange={onChange} />);
     fireEvent.click(screen.getByRole("radio", { name: "Áno" }));

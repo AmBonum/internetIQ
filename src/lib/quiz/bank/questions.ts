@@ -70,7 +70,7 @@ const bad = (id: string, label: string, sev: Exclude<Severity, null>): Option =>
 });
 
 export const QUESTIONS: Question[] = [
-  // ============ PHISHING — SMS (Slovenská pošta, kuriéri, banky) ============
+  // ============ PHISHING — SMS (Slovenská pošta, couriers, banks) ============
   {
     id: "p-sms-posta-1",
     category: "phishing",
@@ -368,7 +368,7 @@ export const QUESTIONS: Question[] = [
       "Apple posiela z `@email.apple.com`. Stav úložiska skontroluj priamo v nastaveniach zariadenia.",
   },
 
-  // ============ URL — domény, podvrhy, IDN ============
+  // ============ URL — domains, lookalikes, IDN ============
   {
     id: "u-tatra-1",
     category: "url",
@@ -520,7 +520,7 @@ export const QUESTIONS: Question[] = [
     explanation: "Facebook = `facebook.com` (alebo `fb.com`). Iné varianty = phishing.",
   },
 
-  // ============ FAKE vs REAL — eshopy, inzeráty, IG reklamy ============
+  // ============ FAKE vs REAL — eshops, marketplace ads, IG ads ============
   {
     id: "f-bazos-iphone-1",
     category: "fake_vs_real",
@@ -682,7 +682,7 @@ export const QUESTIONS: Question[] = [
       "Fake recenzie sa dajú nakúpiť. Hľadaj rozloženie v čase, detaily, fotky. Pozor na generické 5★ záplavy.",
   },
 
-  // ============ SCENARIO — telefón, QR, fyzické ============
+  // ============ SCENARIO — phone, QR, physical ============
   {
     id: "s-vishing-1",
     category: "scenario",
@@ -902,7 +902,7 @@ export const QUESTIONS: Question[] = [
       'Klasický scam: pošle ti screenshot „prevodu", ty mu pošleš peniaze, jeho prevod sa nikdy nezrealizuje.',
   },
 
-  // ============ Doplnenie pre 100 — variácie ============
+  // ============ Filler to reach 100 — variations ============
   {
     id: "p-sms-bazos-1",
     category: "phishing",
@@ -1699,8 +1699,8 @@ export const QUESTIONS: Question[] = [
   },
 
   // ============ E9.1 — +30 LEGIT URL HONEYPOTS ============
-  // Cieľ: učiť sa rozoznať dôveryhodné URL od scam-ových klonov.
-  // Severity „minor" pri zlej (paranoidnej) odpovedi — pereverenost je menšie zlo než klikanie všetkého.
+  // Goal: learn to distinguish trustworthy URLs from scam clones.
+  // Severity "minor" on a wrong (paranoid) answer — over-caution is a smaller evil than clicking everything.
 
   // ----- Banking (10) -----
   {
@@ -1842,7 +1842,7 @@ export const QUESTIONS: Question[] = [
       "Tracking ID-čká v path sú normálny pattern u akejkoľvek transakčnej stránky. Dôležitá je doména druhého rádu (csob.sk) a HTTPS s validnou cert.",
   },
 
-  // ----- E-shop / komerčné (10) -----
+  // ----- E-shop / commercial (10) -----
   {
     id: "h-url-shop-1",
     category: "honeypot",
@@ -2006,7 +2006,7 @@ export const QUESTIONS: Question[] = [
       "Heureka má `obchody.heureka.sk` subdoménu kde sú profily overených e-shopov. Tieto stránky sú regulované — pred zverejnením Heureka manuálne overuje oprávnenosť.",
   },
 
-  // ----- eGov / štátne (10) -----
+  // ----- eGov / state (10) -----
   {
     id: "h-url-gov-1",
     category: "honeypot",
@@ -2154,9 +2154,9 @@ export const QUESTIONS: Question[] = [
       "DataCentrum (DataCentrum elektronizácie územnej samosprávy Slovenska, DEUS) je príspevková organizácia MIRRI SR, .gov.sk doména im patrí. Skratka DEUS / dlhšie meno organizácie sa občas skracuje.",
   },
 
-  // ============ DEMOGRAFICKÉ DOPLNKY — žiaci, študenti, seniori ============
+  // ============ DEMOGRAPHIC EXTRAS — pupils, students, seniors ============
 
-  // --- Žiaci / gaming / škola ---
+  // --- Pupils / gaming / school ---
   {
     id: "f-discord-nitro-1",
     category: "fake_vs_real",
@@ -2337,7 +2337,7 @@ export const QUESTIONS: Question[] = [
       "Seriózne charity (Liga proti rakovine, Dobrý anjel) nikdy nepýtajú číslo karty po telefóne. Darujte priamo na ich overených weboch.",
   },
 
-  // --- Študenti (16+) ---
+  // --- Students (16+) ---
   {
     id: "f-student-accom-1",
     category: "fake_vs_real",
@@ -2386,7 +2386,7 @@ export const QUESTIONS: Question[] = [
   },
 
   // ============ E9.2 — Legit SMS / borderline (honeypot, 20× kind:"sms") ============
-  // 8× Slovenská pošta
+  // 8× Slovak Post (Slovenská pošta)
   {
     id: "h-sms-posta-legit-1",
     category: "honeypot",
@@ -2520,7 +2520,7 @@ export const QUESTIONS: Question[] = [
       "0850 122 413 je oficiálne info-číslo Slovenskej pošty (overiteľné na posta.sk). Aj tak: pred zavolaním si číslo skontroluj na oficiálnom webe — útočník mohol číslo v SMS zmeniť.",
   },
 
-  // 6× banky (OTP, potvrdenia transakcií, 3DS)
+  // 6× banks (OTP, transaction confirmations, 3DS)
   {
     id: "h-sms-bank-legit-1",
     category: "honeypot",
@@ -2624,7 +2624,7 @@ export const QUESTIONS: Question[] = [
       "Fio posiela notifikácie o výberoch. Žiadny link, len informácia o tvojej akcii. Ak miesto / suma / čas nesedia — kartu hneď blokuj.",
   },
 
-  // 4× úrady (FS, slovensko.sk, SP, ePN)
+  // 4× government offices (FS, slovensko.sk, SP, ePN)
   {
     id: "h-sms-urad-legit-1",
     category: "honeypot",
@@ -2694,7 +2694,7 @@ export const QUESTIONS: Question[] = [
       "ePN (elektronická PN) sa vystavuje cez NCZI a notifikuje pacienta SMS. Žiadny link — detail si pacient otvorí v aplikácii eZdravie / na ezdravie.sk po prihlásení cez eID.",
   },
 
-  // 2× borderline (vyžaduje rozhodnutie)
+  // 2× borderline (requires judgement)
   {
     id: "h-sms-border-1",
     category: "honeypot",
@@ -3105,7 +3105,7 @@ export const QUESTIONS: Question[] = [
   },
 
   // ============ E9.4 — Honeypot extension (+30) ============
-  // 10× emaily ktoré sa SPRÁVAJÚ ako phishing, ale sú legit
+  // 10× e-mails that LOOK like phishing but are legitimate
   {
     id: "h-mail-bank-realnotice-1",
     category: "honeypot",
@@ -3298,7 +3298,7 @@ export const QUESTIONS: Question[] = [
       "Google posiela device-sign-in maily z `no-reply@accounts.google.com`. Žiadny prihlasovací link — len odkaz na `myaccount.google.com`, ktorý si otvor ručne. Phishing by mal `secure-google-login.com`.",
   },
 
-  // 8× volania ktoré pripomínajú vishing, ale sú legit
+  // 8× calls that resemble vishing but are legitimate
   {
     id: "h-call-pz-real-1",
     category: "honeypot",
@@ -3447,7 +3447,7 @@ export const QUESTIONS: Question[] = [
       "ZSE / SSE / VSE posielajú info o plánovaných výpadkoch cez 0850 čísla a SMS. Žiadne údaje sa nepýtajú. Vishing-energetik by pýtal číslo zmluvy + pohrozil odpojením, ak okamžite nezaplatím cez SMS-platbu.",
   },
 
-  // 6× listings podozrivé, ale legit
+  // 6× listings that look suspicious but are legitimate
   {
     id: "h-list-cheap-real-1",
     category: "honeypot",
@@ -3678,7 +3678,7 @@ export const QUESTIONS: Question[] = [
 
   // ============ E10 — Pig butchering + malvertising + crypto recovery (IOCTA 2025/2026) ============
 
-  // ----- Pig butchering — šafránové prasiatko (8 otázok) -----
+  // ----- Pig butchering (8 questions) -----
   {
     id: "s-pig-contact-1",
     category: "scenario",
@@ -3794,7 +3794,7 @@ export const QUESTIONS: Question[] = [
       "Sociálna platforma (Instagram, TikTok, Tinder) + neznámý záujem + niekoľko týždňov budovania vzťahu + náhla zmena na investičnú tému = pig butchering. Kamoška, ktorá zarobila, je súčasť scenáru — neexistuje alebo je tiež obeť.",
   },
 
-  // ----- Malvertising — falošné Google / Meta reklamy (6 otázok) -----
+  // ----- Malvertising — fake Google / Meta ads (6 questions) -----
   {
     id: "u-malvad-bank-1",
     category: "url",

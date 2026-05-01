@@ -22,13 +22,13 @@ CREATE INDEX attempts_share_id_idx ON public.attempts (share_id);
 
 ALTER TABLE public.attempts ENABLE ROW LEVEL SECURITY;
 
--- Hocikto môže pridať pokus (anonymne)
+-- Anyone can insert an attempt (anonymously)
 CREATE POLICY "Anyone can insert attempts"
   ON public.attempts FOR INSERT
   TO anon, authenticated
   WITH CHECK (true);
 
--- Hocikto môže čítať pokusy (leaderboard, share linky)
+-- Anyone can read attempts (leaderboard, share links)
 CREATE POLICY "Anyone can read attempts"
   ON public.attempts FOR SELECT
   TO anon, authenticated

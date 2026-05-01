@@ -47,19 +47,19 @@ If a story has:
 **AC-2**: When the respondent submits an empty name, server returns 400 name_length.
 ```
 
-The plan TC must reference it:
+The plan TC must reference it (note that the only Slovak in the TC is the quoted verbatim UI label `"Meno"` — everything else is English):
 ```
-### TC-04: Submit s prázdnym poľom „Meno" zlyhá s 400 name_length
+### TC-04: Submitting with an empty "Meno" field fails with 400 name_length
 
 **AC reference:** AC-2
 
 **Prerequisites**:
-- Otvorený `/test/zostava/<setId>` s edu intake formom (set existuje s collects_responses=true).
+- The page `/test/zostava/<setId>` is open with the edu intake form (the test_set exists with `collects_responses=true`).
 
-**When** klikneš submit so prázdnym poľom „Meno"
-**and** vyplníš e-mail a GDPR consent korektne
-**Then** server vráti HTTP 400 s body `{"error":"name_length"}`
-**and** UI nepokračuje na test-flow
+**When** the user clicks submit while leaving the field labelled "Meno" empty
+**and** the e-mail and GDPR consent are filled in correctly
+**Then** the server responds with HTTP 400 and body `{"error":"name_length"}`
+**and** the UI does not advance to the test flow
 ```
 
 The reviewer can mechanically check that every AC has a TC, and every TC traces to a real AC — no "phantom requirements".
@@ -100,24 +100,24 @@ Rules:
 Every test case in every plan uses this exact Gherkin-flavoured shape:
 
 ```
-### TC-<NN>: <imperative-mood title in Slovak>
+### TC-<NN>: <imperative-mood title in English>
 
 **Prerequisites**:
 - <fact about the system / data state before the test runs>
 - <fact about the user / browser>
 - <fact about external services>
 
-**When** <single user-initiated action — present tense, second person Slovak>
+**When** <single user-initiated action — present tense, English>
 **and** <follow-up action, if any>
 **Then** <observable outcome the test must verify>
 **and** <additional observable outcome>
 ```
 
 Rules:
+- **Language rule** (per `.claude/CLAUDE.md` § Style). The plan is in **English** — TC titles, Prerequisites, When/and/Then narrative, section headers, Context, Out of scope, Open questions. **Slovak appears only when quoting a verbatim production UI string** (button label, error message, page heading), and only inside quotation marks: e.g. *the button labelled "Spustiť test"*, *server returns the message "Tento test si už pod týmto e-mailom absolvoval/a."*. Don't paraphrase, don't translate; copy from the component file or live UI exactly.
 - **Prerequisites** is a bullet list, not prose. Every assumption explicit (logged-in vs anon, cookie state, DB seed, viewport, locale, what `.dev.vars` / Stripe test mode applies).
 - **When / and / Then / and** are sentence-level — no bullet lists inside them. If a step is too long for one sentence, split it into two `and` clauses.
 - **Multi-step flows** chain `and` after `When`, then a single `Then` with as many `and` follow-ups as needed for the assertions. Never alternate `When … Then … When … Then` inside one TC.
-- **Slovak** for user-visible strings (button labels, error messages — match the actual UI). English allowed for technical terms (HTTP 401, JWT, RLS, etc.).
 - **TC numbering** — sequential per file: TC-01, TC-02, … No gaps when re-ordering, no duplicates across files.
 
 ---
@@ -259,7 +259,7 @@ A plan is "done" when:
 - ✅ At least 5 edge-case TCs covering ≥3 categories from §3.
 - ✅ Each TC is independent — running TC-04 alone, no prior TC, must succeed.
 - ✅ "Out of scope" lists at least one explicit non-goal — when the source story has an "Out of scope" section, copy + extend; don't shrink.
-- ✅ Slovak strings match production UI verbatim (no paraphrasing) — sourced from the component file or from the source story's AC text, not invented.
+- ✅ When the plan cites Slovak UI strings, they are **verbatim** quotes (in quotation marks) from the component file or from the source story's AC text — no paraphrasing, no translation. The plan body itself is English.
 - ✅ "Open questions" section exists, even if `_None._`.
 
 If any of these fail, fix before saving — do not ship a half-finished plan and call it "v1".

@@ -62,7 +62,7 @@ describe("KontaktPage (/kontakt)", () => {
     }
   });
 
-  it("shows operator identity block with sídlo + ORSR (unique to /kontakt body)", () => {
+  it('shows operator identity block with "sídlo" + ORSR (unique to /kontakt body)', () => {
     render(<KontaktPage />);
     const main = screen.getByRole("main");
     // am.bonum + IČO appear in Footer too; sídlo + ORSR are unique to this page.

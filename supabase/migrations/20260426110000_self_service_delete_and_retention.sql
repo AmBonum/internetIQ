@@ -3,7 +3,7 @@
 -- Honours two privacy promises that were previously documented but
 -- not enforced in code:
 --
---   1. Right to erasure (GDPR čl. 17): the user holding the share_id
+--   1. Right to erasure (GDPR Art. 17): the user holding the share_id
 --      URL can delete their own attempt themselves, no email needed.
 --   2. 36-month retention (privacy policy table row "attempts"):
 --      a daily pg_cron job purges rows older than 36 months.

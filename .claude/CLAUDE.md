@@ -79,8 +79,20 @@
   then; that is expected.
 
 ## Style
-- Slovak in user-facing strings, commit messages, story files. English
-  in code identifiers, comments (when necessary), and CLAUDE.md.
+- **Language rule (canonical).** Slovak appears in **exactly one place**:
+  the production UI content rendered to end users on `subenai.sk` (page
+  copy, button labels, validation messages, e-mail templates that ship
+  to recipients). **Everything else is English**: code, comments,
+  CLAUDE.md, READMEs, agent prompts, test plans (`specs/**`), test
+  code (`tests/**`, `e2e/**`), commit messages, PR descriptions,
+  internal documentation. When a test or plan needs to assert against a
+  Slovak UI string, **quote it verbatim** — don't paraphrase, don't
+  translate.
+  - **Legacy carve-outs** (existing files we don't retroactively
+    migrate, but new files in these areas follow the rule above):
+    `tasks/stories/*.md` (existing Slovak stories), `CHANGELOG.md`
+    (user-facing /zmeny page renders it), `tasks/PLAN-*.md` and
+    `tasks/E*-runbook.md` (existing Slovak indexes).
 - No emojis in code or commits unless the user asks. UI emoji that's
   already there stays.
 - Default to **no comments**. Only write a comment when the WHY is

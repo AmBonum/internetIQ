@@ -45,9 +45,9 @@ CREATE INDEX IF NOT EXISTS sponsors_stripe_customer_id_idx
 -- ============================================================================
 CREATE TABLE IF NOT EXISTS public.donations (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  -- ON DELETE RESTRICT: zákonná povinnosť uchovať účtovné záznamy
-  -- 10 rokov per zákon č. 431/2002 Z. z. — sponsor sa nedá DELETE
-  -- pokým má donations. GDPR Art. 17 sa rieši anonymizáciou.
+  -- ON DELETE RESTRICT: legal obligation to keep accounting records
+  -- 10 years per zákon č. 431/2002 Z. z. — sponsor cannot be DELETEd
+  -- while donations exist. GDPR Art. 17 is handled via anonymization.
   sponsor_id UUID NOT NULL REFERENCES public.sponsors(id) ON DELETE RESTRICT,
   stripe_payment_intent_id TEXT UNIQUE,
   amount_eur NUMERIC(10, 2) NOT NULL,

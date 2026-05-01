@@ -40,7 +40,7 @@ describe("/skoly — author guide page (E12.5)", () => {
     expect(screen.getByRole("heading", { name: /Časté otázky/i })).toBeInTheDocument();
   });
 
-  it("explains kontrolór / sprostredkovateľ rola so reviewer with legal background can verify", () => {
+  it('explains "kontrolór" / "sprostredkovateľ" roles so a reviewer with legal background can verify', () => {
     const Comp = Route.options.component as React.ComponentType;
     render(<Comp />);
     expect(screen.getByText(/ty kontrolór/i)).toBeInTheDocument();

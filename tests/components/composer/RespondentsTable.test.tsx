@@ -22,7 +22,7 @@ beforeEach(() => {
 });
 
 describe("RespondentsTable", () => {
-  it("renders one row per respondent with score + áno/nie badge", () => {
+  it('renders one row per respondent with score + "áno"/"nie" badge', () => {
     render(
       <RespondentsTable
         rows={[
@@ -61,7 +61,7 @@ describe("RespondentsTable", () => {
     expect(screen.getByText("Boris")).toBeInTheDocument();
   });
 
-  it("toggles aria-sort on the Skóre header when clicked", async () => {
+  it('toggles aria-sort on the "Skóre" header when clicked', async () => {
     const user = userEvent.setup();
     render(
       <RespondentsTable

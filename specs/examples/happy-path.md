@@ -3,140 +3,141 @@
 **Area:** `specs/examples/`
 **Component(s) under test:** `src/routes/test.index.tsx`, `src/components/quiz/flow/TestFlow.tsx`, `src/components/quiz/results/ResultsView.tsx`
 **Routes:** `/test`, `/r/$shareId`
-**API endpoints:** _None — anon Supabase INSERT cez `@/integrations/supabase/client`._
-**Data dependencies:** `attempts` tabuľka (RLS politika "Anon insert non-edu attempts only" povoľuje INSERT keď `respondent_name IS NULL`)
+**API endpoints:** _None — direct anon Supabase INSERT via `@/integrations/supabase/client`._
+**Data dependencies:** `attempts` table (RLS policy "Anon insert non-edu attempts only" allows INSERT when `respondent_name IS NULL`)
+**Source stories:** _None — pre-story feature; the example exists to teach the planner the shape, not to map a real epic._
 **Last updated:** 2026-05-01
 
 ---
 
 ## Context
 
-Toto je **referenčný plán** pre planner agenta. Pokrýva najjednoduchší flow: anonymný používateľ otvorí `/test`, klikne „Spustiť", odpovie na 15 otázok, vidí výsledok a klikne na zdieľací odkaz. Žiadne meno, žiadny e-mail, žiadne heslo. Plán slúži ako vzor štruktúry — tone, granularity a Prerequisites/When/and/Then formátu.
+Reference plan for the planner agent. Covers the simplest flow: an anonymous user lands on `/test`, clicks "Spustiť test", answers 15 questions, sees the results screen, and follows the share link. No name, no e-mail, no password. Use this file as the canonical shape for tone, granularity, and how Slovak UI strings get quoted inside an otherwise English plan.
 
 ## Out of scope
 
-- Scoring algoritmus (overený unit testami v `tests/lib/quiz/`).
-- Trap dialóg (samostatný plán `specs/quiz/trap-dialog.md`).
-- Survey karta po teste (samostatný plán `specs/quiz/post-test-survey.md`).
+- Scoring algorithm (covered by unit tests in `tests/lib/quiz/`).
+- Trap dialog (separate plan in `specs/quiz/trap-dialog.md`).
+- Survey card after the test (separate plan in `specs/quiz/post-test-survey.md`).
 
 ---
 
 ## Happy paths
 
-### TC-01: Spustiť test, odpovedať na všetky otázky a vidieť skóre
+### TC-01: Start the quiz, answer all questions, and reach the result screen
 
 **Prerequisites**:
-- Browser na `http://localhost:8080/`.
-- Žiadny cookie banner consent zatiaľ neuložený (čistý localStorage).
-- Vite a Wrangler bežia (`npm run dev` + `npm run dev:api`).
+- Browser at `http://localhost:8080/`.
+- No consent record yet (clean localStorage).
+- Vite + Wrangler running (`npm run dev` + `npm run dev:api`).
 - Viewport 1280×800.
 
-**When** klikneš na primárne CTA „Spustiť test" na hero sekcii
-**and** prijmeš nutné cookies kliknutím „Prijať všetko" v banneri
-**and** odpovieš správne na všetkých 15 otázok kliknutím na prvú možnosť, ktorá sa javí ako legit
-**Then** stránka prejde na výsledkovú obrazovku s nadpisom obsahujúcim slovo „skóre"
-**and** zobrazí sa percentilová hodnota v rozsahu 0–100
-**and** zobrazí sa archetyp osobnosti (jeden z piatich slovenských názvov definovaných v `src/lib/quiz/score/scoring.ts`)
-**and** v `attempts` tabuľke pribudol presne 1 nový riadok kde `respondent_name IS NULL`
+**When** the user clicks the primary CTA labelled "Spustiť test" in the hero section
+**and** accepts necessary cookies via the banner button labelled "Prijať všetko"
+**and** answers all 15 questions by clicking the option that looks legitimate
+**Then** the page transitions to the result screen with a heading containing the word "skóre"
+**and** a percentile in the range 0–100 is shown
+**and** a personality archetype is displayed (one of the five Slovak labels defined in `src/lib/quiz/score/scoring.ts`)
+**and** exactly one new row is inserted into `attempts` with `respondent_name IS NULL`
 
-### TC-02: Zdieľací odkaz vedie späť na moje výsledky
+### TC-02: Share link round-trips back to the same result
 
 **Prerequisites**:
-- TC-01 prebehol — share_id je viditeľné na výsledkovej stránke.
+- TC-01 has run — a `share_id` is visible on the result screen.
 
-**When** klikneš na tlačidlo „Skopírovať odkaz"
-**and** otvoríš skopírovaný URL v incognito okne
-**Then** stránka `/r/$shareId` zobrazí rovnaké skóre ako pôvodná session
-**and** zobrazí review odpovedí keď klikneš „Pozrieť detailný rozbor"
+**When** the user clicks the button labelled "Skopírovať odkaz"
+**and** the copied URL is opened in an incognito window
+**Then** `/r/$shareId` shows the same score as the original session
+**and** the answer review section appears after the user clicks the toggle labelled "Pozrieť detailný rozbor"
 
 ---
 
 ## Negative scenarios
 
-### TC-03: Vyhodené prerušenie testu po 5. otázke ho nezruší úplne
+### TC-03: Closing the tab mid-quiz preserves progress on return
 
 **Prerequisites**:
-- Test je v progrese, odpovedaných 5/15 otázok.
+- The quiz is in progress with 5 of 15 questions answered.
 
-**When** zatvoríš tab
-**and** otvoríš znova `/test`
-**Then** stránka ponúkne pokračovať od 6. otázky cez sessionStorage state
-**and** progres bar ukazuje 5/15 splnených
+**When** the user closes the tab
+**and** reopens `/test`
+**Then** the page offers to resume from question 6 via sessionStorage state
+**and** the progress bar shows 5/15 completed
 
-### TC-04: Submit zlyhá pri 500 z Supabase
+### TC-04: Submission fails when Supabase returns 500
 
 **Prerequisites**:
-- Playwright `route` mock na `*/rest/v1/attempts` vracia 500.
+- A Playwright `route` mock on `*/rest/v1/attempts` that returns 500.
 
-**When** dokončíš všetkých 15 otázok
-**Then** výsledková stránka zobrazí skóre lokálne (z client-side scoring)
-**and** zobrazí sa neutrálna chybová hláška „Výsledok sa nepodarilo uložiť, ale tvoje skóre vidíš tu"
-**and** žiadny share_id sa nevygeneruje
-**and** v console nie je žiadne PII v error logu
+**When** the user finishes all 15 questions
+**Then** the result screen still shows the score (computed client-side)
+**and** a neutral error message is shown: "Výsledok sa nepodarilo uložiť, ale tvoje skóre vidíš tu"
+**and** no `share_id` is generated
+**and** no PII appears in the browser console error log
 
 ---
 
 ## Edge cases
 
-### TC-05: Test absolvovaný za < 1 sekundu (anti-cheat)
+### TC-05: Quiz finished in under one second triggers anti-cheat
 
 **Prerequisites**:
-- Headless mode, klik scripted čo najrýchlejšie.
+- Headless mode with scripted clicks issued as fast as possible.
 
-**When** klikneš na všetky odpovede do 1 sekundy od spustenia
-**Then** výsledková stránka zobrazí skóre 0 alebo flag „cheat detected"
-**and** v `attempts.flags` pribudne hodnota `"too_fast"`
+**When** the user clicks all 15 answers within one second of starting the quiz
+**Then** the result screen shows a score of 0 or surfaces a "cheat detected" flag
+**and** the value `"too_fast"` is appended to `attempts.flags`
 
-### TC-06: Test absolvovaný za > 1 hodinu
-
-**Prerequisites**:
-- Browser čas posunutý späť o 60 min cez `clock` API.
-
-**When** odošleš odpoveď po 60+ minútach od štartu
-**Then** server odmietne INSERT cez constraint `attempts_time_nonneg` (max 3 600 000 ms)
-**and** klientovi sa zobrazí „Test trval príliš dlho, skús odznova"
-
-### TC-07: Slovenské diakritiky v nickname po teste
+### TC-06: Quiz that takes more than one hour is rejected
 
 **Prerequisites**:
-- Survey karta zobrazená po dokončení testu.
+- Browser clock shifted backwards by 60 minutes via the `clock` API.
 
-**When** vyplníš pole „Prezývka" hodnotou `Žofia Ščúrová-Ďurišová`
-**and** klikneš „Uložiť"
-**Then** UPDATE attempts uspeje (RLS demographics-only policy)
-**and** pri reload `/r/$shareId` sa diakritiky zobrazia korektne
+**When** the user submits the final answer 60+ minutes after starting
+**Then** the server rejects the INSERT via the `attempts_time_nonneg` constraint (max 3 600 000 ms)
+**and** the client shows the message "Test trval príliš dlho, skús odznova"
 
-### TC-08: Refresh strednou stránkou nezdvojí INSERT
-
-**Prerequisites**:
-- Si na poslednej (15.) otázke.
-
-**When** klikneš na poslednú odpoveď
-**and** okamžite stlačíš F5 pred tým, ako server vráti odpoveď
-**Then** v `attempts` tabuľke pribudol presne 1 riadok, nie 2
-**and** výsledková stránka po reloade zobrazí to isté skóre
-
-### TC-09: localStorage je vypnutý (privacy mód)
+### TC-07: Slovak diacritics in the post-test nickname survive a save
 
 **Prerequisites**:
-- Browser context s `storageState: { localStorage: [] }` a Playwright permissions blokujúce storage.
+- The survey card is visible after quiz completion.
 
-**When** klikneš „Spustiť test"
-**Then** test sa spustí (state v memory, nie persistuje)
-**and** po refreshe sa stratí progres a zobrazí sa „Pokračovať od začiatku"
-**and** žiadny console error neunikne (graceful degradation)
+**When** the user fills the "Prezývka" field with the value `Žofia Ščúrová-Ďurišová`
+**and** clicks the button labelled "Uložiť"
+**Then** the UPDATE on `attempts` succeeds (demographics-only RLS policy)
+**and** the diacritics render correctly when `/r/$shareId` is reloaded
 
-### TC-10: Mobilný viewport — všetky CTA tlačidlá viditeľné bez horizontal scroll
+### TC-08: Refresh during the final submit does not double-insert
+
+**Prerequisites**:
+- The user is on the last (15th) question.
+
+**When** the user clicks the final answer
+**and** immediately presses F5 before the server response arrives
+**Then** exactly one new row is inserted into `attempts`, not two
+**and** the result screen after the reload shows the same score
+
+### TC-09: localStorage disabled (privacy mode)
+
+**Prerequisites**:
+- Browser context with `storageState: { localStorage: [] }` and Playwright permissions blocking storage.
+
+**When** the user clicks the CTA labelled "Spustiť test"
+**Then** the quiz starts (state held in memory, not persisted)
+**and** after a refresh the progress is lost and the UI shows "Pokračovať od začiatku"
+**and** no console error escapes (graceful degradation)
+
+### TC-10: Mobile viewport keeps every CTA inside the viewport
 
 **Prerequisites**:
 - Viewport 375×667 (iPhone SE).
 
-**When** prejdeš celým testom v mobilnom móde
-**Then** „Pokračovať" tlačidlo je vždy v rámci viewportu
-**and** žiadny prvok nepretvára `document.body` na width > 375
+**When** the user walks through the entire quiz in mobile mode
+**Then** the button labelled "Pokračovať" stays inside the viewport on every question
+**and** no element forces `document.body.width > 375`
 
 ---
 
 ## Open questions
 
-- Existuje konkrétny rate-limit na anon `attempts` INSERT? (Aktuálne závislé len na CF Pages-level limite.) — _zatiaľ otvorené, ovplyvní TC k abuse rate-limit-u._
+- Is there a concrete rate limit on anon `attempts` INSERT today? (Currently only the CF Pages-level limit applies.) — _open; affects whether to add a TC for abuse rate-limit boundary._
