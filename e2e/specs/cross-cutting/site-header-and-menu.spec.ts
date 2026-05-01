@@ -17,134 +17,188 @@ test.describe("Site header and responsive navigation menu", () => {
       page,
       header,
     }) => {
-      await page.setViewportSize({ width: 1280, height: 800 });
-      await page.goto("/");
+      await test.step("Set desktop viewport (1280×800) and open the home page", async () => {
+        await page.setViewportSize({ width: 1280, height: 800 });
+        await page.goto("/");
+      });
 
-      await expect(header.nav).toBeVisible();
-      await expect(header.navLink("testy")).toBeVisible();
-      await expect(header.navLink("skolenia")).toBeVisible();
-      await expect(header.navLink("podpora")).toBeVisible();
-      await expect(header.navLink("kontakt")).toBeVisible();
+      await test.step("Verify the desktop nav is visible with all four links", async () => {
+        await expect(header.nav).toBeVisible();
+        await expect(header.navLink("testy")).toBeVisible();
+        await expect(header.navLink("skolenia")).toBeVisible();
+        await expect(header.navLink("podpora")).toBeVisible();
+        await expect(header.navLink("kontakt")).toBeVisible();
+      });
 
-      await header.navLink("testy").click();
-      await expect(page).toHaveURL(/\/testy$/);
+      await test.step('Click "Testy" and verify it routes to /testy', async () => {
+        await header.navLink("testy").click();
+        await expect(page).toHaveURL(/\/testy$/);
+      });
 
-      await page.goto("/");
-      await header.navLink("skolenia").click();
-      await expect(page).toHaveURL(/\/skolenia$/);
+      await test.step('Return home, click "Školenia" and verify it routes to /skolenia', async () => {
+        await page.goto("/");
+        await header.navLink("skolenia").click();
+        await expect(page).toHaveURL(/\/skolenia$/);
+      });
 
-      await page.goto("/");
-      await header.navLink("podpora").click();
-      await expect(page).toHaveURL(/\/podpora$/);
+      await test.step('Return home, click "Podporiť projekt" and verify it routes to /podpora', async () => {
+        await page.goto("/");
+        await header.navLink("podpora").click();
+        await expect(page).toHaveURL(/\/podpora$/);
+      });
 
-      await page.goto("/");
-      await header.navLink("kontakt").click();
-      await expect(page).toHaveURL(/\/kontakt$/);
+      await test.step('Return home, click "Kontakt" and verify it routes to /kontakt', async () => {
+        await page.goto("/");
+        await header.navLink("kontakt").click();
+        await expect(page).toHaveURL(/\/kontakt$/);
+      });
     });
 
     test("TC-02: The logo links to the home page from any route", async ({ page, header }) => {
-      await page.setViewportSize({ width: 1280, height: 800 });
-      await page.goto("/testy");
+      await test.step("Set desktop viewport and open /testy", async () => {
+        await page.setViewportSize({ width: 1280, height: 800 });
+        await page.goto("/testy");
+      });
 
-      await header.logoLink.click();
-      await expect(page).toHaveURL(/\/$/);
-      await expect(header.root).toBeVisible();
+      await test.step("Click the logo and verify navigation to / with the header still rendered", async () => {
+        await header.logoLink.click();
+        await expect(page).toHaveURL(/\/$/);
+        await expect(header.root).toBeVisible();
+      });
     });
 
     test("TC-03: The CTA pill navigates to /test and adapts its label to the viewport", async ({
       page,
       header,
     }) => {
-      await page.setViewportSize({ width: 1280, height: 800 });
-      await page.goto("/");
+      await test.step("Set lg viewport (1280×800) and open the home page", async () => {
+        await page.setViewportSize({ width: 1280, height: 800 });
+        await page.goto("/");
+      });
 
-      await expect(header.ctaPill).toHaveAccessibleName(/Spustiť rýchly test/i);
-      await expect(header.ctaPillLongSuffix).toBeVisible();
+      await test.step('Verify the CTA accessible name is "Spustiť rýchly test" and the long suffix is visible', async () => {
+        await expect(header.ctaPill).toHaveAccessibleName(/Spustiť rýchly test/i);
+        await expect(header.ctaPillLongSuffix).toBeVisible();
+      });
 
-      await page.setViewportSize({ width: 900, height: 700 });
-      await expect(header.ctaPillLongSuffix).toBeHidden();
-      await expect(header.ctaPill).toHaveAccessibleName(/Spustiť rýchly test/i);
+      await test.step("Shrink to 900×700 and verify the long suffix becomes hidden while the accessible name persists", async () => {
+        await page.setViewportSize({ width: 900, height: 700 });
+        await expect(header.ctaPillLongSuffix).toBeHidden();
+        await expect(header.ctaPill).toHaveAccessibleName(/Spustiť rýchly test/i);
+      });
 
-      await header.ctaPill.click();
-      await expect(page).toHaveURL(/\/test$/);
+      await test.step("Click the CTA and verify navigation to /test", async () => {
+        await header.ctaPill.click();
+        await expect(page).toHaveURL(/\/test$/);
+      });
     });
 
     test("TC-04: The mobile hamburger opens a Sheet containing every nav item plus the CTA", async ({
       page,
       header,
     }) => {
-      await page.setViewportSize({ width: 375, height: 667 });
-      await page.goto("/");
+      await test.step("Set mobile viewport (375×667) and open the home page", async () => {
+        await page.setViewportSize({ width: 375, height: 667 });
+        await page.goto("/");
+      });
 
-      await expect(header.desktopNav).toBeHidden();
-      await expect(header.hamburgerTrigger).toBeVisible();
+      await test.step("Verify the desktop nav is hidden and the hamburger is visible", async () => {
+        await expect(header.desktopNav).toBeHidden();
+        await expect(header.hamburgerTrigger).toBeVisible();
+      });
 
-      await header.openMobileMenu();
+      await test.step("Open the mobile sheet", async () => {
+        await header.openMobileMenu();
+      });
 
-      await expect(header.sheetCloseButton).toBeVisible();
-      await expect(header.sheetLogoLink).toBeVisible();
-      await expect(header.sheetNavLink("testy")).toBeVisible();
-      await expect(header.sheetNavLink("skolenia")).toBeVisible();
-      await expect(header.sheetNavLink("podpora")).toBeVisible();
-      await expect(header.sheetNavLink("kontakt")).toBeVisible();
-      await expect(header.sheetCtaLink).toBeVisible();
-      await expect(header.sheetCtaLink).toHaveText(/Spustiť test/);
+      await test.step("Verify the sheet shows the close button, logo, every nav link and the CTA", async () => {
+        await expect(header.sheetCloseButton).toBeVisible();
+        await expect(header.sheetLogoLink).toBeVisible();
+        await expect(header.sheetNavLink("testy")).toBeVisible();
+        await expect(header.sheetNavLink("skolenia")).toBeVisible();
+        await expect(header.sheetNavLink("podpora")).toBeVisible();
+        await expect(header.sheetNavLink("kontakt")).toBeVisible();
+        await expect(header.sheetCtaLink).toBeVisible();
+        await expect(header.sheetCtaLink).toHaveText(/Spustiť test/);
+      });
 
-      await header.closeMobileMenu();
-      await expect(header.hamburgerTrigger).toBeVisible();
+      await test.step("Close the sheet and verify the hamburger is visible again", async () => {
+        await header.closeMobileMenu();
+        await expect(header.hamburgerTrigger).toBeVisible();
+      });
     });
 
     test("TC-05: Clicking a nav link inside the Sheet navigates and auto-closes the menu", async ({
       page,
       header,
     }) => {
-      await page.setViewportSize({ width: 375, height: 667 });
-      await page.goto("/");
-      await header.openMobileMenu();
+      await test.step("Set mobile viewport, open the home page and open the sheet", async () => {
+        await page.setViewportSize({ width: 375, height: 667 });
+        await page.goto("/");
+        await header.openMobileMenu();
+      });
 
-      await header.sheetNavLink("testy").click();
+      await test.step('Click the "Testy" link inside the sheet', async () => {
+        await header.sheetNavLink("testy").click();
+      });
 
-      await expect(page).toHaveURL(/\/testy$/);
-      await expect(header.sheet).toBeHidden();
-      await expect(header.hamburgerTrigger).toBeVisible();
+      await test.step("Verify navigation to /testy and that the sheet auto-closed", async () => {
+        await expect(page).toHaveURL(/\/testy$/);
+        await expect(header.sheet).toBeHidden();
+        await expect(header.hamburgerTrigger).toBeVisible();
+      });
     });
 
     test("TC-06: Active route is highlighted in the desktop nav", async ({ page, header }) => {
-      await page.setViewportSize({ width: 1280, height: 800 });
-      await page.goto("/skolenia");
+      await test.step("Set desktop viewport and open /skolenia", async () => {
+        await page.setViewportSize({ width: 1280, height: 800 });
+        await page.goto("/skolenia");
+      });
 
-      await expect(header.navLink("skolenia")).toHaveClass(/text-foreground/);
-      await expect(header.navLink("testy")).toHaveClass(/text-muted-foreground/);
-      await expect(header.navLink("podpora")).toHaveClass(/text-muted-foreground/);
-      await expect(header.navLink("kontakt")).toHaveClass(/text-muted-foreground/);
+      await test.step('Verify only "Školenia" carries the active foreground class', async () => {
+        await expect(header.navLink("skolenia")).toHaveClass(/text-foreground/);
+        await expect(header.navLink("testy")).toHaveClass(/text-muted-foreground/);
+        await expect(header.navLink("podpora")).toHaveClass(/text-muted-foreground/);
+        await expect(header.navLink("kontakt")).toHaveClass(/text-muted-foreground/);
+      });
 
-      await page.goto("/podpora");
-      await expect(header.navLink("podpora")).toHaveClass(/text-foreground/);
-      await expect(header.navLink("skolenia")).toHaveClass(/text-muted-foreground/);
+      await test.step('Navigate to /podpora and verify the active highlight follows to "Podporiť projekt"', async () => {
+        await page.goto("/podpora");
+        await expect(header.navLink("podpora")).toHaveClass(/text-foreground/);
+        await expect(header.navLink("skolenia")).toHaveClass(/text-muted-foreground/);
+      });
     });
 
     test("TC-07: A nested route (/testy/eshop) highlights only the most-specific matching nav entry", async ({
       page,
       header,
     }) => {
-      await page.setViewportSize({ width: 1280, height: 800 });
-      await page.goto("/testy/eshop");
+      await test.step("Set desktop viewport and open /testy/eshop", async () => {
+        await page.setViewportSize({ width: 1280, height: 800 });
+        await page.goto("/testy/eshop");
+      });
 
-      await expect(header.navLink("testy")).toHaveClass(/text-foreground/);
-      await expect(header.navLink("skolenia")).toHaveClass(/text-muted-foreground/);
-      await expect(header.navLink("podpora")).toHaveClass(/text-muted-foreground/);
-      await expect(header.navLink("kontakt")).toHaveClass(/text-muted-foreground/);
+      await test.step('Verify only "Testy" is highlighted, the other three remain muted', async () => {
+        await expect(header.navLink("testy")).toHaveClass(/text-foreground/);
+        await expect(header.navLink("skolenia")).toHaveClass(/text-muted-foreground/);
+        await expect(header.navLink("podpora")).toHaveClass(/text-muted-foreground/);
+        await expect(header.navLink("kontakt")).toHaveClass(/text-muted-foreground/);
+      });
     });
 
     test("TC-08: Active route is highlighted inside the mobile Sheet", async ({ page, header }) => {
-      await page.setViewportSize({ width: 375, height: 667 });
-      await page.goto("/skolenia");
-      await header.openMobileMenu();
+      await test.step("Set mobile viewport, open /skolenia and open the sheet", async () => {
+        await page.setViewportSize({ width: 375, height: 667 });
+        await page.goto("/skolenia");
+        await header.openMobileMenu();
+      });
 
-      await expect(header.sheetNavLink("skolenia")).toHaveClass(/bg-primary\/10/);
-      await expect(header.sheetNavLink("testy")).not.toHaveClass(/bg-primary\/10/);
-      await expect(header.sheetNavLink("podpora")).not.toHaveClass(/bg-primary\/10/);
-      await expect(header.sheetNavLink("kontakt")).not.toHaveClass(/bg-primary\/10/);
+      await test.step('Verify only the "Školenia" sheet link has the active background', async () => {
+        await expect(header.sheetNavLink("skolenia")).toHaveClass(/bg-primary\/10/);
+        await expect(header.sheetNavLink("testy")).not.toHaveClass(/bg-primary\/10/);
+        await expect(header.sheetNavLink("podpora")).not.toHaveClass(/bg-primary\/10/);
+        await expect(header.sheetNavLink("kontakt")).not.toHaveClass(/bg-primary\/10/);
+      });
     });
   });
 
@@ -157,71 +211,95 @@ test.describe("Site header and responsive navigation menu", () => {
       page,
       header,
     }) => {
-      await page.setViewportSize({ width: 1280, height: 800 });
-      await page.goto("/");
+      await test.step("Set desktop viewport and open the home page", async () => {
+        await page.setViewportSize({ width: 1280, height: 800 });
+        await page.goto("/");
+      });
 
-      await expect(header.hamburgerTrigger).toBeHidden();
-      await expect(header.desktopNav).toBeVisible();
+      await test.step("Verify the hamburger is hidden and the desktop nav is visible", async () => {
+        await expect(header.hamburgerTrigger).toBeHidden();
+        await expect(header.desktopNav).toBeVisible();
+      });
     });
 
     test("TC-10: The desktop nav is not visible on a mobile viewport", async ({ page, header }) => {
-      await page.setViewportSize({ width: 375, height: 667 });
-      await page.goto("/");
+      await test.step("Set mobile viewport and open the home page", async () => {
+        await page.setViewportSize({ width: 375, height: 667 });
+        await page.goto("/");
+      });
 
-      await expect(header.desktopNav).toBeHidden();
-      await expect(header.hamburgerTrigger).toBeVisible();
+      await test.step("Verify the desktop nav is hidden and the hamburger is visible", async () => {
+        await expect(header.desktopNav).toBeHidden();
+        await expect(header.hamburgerTrigger).toBeVisible();
+      });
     });
 
     test("TC-11: The header still renders on an unknown (404) route", async ({ page, header }) => {
-      await page.setViewportSize({ width: 1280, height: 800 });
-      await page.goto("/this-route-does-not-exist");
+      await test.step("Set desktop viewport and open an unknown route", async () => {
+        await page.setViewportSize({ width: 1280, height: 800 });
+        await page.goto("/this-route-does-not-exist");
+      });
 
-      await expect(header.root).toBeVisible();
-      await expect(header.navLink("testy")).toBeVisible();
-      await expect(header.navLink("skolenia")).toBeVisible();
-      await expect(header.navLink("podpora")).toBeVisible();
-      await expect(header.navLink("kontakt")).toBeVisible();
-      await expect(header.ctaPill).toBeVisible();
+      await test.step("Verify the header, every nav link and the CTA are still rendered", async () => {
+        await expect(header.root).toBeVisible();
+        await expect(header.navLink("testy")).toBeVisible();
+        await expect(header.navLink("skolenia")).toBeVisible();
+        await expect(header.navLink("podpora")).toBeVisible();
+        await expect(header.navLink("kontakt")).toBeVisible();
+        await expect(header.ctaPill).toBeVisible();
+      });
 
-      await expect(header.navLink("testy")).toHaveClass(/text-muted-foreground/);
-      await expect(header.navLink("skolenia")).toHaveClass(/text-muted-foreground/);
-      await expect(header.navLink("podpora")).toHaveClass(/text-muted-foreground/);
-      await expect(header.navLink("kontakt")).toHaveClass(/text-muted-foreground/);
+      await test.step("Verify no nav link claims the active state on a 404 route", async () => {
+        await expect(header.navLink("testy")).toHaveClass(/text-muted-foreground/);
+        await expect(header.navLink("skolenia")).toHaveClass(/text-muted-foreground/);
+        await expect(header.navLink("podpora")).toHaveClass(/text-muted-foreground/);
+        await expect(header.navLink("kontakt")).toHaveClass(/text-muted-foreground/);
+      });
     });
 
     test("TC-12: Repeatedly opening and closing the mobile Sheet does not leak state", async ({
       page,
       header,
     }) => {
-      await page.setViewportSize({ width: 375, height: 667 });
-      await page.goto("/");
-
       const errors: string[] = [];
-      page.on("console", (msg) => {
-        if (msg.type() === "error") errors.push(msg.text());
+
+      await test.step("Set mobile viewport, open the home page and start collecting console errors", async () => {
+        await page.setViewportSize({ width: 375, height: 667 });
+        await page.goto("/");
+        page.on("console", (msg) => {
+          if (msg.type() === "error") errors.push(msg.text());
+        });
       });
 
-      for (let i = 0; i < 10; i++) {
-        await header.openMobileMenu();
-        await header.closeMobileMenu();
-      }
+      await test.step("Open and close the sheet 10 times in a row", async () => {
+        for (let i = 0; i < 10; i++) {
+          await header.openMobileMenu();
+          await header.closeMobileMenu();
+        }
+      });
 
-      expect(errors).toHaveLength(0);
-      await expect(header.hamburgerTrigger).toBeVisible();
+      await test.step("Verify no console errors fired and the hamburger is still usable", async () => {
+        expect(errors).toHaveLength(0);
+        await expect(header.hamburgerTrigger).toBeVisible();
+      });
     });
 
     test("TC-13: The route /test does not appear as an active nav item (CTA excluded from NAV_ITEMS)", async ({
       page,
       header,
     }) => {
-      await page.setViewportSize({ width: 1280, height: 800 });
-      await page.goto("/test");
+      await test.step("Set desktop viewport and open /test", async () => {
+        await page.setViewportSize({ width: 1280, height: 800 });
+        await page.goto("/test");
+      });
 
-      await expect(header.navLink("testy")).toHaveClass(/text-muted-foreground/);
-      await expect(header.navLink("skolenia")).toHaveClass(/text-muted-foreground/);
-      await expect(header.navLink("podpora")).toHaveClass(/text-muted-foreground/);
-      await expect(header.navLink("kontakt")).toHaveClass(/text-muted-foreground/);
-      await expect(header.ctaPill).not.toHaveClass(/bg-primary\/10/);
+      await test.step("Verify no nav link is highlighted and the CTA carries no active background", async () => {
+        await expect(header.navLink("testy")).toHaveClass(/text-muted-foreground/);
+        await expect(header.navLink("skolenia")).toHaveClass(/text-muted-foreground/);
+        await expect(header.navLink("podpora")).toHaveClass(/text-muted-foreground/);
+        await expect(header.navLink("kontakt")).toHaveClass(/text-muted-foreground/);
+        await expect(header.ctaPill).not.toHaveClass(/bg-primary\/10/);
+      });
     });
   });
 
@@ -234,165 +312,227 @@ test.describe("Site header and responsive navigation menu", () => {
       page,
       header,
     }) => {
-      await page.goto("/");
+      await test.step("Open the home page", async () => {
+        await page.goto("/");
+      });
 
-      await page.setViewportSize({ width: 767, height: 800 });
-      await expect(header.hamburgerTrigger).toBeVisible();
-      await expect(header.desktopNav).toBeHidden();
+      await test.step("At 767 px verify the hamburger is visible and the desktop nav is hidden", async () => {
+        await page.setViewportSize({ width: 767, height: 800 });
+        await expect(header.hamburgerTrigger).toBeVisible();
+        await expect(header.desktopNav).toBeHidden();
+      });
 
-      const logoBeforeResize = await header.logoLink.boundingBox();
-      await page.setViewportSize({ width: 768, height: 800 });
-      await expect(header.desktopNav).toBeVisible();
-      await expect(header.hamburgerTrigger).toBeHidden();
-      const logoAfterResize = await header.logoLink.boundingBox();
+      const logoBeforeResize = await test.step("Capture the logo position at 767 px", async () => {
+        return header.logoLink.boundingBox();
+      });
 
-      expect(logoAfterResize?.x).toBeCloseTo(logoBeforeResize?.x ?? 0, -1);
+      await test.step("Resize to 768 px and verify the desktop nav appears while the hamburger hides", async () => {
+        await page.setViewportSize({ width: 768, height: 800 });
+        await expect(header.desktopNav).toBeVisible();
+        await expect(header.hamburgerTrigger).toBeHidden();
+      });
+
+      await test.step("Verify the logo's x-position barely shifts across the breakpoint", async () => {
+        const logoAfterResize = await header.logoLink.boundingBox();
+        expect(logoAfterResize?.x).toBeCloseTo(logoBeforeResize?.x ?? 0, -1);
+      });
     });
 
     test("TC-15: At 375×667 the header fits the viewport without horizontal scroll", async ({
       page,
       header,
     }) => {
-      await page.setViewportSize({ width: 375, height: 667 });
-      await page.goto("/");
+      await test.step("Set mobile viewport and open the home page", async () => {
+        await page.setViewportSize({ width: 375, height: 667 });
+        await page.goto("/");
+      });
 
-      const scrollWidth = await page.evaluate(() => document.documentElement.scrollWidth);
-      expect(scrollWidth).toBeLessThanOrEqual(375);
+      await test.step("Verify the document scrollWidth does not exceed 375 px", async () => {
+        const scrollWidth = await page.evaluate(() => document.documentElement.scrollWidth);
+        expect(scrollWidth).toBeLessThanOrEqual(375);
+      });
 
-      await header.openMobileMenu();
-      await expect(header.sheetCtaLink).toBeVisible();
+      await test.step("Open the sheet and verify the CTA is visible", async () => {
+        await header.openMobileMenu();
+        await expect(header.sheetCtaLink).toBeVisible();
+      });
     });
 
     test("TC-16: Keyboard tab order on the desktop header", async ({ page, header }) => {
-      await page.setViewportSize({ width: 1280, height: 800 });
-      await page.goto("/");
+      await test.step("Set desktop viewport, open the home page and clear focus", async () => {
+        await page.setViewportSize({ width: 1280, height: 800 });
+        await page.goto("/");
+        await page.evaluate(() => (document.activeElement as HTMLElement)?.blur());
+      });
 
-      await page.evaluate(() => (document.activeElement as HTMLElement)?.blur());
+      await test.step("Tab once and verify the logo is focused", async () => {
+        await page.keyboard.press("Tab");
+        await expect(header.logoLink).toBeFocused();
+      });
 
-      await page.keyboard.press("Tab");
-      await expect(header.logoLink).toBeFocused();
+      await test.step("Tab through all four nav links in order (Testy → Školenia → Podporiť projekt → Kontakt)", async () => {
+        await page.keyboard.press("Tab");
+        await expect(header.navLink("testy")).toBeFocused();
+        await page.keyboard.press("Tab");
+        await expect(header.navLink("skolenia")).toBeFocused();
+        await page.keyboard.press("Tab");
+        await expect(header.navLink("podpora")).toBeFocused();
+        await page.keyboard.press("Tab");
+        await expect(header.navLink("kontakt")).toBeFocused();
+      });
 
-      await page.keyboard.press("Tab");
-      await expect(header.navLink("testy")).toBeFocused();
+      await test.step("Tab once more and verify the CTA pill is focused", async () => {
+        await page.keyboard.press("Tab");
+        await expect(header.ctaPill).toBeFocused();
+      });
 
-      await page.keyboard.press("Tab");
-      await expect(header.navLink("skolenia")).toBeFocused();
-
-      await page.keyboard.press("Tab");
-      await expect(header.navLink("podpora")).toBeFocused();
-
-      await page.keyboard.press("Tab");
-      await expect(header.navLink("kontakt")).toBeFocused();
-
-      await page.keyboard.press("Tab");
-      await expect(header.ctaPill).toBeFocused();
-
-      await page.keyboard.press("Enter");
-      await expect(page).toHaveURL(/\/test$/);
+      await test.step("Press Enter and verify navigation to /test", async () => {
+        await page.keyboard.press("Enter");
+        await expect(page).toHaveURL(/\/test$/);
+      });
     });
 
     test("TC-17: Focus trap inside the mobile Sheet and Escape closes it", async ({
       page,
       header,
     }) => {
-      await page.setViewportSize({ width: 375, height: 667 });
-      await page.goto("/");
-      await header.openMobileMenu();
+      await test.step("Set mobile viewport, open the home page and open the sheet", async () => {
+        await page.setViewportSize({ width: 375, height: 667 });
+        await page.goto("/");
+        await header.openMobileMenu();
+      });
 
-      await expect(header.sheetCloseButton).toBeFocused();
+      await test.step("Verify the close button receives focus when the sheet opens", async () => {
+        await expect(header.sheetCloseButton).toBeFocused();
+      });
 
-      await page.keyboard.press("Escape");
-      await expect(header.sheet).toBeHidden();
-      await expect(header.hamburgerTrigger).toBeFocused();
+      await test.step("Press Escape and verify the sheet closes and focus returns to the hamburger", async () => {
+        await page.keyboard.press("Escape");
+        await expect(header.sheet).toBeHidden();
+        await expect(header.hamburgerTrigger).toBeFocused();
+      });
     });
 
     test("TC-18: Required ARIA attributes are present and correct", async ({ page, header }) => {
-      await page.setViewportSize({ width: 375, height: 667 });
-      await page.goto("/");
+      await test.step("Set mobile viewport and open the home page", async () => {
+        await page.setViewportSize({ width: 375, height: 667 });
+        await page.goto("/");
+      });
 
-      await expect(header.navByRole).toHaveAccessibleName(/Hlavná navigácia/i);
-      await expect(header.logoLink).toHaveAccessibleName(/subenai — domov/i);
-      await expect(header.hamburgerTrigger).toHaveAccessibleName(/Otvoriť menu/i);
+      await test.step("Verify the navigation landmark and the trigger button have correct accessible names", async () => {
+        await expect(header.navByRole).toHaveAccessibleName(/Hlavná navigácia/i);
+        await expect(header.logoLink).toHaveAccessibleName(/subenai — domov/i);
+        await expect(header.hamburgerTrigger).toHaveAccessibleName(/Otvoriť menu/i);
+      });
 
-      await header.openMobileMenu();
-      await expect(header.sheetCloseButton).toHaveAccessibleName(/Zavrieť menu/i);
-      await expect(header.sheetCtaLink).toHaveAccessibleName(/Spustiť rýchly test/i);
+      await test.step("Open the sheet and verify the close button + CTA accessible names", async () => {
+        await header.openMobileMenu();
+        await expect(header.sheetCloseButton).toHaveAccessibleName(/Zavrieť menu/i);
+        await expect(header.sheetCtaLink).toHaveAccessibleName(/Spustiť rýchly test/i);
+      });
 
-      await expect(header.hamburgerIcon).toHaveAttribute("aria-hidden", "true");
+      await test.step("Verify the decorative hamburger icon is hidden from assistive tech", async () => {
+        await expect(header.hamburgerIcon).toHaveAttribute("aria-hidden", "true");
+      });
     });
 
     test("TC-19: Browser back button after the Sheet auto-closed on navigation", async ({
       page,
       header,
     }) => {
-      await page.setViewportSize({ width: 375, height: 667 });
-      await page.goto("/");
-      await header.openMobileMenu();
+      await test.step("Set mobile viewport, open the home page and open the sheet", async () => {
+        await page.setViewportSize({ width: 375, height: 667 });
+        await page.goto("/");
+        await header.openMobileMenu();
+      });
 
-      await header.sheetNavLink("skolenia").click();
-      await expect(page).toHaveURL(/\/skolenia$/);
-      await expect(header.sheet).toBeHidden();
+      await test.step('Click "Školenia" inside the sheet and verify the sheet auto-closed', async () => {
+        await header.sheetNavLink("skolenia").click();
+        await expect(page).toHaveURL(/\/skolenia$/);
+        await expect(header.sheet).toBeHidden();
+      });
 
-      await page.goBack();
-      await expect(page).toHaveURL(/\/$/);
-      await expect(header.sheet).toBeHidden();
-      await expect(header.hamburgerTrigger).toBeVisible();
+      await test.step("Press the browser back button and verify the home page returns with the sheet still closed", async () => {
+        await page.goBack();
+        await expect(page).toHaveURL(/\/$/);
+        await expect(header.sheet).toBeHidden();
+        await expect(header.hamburgerTrigger).toBeVisible();
+      });
     });
 
     test("TC-20: Hash navigation does not toggle active state", async ({ page, header }) => {
-      await page.setViewportSize({ width: 1280, height: 800 });
-      await page.goto("/#section");
+      await test.step("Set desktop viewport and open /#section", async () => {
+        await page.setViewportSize({ width: 1280, height: 800 });
+        await page.goto("/#section");
+      });
 
-      await expect(header.navLink("testy")).toHaveClass(/text-muted-foreground/);
-      await expect(header.navLink("skolenia")).toHaveClass(/text-muted-foreground/);
-      await expect(header.navLink("podpora")).toHaveClass(/text-muted-foreground/);
-      await expect(header.navLink("kontakt")).toHaveClass(/text-muted-foreground/);
+      await test.step("Verify no nav link claims the active state for a hash-only path", async () => {
+        await expect(header.navLink("testy")).toHaveClass(/text-muted-foreground/);
+        await expect(header.navLink("skolenia")).toHaveClass(/text-muted-foreground/);
+        await expect(header.navLink("podpora")).toHaveClass(/text-muted-foreground/);
+        await expect(header.navLink("kontakt")).toHaveClass(/text-muted-foreground/);
+      });
     });
 
     test("TC-21: Sticky header with backdrop blur stays positioned during scroll", async ({
       page,
       header,
     }) => {
-      await page.setViewportSize({ width: 1280, height: 800 });
-      await page.goto("/skolenia");
+      await test.step("Set desktop viewport and open /skolenia", async () => {
+        await page.setViewportSize({ width: 1280, height: 800 });
+        await page.goto("/skolenia");
+      });
 
-      await page.evaluate(() => window.scrollBy(0, 1000));
+      await test.step("Scroll the page down by 1000 px", async () => {
+        await page.evaluate(() => window.scrollBy(0, 1000));
+      });
 
-      const { position, top, zIndex } = await header.rootComputedStyle();
-      expect(position).toBe("sticky");
-      expect(top).toBe("0px");
-      expect(Number(zIndex)).toBeGreaterThanOrEqual(40);
-      await expect(header.root).toHaveClass(/backdrop-blur/);
+      await test.step("Verify the header remains sticky at top:0 with z-index ≥ 40 and the backdrop-blur class", async () => {
+        const { position, top, zIndex } = await header.rootComputedStyle();
+        expect(position).toBe("sticky");
+        expect(top).toBe("0px");
+        expect(Number(zIndex)).toBeGreaterThanOrEqual(40);
+        await expect(header.root).toHaveClass(/backdrop-blur/);
+      });
     });
 
     test("TC-22: At 375 px the Sheet width does not exceed the viewport", async ({
       page,
       header,
     }) => {
-      await page.setViewportSize({ width: 375, height: 667 });
-      await page.goto("/");
-      await header.openMobileMenu();
+      await test.step("Set mobile viewport, open the home page and open the sheet", async () => {
+        await page.setViewportSize({ width: 375, height: 667 });
+        await page.goto("/");
+        await header.openMobileMenu();
+      });
 
-      const box = await header.sheet.boundingBox();
-      expect(box?.width).toBeLessThanOrEqual(375);
-
-      const scrollWidth = await page.evaluate(() => document.documentElement.scrollWidth);
-      expect(scrollWidth).toBeLessThanOrEqual(375);
+      await test.step("Verify the sheet width and the document scrollWidth both fit within 375 px", async () => {
+        const box = await header.sheet.boundingBox();
+        expect(box?.width).toBeLessThanOrEqual(375);
+        const scrollWidth = await page.evaluate(() => document.documentElement.scrollWidth);
+        expect(scrollWidth).toBeLessThanOrEqual(375);
+      });
     });
 
     test("TC-23: Path-prefix collision — /skolenia/$slug highlights only Školenia, never Testy", async ({
       page,
       header,
     }) => {
-      await page.setViewportSize({ width: 1280, height: 800 });
-      await page.goto("/skolenia/sms-smishing");
+      await test.step("Set desktop viewport and open /skolenia/sms-smishing", async () => {
+        await page.setViewportSize({ width: 1280, height: 800 });
+        await page.goto("/skolenia/sms-smishing");
+      });
 
-      await expect(header.navLink("skolenia")).toHaveClass(/text-foreground/);
-      await expect(header.navLink("testy")).toHaveClass(/text-muted-foreground/);
+      await test.step('Verify only "Školenia" is highlighted', async () => {
+        await expect(header.navLink("skolenia")).toHaveClass(/text-foreground/);
+        await expect(header.navLink("testy")).toHaveClass(/text-muted-foreground/);
+      });
 
-      await page.goto("/testy/eshop");
-      await expect(header.navLink("testy")).toHaveClass(/text-foreground/);
-      await expect(header.navLink("skolenia")).toHaveClass(/text-muted-foreground/);
+      await test.step('Navigate to /testy/eshop and verify the highlight follows to "Testy"', async () => {
+        await page.goto("/testy/eshop");
+        await expect(header.navLink("testy")).toHaveClass(/text-foreground/);
+        await expect(header.navLink("skolenia")).toHaveClass(/text-muted-foreground/);
+      });
     });
   });
 });
