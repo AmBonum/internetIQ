@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { createFileRoute, Link, notFound, useParams } from "@tanstack/react-router";
+import { createFileRoute, Link, useParams } from "@tanstack/react-router";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { AuthorPasswordGate } from "@/components/composer/AuthorPasswordGate";
@@ -11,11 +11,6 @@ import { ROUTES } from "@/config/routes";
 type Phase = "loading" | "needs_auth" | "ready" | "error" | "not_found";
 
 export const Route = createFileRoute("/test/zostava/$id/vysledky")({
-  beforeLoad: () => {
-    // Same gating policy as /test/zostav and /test/zostava/$id while edu
-    // mode rolls out — visible to direct navigation, but not advertised.
-    throw notFound();
-  },
   head: () => ({
     meta: [
       { title: "Výsledky edu testu — subenai" },

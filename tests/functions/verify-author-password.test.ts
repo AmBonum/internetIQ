@@ -11,7 +11,7 @@ import { verifyEduAuthorToken } from "../../functions/_lib/jwt";
 const env = {
   SUPABASE_URL: "https://stub.supabase.co",
   SUPABASE_SERVICE_ROLE_KEY: "service_role_stub",
-  EDU_JWT_SECRET: "test-secret",
+  JWT_SECRET: "test-secret",
 };
 
 function buildRequest(body: unknown, ip = "203.0.113.30", method = "POST") {
@@ -58,7 +58,7 @@ describe("POST /api/verify-author-password", () => {
     expect(setCookie).toContain("SameSite=Lax");
     expect(setCookie).toContain("Path=/test/zostava/set-1");
     const token = setCookie.split(";")[0].split("=")[1];
-    const verify = await verifyEduAuthorToken(token, env.EDU_JWT_SECRET);
+    const verify = await verifyEduAuthorToken(token, env.JWT_SECRET);
     expect(verify.ok).toBe(true);
     if (verify.ok) {
       expect(verify.claims.set_id).toBe("set-1");
@@ -96,7 +96,7 @@ describe("POST /api/verify-author-password", () => {
   it("500 jwt_not_configured if secret missing", async () => {
     const r = await onRequestPost({
       request: buildRequest({ set_id: "set-1", password: "x" }),
-      env: { ...env, EDU_JWT_SECRET: "" },
+      env: { ...env, JWT_SECRET: "" },
     });
     expect(r.status).toBe(500);
   });

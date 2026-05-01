@@ -11,7 +11,7 @@ import { verifyEduAuthorToken, EDU_AUTHOR_COOKIE_NAME } from "../_lib/jwt";
 interface Env {
   SUPABASE_URL: string;
   SUPABASE_SERVICE_ROLE_KEY: string;
-  EDU_JWT_SECRET: string;
+  JWT_SECRET: string;
 }
 
 interface RequestContext {
@@ -51,7 +51,7 @@ function readCookie(request: Request, name: string): string | null {
 export async function onRequestPost(ctx: RequestContext): Promise<Response> {
   const { request, env } = ctx;
 
-  if (!env.EDU_JWT_SECRET) return jsonResponse(500, { error: "jwt_not_configured" });
+  if (!env.JWT_SECRET) return jsonResponse(500, { error: "jwt_not_configured" });
   if (!env.SUPABASE_URL || !env.SUPABASE_SERVICE_ROLE_KEY) {
     return jsonResponse(500, { error: "supabase_not_configured" });
   }
@@ -59,7 +59,7 @@ export async function onRequestPost(ctx: RequestContext): Promise<Response> {
   const cookie = readCookie(request, EDU_AUTHOR_COOKIE_NAME);
   if (!cookie) return jsonResponse(401, { error: "no_session" });
 
-  const verification = await verifyEduAuthorToken(cookie, env.EDU_JWT_SECRET);
+  const verification = await verifyEduAuthorToken(cookie, env.JWT_SECRET);
   if (!verification.ok) {
     return jsonResponse(401, { error: `token_${verification.reason}` });
   }

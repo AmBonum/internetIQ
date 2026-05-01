@@ -119,7 +119,7 @@ export async function verifyEduAttemptToken(token: string, secret: string): Prom
 // ----- Author session tokens (E12.4) -----------------------------------
 // Same HMAC machinery, separate claim shape so we can never accidentally
 // mistake a respondent ticket for an author session (or vice-versa). Both
-// share EDU_JWT_SECRET — rotation rotates everything together.
+// share JWT_SECRET — rotation rotates everything together.
 
 export interface EduAuthorClaims {
   set_id: string;

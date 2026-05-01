@@ -7,7 +7,7 @@ import { verifyEduAttemptToken } from "../../functions/_lib/jwt";
 const env = {
   SUPABASE_URL: "https://stub.supabase.co",
   SUPABASE_SERVICE_ROLE_KEY: "service_role_stub",
-  EDU_JWT_SECRET: "test-secret",
+  JWT_SECRET: "test-secret",
 };
 
 interface ServerState {
@@ -64,7 +64,7 @@ describe("POST /api/begin-edu-attempt", () => {
     const r = await onRequestPost({ request: buildRequest(validBody), env });
     expect(r.status).toBe(200);
     const body = await r.json();
-    const verify = await verifyEduAttemptToken(body.token, env.EDU_JWT_SECRET);
+    const verify = await verifyEduAttemptToken(body.token, env.JWT_SECRET);
     expect(verify.ok).toBe(true);
     if (verify.ok) {
       expect(verify.claims.set_id).toBe("set-1");
@@ -160,7 +160,7 @@ describe("POST /api/begin-edu-attempt", () => {
   it("500 jwt_not_configured when secret missing", async () => {
     const r = await onRequestPost({
       request: buildRequest(validBody),
-      env: { ...env, EDU_JWT_SECRET: "" },
+      env: { ...env, JWT_SECRET: "" },
     });
     expect(r.status).toBe(500);
     expect((await r.json()).error).toBe("jwt_not_configured");

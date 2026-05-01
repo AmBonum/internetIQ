@@ -6,7 +6,7 @@ import { signEduAuthorToken, signEduAttemptToken } from "../../functions/_lib/jw
 const env = {
   SUPABASE_URL: "https://stub.supabase.co",
   SUPABASE_SERVICE_ROLE_KEY: "service_role_stub",
-  EDU_JWT_SECRET: "test-secret",
+  JWT_SECRET: "test-secret",
 };
 
 const VALID_UUID = "11111111-2222-3333-4444-555555555555";
@@ -48,7 +48,7 @@ beforeEach(() => {
 describe("POST /api/delete-edu-respondent", () => {
   it("happy path returns 200 ok", async () => {
     mockSupabase({ rowExists: true });
-    const cookieToken = await signEduAuthorToken("set-1", env.EDU_JWT_SECRET);
+    const cookieToken = await signEduAuthorToken("set-1", env.JWT_SECRET);
     const r = await onRequestPost({
       request: buildRequest({ set_id: "set-1", attempt_id: VALID_UUID }, cookieToken),
       env,
@@ -70,7 +70,7 @@ describe("POST /api/delete-edu-respondent", () => {
     // An attempt-issued JWT (E12.3) must NOT be usable for deleting rows.
     const wrongToken = await signEduAttemptToken(
       { set_id: "set-1", name: "x", email: "x@x.sk" },
-      env.EDU_JWT_SECRET,
+      env.JWT_SECRET,
     );
     const r = await onRequestPost({
       request: buildRequest({ set_id: "set-1", attempt_id: VALID_UUID }, wrongToken),
@@ -81,7 +81,7 @@ describe("POST /api/delete-edu-respondent", () => {
   });
 
   it("403 set_mismatch when body set_id != cookie set_id", async () => {
-    const cookieToken = await signEduAuthorToken("set-cookie", env.EDU_JWT_SECRET);
+    const cookieToken = await signEduAuthorToken("set-cookie", env.JWT_SECRET);
     const r = await onRequestPost({
       request: buildRequest({ set_id: "set-other", attempt_id: VALID_UUID }, cookieToken),
       env,
@@ -91,7 +91,7 @@ describe("POST /api/delete-edu-respondent", () => {
   });
 
   it("400 invalid_attempt_id on non-UUID input", async () => {
-    const cookieToken = await signEduAuthorToken("set-1", env.EDU_JWT_SECRET);
+    const cookieToken = await signEduAuthorToken("set-1", env.JWT_SECRET);
     const r = await onRequestPost({
       request: buildRequest({ set_id: "set-1", attempt_id: "not-a-uuid" }, cookieToken),
       env,
@@ -102,7 +102,7 @@ describe("POST /api/delete-edu-respondent", () => {
 
   it("404 attempt_not_found when DELETE matched no rows", async () => {
     mockSupabase({ rowExists: false });
-    const cookieToken = await signEduAuthorToken("set-1", env.EDU_JWT_SECRET);
+    const cookieToken = await signEduAuthorToken("set-1", env.JWT_SECRET);
     const r = await onRequestPost({
       request: buildRequest({ set_id: "set-1", attempt_id: VALID_UUID }, cookieToken),
       env,

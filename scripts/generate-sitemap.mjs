@@ -29,6 +29,8 @@ const STATIC_ROUTES = [
   { loc: "/sponzori/vsetci", priority: "0.3", changefreq: "weekly" },
   { loc: "/spravovat-podporu", priority: "0.3", changefreq: "yearly" },
   { loc: "/zmeny", priority: "0.4", changefreq: "weekly" },
+  { loc: "/test/zostav", priority: "0.7", changefreq: "monthly" },
+  { loc: "/skoly", priority: "0.7", changefreq: "monthly" },
 ];
 
 async function loadSlugs(dirRel) {
