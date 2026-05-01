@@ -103,6 +103,43 @@
 - Migrations live at `supabase/migrations/{timestamp}_{name}.sql` and
   must also land in `DEPLOY_SETUP.sql` (the standalone bootstrap file).
 
+## Test IDs (canonical rule)
+- **Every interactive or semantically-meaningful DOM element has a
+  `data-testid`** — buttons, links, form inputs, paragraphs that carry
+  asserted copy, headings, list items the test plan iterates over,
+  status badges, dialog roots. The test-id is the first-class hook for
+  Playwright + Vitest locators; role + accessible name remain useful
+  for accessibility checks but are no longer the primary locator.
+- **Naming**: `<area>-<component>-<element>` in kebab-case. Examples:
+  `header-nav-link-testy`, `header-cta-pill`, `header-mobile-trigger`,
+  `intake-form-name-input`, `intake-form-submit-button`,
+  `consent-banner-accept-all`. Stable across refactors — derived from
+  the component's purpose, not its current visual style.
+- **When working on a component** (writing it OR writing a test for
+  it), audit every element that the test plan asserts on. If it lacks
+  a `data-testid`, **add one to the source file in the same change**.
+  No "follow-up TODO" — the test-id ships with the test that needs it.
+- **Locator precedence in tests** (highest to lowest):
+  1. `getByTestId("header-cta-pill")` — primary, most resilient.
+  2. `getByRole("button", { name: /…/i })` — for accessibility tests
+     that specifically verify role + name semantics.
+  3. `getByLabel("…")` — only when the element is intrinsically tied
+     to a label (form inputs); test-id is still added on top.
+  4. `getByText(...)` — last resort, only for verbatim Slovak strings
+     that have no surrounding stable element.
+- **Class / structural / `nth-child` selectors are forbidden** — they
+  break on Tailwind refactors and visual reorderings.
+- **POM-only locators in tests.** Every element locator a Playwright
+  spec uses comes from a POM getter or method
+  (`e2e/poms/<area>/<Component>.ts`). Specs MUST NOT call
+  `page.locator(...)`, `page.getByTestId(...)`, `page.getByRole(...)`,
+  etc. directly. If the test asserts on an element, that element has
+  a getter on the POM and the spec uses it: `await expect(header.ctaPill).toBeVisible()`,
+  not `await expect(page.getByTestId("header-cta-pill")).toBeVisible()`.
+  Page-level actions (`page.setViewportSize`, `page.keyboard.press`,
+  `page.goto`, `page.evaluate(window.scrollTo)`) stay in the spec —
+  those are environment, not elements.
+
 ## Non-negotiables
 - Never `git push` without an explicit ask in the current turn.
 - Never use `--no-verify` / `--no-gpg-sign`. If a hook fails, fix the

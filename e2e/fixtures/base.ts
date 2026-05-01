@@ -1,5 +1,6 @@
 import { test as base } from "@playwright/test";
 import { ConsentBanner } from "../poms/shared/ConsentBanner";
+import { SiteHeader } from "../poms/shared/SiteHeader";
 import { HomePage } from "../poms/quiz/HomePage";
 
 /**
@@ -25,6 +26,7 @@ import { HomePage } from "../poms/quiz/HomePage";
 type Fixtures = {
   home: HomePage;
   consent: ConsentBanner;
+  header: SiteHeader;
 };
 
 export const test = base.extend<Fixtures>({
@@ -33,6 +35,9 @@ export const test = base.extend<Fixtures>({
   },
   consent: async ({ page }, use) => {
     await use(new ConsentBanner(page));
+  },
+  header: async ({ page }, use) => {
+    await use(new SiteHeader(page));
   },
 });
 
