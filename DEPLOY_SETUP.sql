@@ -541,6 +541,70 @@ CREATE POLICY "Anon insert non-edu attempts only"
   WITH CHECK (respondent_name IS NULL AND respondent_email IS NULL);
 
 -- ============================================================================
+-- AH-1 — admin-hub schema foundation
+-- Mirror of supabase/migrations/20260517000000_admin_hub_schema.sql
+-- ============================================================================
+
+-- ============================================================================
+-- AH-1.1 — Enums (12) + has_role() helper
+-- ============================================================================
+
+CREATE TYPE public.app_role AS ENUM ('admin', 'moderator', 'user');
+
+CREATE TYPE public.test_status AS ENUM ('draft', 'published', 'archived');
+
+CREATE TYPE public.question_type AS ENUM (
+  'single', 'multi', 'scale_1_5', 'scale_1_10', 'nps', 'matrix', 'ranking',
+  'slider', 'short_text', 'long_text', 'date', 'time', 'file_upload',
+  'image_choice', 'yes_no'
+);
+
+CREATE TYPE public.question_status AS ENUM (
+  'draft', 'approved', 'deprecated', 'pending', 'flagged', 'published', 'archived'
+);
+
+CREATE TYPE public.gdpr_purpose AS ENUM (
+  'marketing', 'research', 'recruitment', 'education', 'internal_training'
+);
+
+CREATE TYPE public.session_status AS ENUM ('in_progress', 'completed', 'abandoned');
+
+CREATE TYPE public.training_status AS ENUM ('published', 'draft', 'archived');
+
+CREATE TYPE public.report_reason AS ENUM (
+  'spam', 'inappropriate', 'harassment', 'misinformation', 'other'
+);
+
+CREATE TYPE public.report_status AS ENUM ('open', 'reviewing', 'resolved', 'dismissed');
+
+CREATE TYPE public.team_role AS ENUM ('owner', 'editor', 'viewer');
+
+CREATE TYPE public.dsr_type AS ENUM ('access', 'erase', 'portability');
+
+CREATE TYPE public.dsr_status AS ENUM ('open', 'in_progress', 'completed', 'rejected');
+
+CREATE OR REPLACE FUNCTION public.has_role(_user_id uuid, _role public.app_role)
+RETURNS boolean
+LANGUAGE plpgsql
+STABLE
+SECURITY DEFINER
+SET search_path = public, pg_temp
+AS $$
+DECLARE
+  found_role boolean;
+BEGIN
+  SELECT EXISTS (
+    SELECT 1 FROM public.user_roles
+    WHERE user_id = _user_id AND role = _role
+  ) INTO found_role;
+  RETURN found_role;
+END;
+$$;
+
+REVOKE ALL ON FUNCTION public.has_role(uuid, public.app_role) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.has_role(uuid, public.app_role) TO anon, authenticated;
+
+-- ============================================================================
 -- DONE!
 -- Now go to Settings -> API and copy:
 --   - Project URL  (e.g. https://abcdef.supabase.co)
