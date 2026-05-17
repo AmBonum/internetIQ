@@ -76,14 +76,46 @@ describe("AllSponsorsView (/sponzori/vsetci)", () => {
     expect(screen.getByText("Bob")).toBeInTheDocument();
   });
 
-  it("filters by year", async () => {
+  it("filters by date range (inclusive bounds, local timezone)", async () => {
     render(<AllSponsorsView fetchSponsors={async () => SAMPLE} />);
     await waitFor(() => expect(screen.getByText("Anna")).toBeInTheDocument());
 
-    fireEvent.change(screen.getByLabelText(/Rok/i), { target: { value: "2025" } });
+    // From 2025-06-01 keeps Bob (Sep 2025) + Anna (Apr 2026), drops Cyril (Mar 2025).
+    fireEvent.change(screen.getByLabelText(/Od dátumu/i), { target: { value: "2025-06-01" } });
+    expect(screen.getByText("Anna")).toBeInTheDocument();
+    expect(screen.getByText("Bob")).toBeInTheDocument();
+    expect(screen.queryByText("Cyril")).not.toBeInTheDocument();
+
+    // Add To 2025-12-31 narrows further: only Bob.
+    fireEvent.change(screen.getByLabelText(/Do dátumu/i), { target: { value: "2025-12-31" } });
     expect(screen.queryByText("Anna")).not.toBeInTheDocument();
     expect(screen.getByText("Bob")).toBeInTheDocument();
-    expect(screen.getByText("Cyril")).toBeInTheDocument();
+    expect(screen.queryByText("Cyril")).not.toBeInTheDocument();
+  });
+
+  it('filters by status: "Vrátené" only refunded, "Prijaté" only non-refunded', async () => {
+    const mixed: PublicSponsor[] = [
+      makeSponsor({ display_name: "Anna", has_refund: false }),
+      makeSponsor({ display_name: "Daniela", has_refund: true }),
+      makeSponsor({ display_name: "Eva", has_refund: false }),
+    ];
+    render(<AllSponsorsView fetchSponsors={async () => mixed} />);
+    await waitFor(() => expect(screen.getByText("Anna")).toBeInTheDocument());
+
+    fireEvent.change(screen.getByLabelText(/Stav/i), { target: { value: "refunded" } });
+    expect(screen.queryByText("Anna")).not.toBeInTheDocument();
+    expect(screen.getByText("Daniela")).toBeInTheDocument();
+    expect(screen.queryByText("Eva")).not.toBeInTheDocument();
+
+    fireEvent.change(screen.getByLabelText(/Stav/i), { target: { value: "accepted" } });
+    expect(screen.getByText("Anna")).toBeInTheDocument();
+    expect(screen.queryByText("Daniela")).not.toBeInTheDocument();
+    expect(screen.getByText("Eva")).toBeInTheDocument();
+
+    fireEvent.change(screen.getByLabelText(/Stav/i), { target: { value: "all" } });
+    expect(screen.getByText("Anna")).toBeInTheDocument();
+    expect(screen.getByText("Daniela")).toBeInTheDocument();
+    expect(screen.getByText("Eva")).toBeInTheDocument();
   });
 
   it("shows the empty-filter state when nothing matches", async () => {
