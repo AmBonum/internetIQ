@@ -1,583 +1,33 @@
 -- ============================================================================
--- INTERNET IQ TEST — Complete database schema
--- ============================================================================
--- Usage:
--- 1. Create a new project on supabase.com (free tier).
--- 2. In the Supabase dashboard open: SQL Editor -> New query.
--- 3. Copy the full contents of this file and click RUN.
--- ============================================================================
--- ADMIN BOOTSTRAP — required AFTER running this file (admin-hub / AH-*)
--- ============================================================================
--- After this script completes successfully, no user has the admin role.
--- The first admin must be promoted manually via the Supabase SQL Editor:
---
---   1. Sign up the future admin through the live login flow (this
---      triggers the on_auth_user_created handler from AH-1.2 and creates
---      a public.profiles row).
---   2. Copy that user's UUID from public.profiles (filter by email).
---   3. Run the following INSERT in the Supabase SQL Editor:
---
---        INSERT INTO public.user_roles (user_id, role)
---        VALUES ('<copied-uuid>', 'admin')
---        ON CONFLICT (user_id, role) DO NOTHING;
---
--- All subsequent admins are promoted via the /admin/users UI once the
--- first admin is in place. See tasks/PLAN-2026-05-17-admin-hub-integration.md
--- decision #10 and the AH-11.8 story for the production-ready checklist.
--- ============================================================================
-
--- 1) ATTEMPTS TABLE
-CREATE TABLE public.attempts (
-  id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
-  share_id TEXT NOT NULL UNIQUE,
-  nickname TEXT,
-  final_score INTEGER NOT NULL,
-  base_score INTEGER NOT NULL,
-  total_penalty INTEGER NOT NULL,
-  percentile INTEGER NOT NULL,
-  personality TEXT NOT NULL,
-  breakdown JSONB NOT NULL,
-  insights JSONB NOT NULL DEFAULT '[]'::jsonb,
-  stats JSONB NOT NULL,
-  flags JSONB NOT NULL DEFAULT '[]'::jsonb,
-  answers JSONB NOT NULL DEFAULT '[]'::jsonb,
-  total_time_ms INTEGER NOT NULL,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-  -- Demografia (voliteľné, vypĺňa sa po teste)
-  age_range TEXT,
-  gender TEXT,
-  city TEXT,
-  country TEXT,
-  self_caution SMALLINT,
-  survey_completed BOOLEAN NOT NULL DEFAULT false,
-  -- Rastový prieskum (E2.1, voliteľné, vypĺňa sa po teste)
-  top_fear TEXT,
-  has_been_scammed TEXT,
-  referral_source TEXT,
-  wants_courses BOOLEAN,
-  interests TEXT[],
-  survey_extras_completed BOOLEAN NOT NULL DEFAULT false
-);
-
--- 2) INDEXES
-CREATE INDEX attempts_score_idx ON public.attempts (final_score DESC);
-CREATE INDEX attempts_created_idx ON public.attempts (created_at DESC);
-CREATE INDEX attempts_share_id_idx ON public.attempts (share_id);
-CREATE INDEX idx_attempts_answers ON public.attempts USING gin (answers);
-
--- 3) CONSTRAINTS (data validation)
-ALTER TABLE public.attempts
-  ADD CONSTRAINT attempts_final_score_range CHECK (final_score BETWEEN 0 AND 100),
-  ADD CONSTRAINT attempts_base_score_range CHECK (base_score BETWEEN 0 AND 100),
-  ADD CONSTRAINT attempts_percentile_range CHECK (percentile BETWEEN 0 AND 100),
-  ADD CONSTRAINT attempts_penalty_nonneg CHECK (total_penalty >= 0),
-  ADD CONSTRAINT attempts_time_nonneg CHECK (total_time_ms >= 0 AND total_time_ms < 3600000),
-  ADD CONSTRAINT attempts_nickname_len CHECK (nickname IS NULL OR char_length(nickname) BETWEEN 1 AND 40),
-  ADD CONSTRAINT attempts_share_id_format CHECK (share_id ~ '^[a-zA-Z0-9]{6,12}$'),
-  ADD CONSTRAINT attempts_personality_known CHECK (personality IN (
-    'internet_ninja','overconfident_victim','scam_magnet','clickbait_zombie','cautious_but_vulnerable'
-  )),
-  -- E2.1 — growth survey enums (mirror src/lib/quiz/survey-options.ts)
-  ADD CONSTRAINT attempts_top_fear_known CHECK (
-    top_fear IS NULL OR top_fear IN
-      ('phishing','scam_money','scam_identity','hate','doxxing','nothing')
-  ),
-  ADD CONSTRAINT attempts_has_been_scammed_known CHECK (
-    has_been_scammed IS NULL OR has_been_scammed IN
-      ('yes_money','yes_data','yes_account','no','prefer_not_to_say')
-  ),
-  ADD CONSTRAINT attempts_referral_source_known CHECK (
-    referral_source IS NULL OR referral_source IN
-      ('tiktok','instagram','facebook','friend','google','other')
-  ),
-  ADD CONSTRAINT attempts_interests_size CHECK (
-    interests IS NULL
-      OR array_length(interests, 1) IS NULL
-      OR array_length(interests, 1) <= 10
-  );
-
--- 4) ROW-LEVEL SECURITY
-ALTER TABLE public.attempts ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY "Anyone can insert attempts"
-  ON public.attempts FOR INSERT
-  TO anon, authenticated
-  WITH CHECK (true);
-
-CREATE POLICY "Anyone can read attempts"
-  ON public.attempts FOR SELECT
-  TO anon, authenticated
-  USING (true);
-
-CREATE POLICY "Anyone can update demographics"
-  ON public.attempts FOR UPDATE
-  TO anon, authenticated
-  USING (true)
-  WITH CHECK (true);
-
--- 5) VALIDATION TRIGGER for demographic fields
-CREATE OR REPLACE FUNCTION public.validate_attempt_demographics()
-RETURNS trigger
-LANGUAGE plpgsql
-SET search_path = public
-AS $$
-BEGIN
-  IF NEW.self_caution IS NOT NULL AND (NEW.self_caution < 1 OR NEW.self_caution > 5) THEN
-    RAISE EXCEPTION 'self_caution must be between 1 and 5';
-  END IF;
-  IF NEW.age_range IS NOT NULL AND length(NEW.age_range) > 20 THEN
-    RAISE EXCEPTION 'age_range too long';
-  END IF;
-  IF NEW.gender IS NOT NULL AND length(NEW.gender) > 30 THEN
-    RAISE EXCEPTION 'gender too long';
-  END IF;
-  IF NEW.city IS NOT NULL AND length(NEW.city) > 80 THEN
-    RAISE EXCEPTION 'city too long';
-  END IF;
-  IF NEW.country IS NOT NULL AND length(NEW.country) > 80 THEN
-    RAISE EXCEPTION 'country too long';
-  END IF;
-  RETURN NEW;
-END;
-$$;
-
-CREATE TRIGGER validate_attempt_demographics_trg
-BEFORE INSERT OR UPDATE ON public.attempts
-FOR EACH ROW EXECUTE FUNCTION public.validate_attempt_demographics();
-
--- 6) SECURITY TRIGGER — protects scores against overwrite
-CREATE OR REPLACE FUNCTION public.forbid_attempt_score_changes()
-RETURNS trigger
-LANGUAGE plpgsql
-SET search_path = public
-AS $$
-BEGIN
-  IF NEW.final_score IS DISTINCT FROM OLD.final_score
-     OR NEW.base_score IS DISTINCT FROM OLD.base_score
-     OR NEW.total_penalty IS DISTINCT FROM OLD.total_penalty
-     OR NEW.percentile IS DISTINCT FROM OLD.percentile
-     OR NEW.personality IS DISTINCT FROM OLD.personality
-     OR NEW.breakdown::text IS DISTINCT FROM OLD.breakdown::text
-     OR NEW.insights::text IS DISTINCT FROM OLD.insights::text
-     OR NEW.stats::text IS DISTINCT FROM OLD.stats::text
-     OR NEW.flags::text IS DISTINCT FROM OLD.flags::text
-     OR NEW.answers::text IS DISTINCT FROM OLD.answers::text
-     OR NEW.total_time_ms IS DISTINCT FROM OLD.total_time_ms
-     OR NEW.share_id IS DISTINCT FROM OLD.share_id
-     OR NEW.created_at IS DISTINCT FROM OLD.created_at THEN
-    RAISE EXCEPTION 'Score / identity fields are immutable';
-  END IF;
-  RETURN NEW;
-END;
-$$;
-
-CREATE TRIGGER forbid_attempt_score_changes_trg
-BEFORE UPDATE ON public.attempts
-FOR EACH ROW EXECUTE FUNCTION public.forbid_attempt_score_changes();
-
--- ============================================================================
--- Self-service delete + 36-month retention (matches privacy policy)
--- ============================================================================
-
-DROP POLICY IF EXISTS attempts_anon_delete ON public.attempts;
-CREATE POLICY attempts_anon_delete
-  ON public.attempts
-  FOR DELETE
-  TO anon
-  USING (share_id IS NOT NULL);
-
-CREATE OR REPLACE FUNCTION public.purge_expired_attempts()
-RETURNS integer
-LANGUAGE plpgsql
-SECURITY DEFINER
-SET search_path = public
-AS $$
-DECLARE
-  purged_count integer;
-BEGIN
-  WITH deleted AS (
-    DELETE FROM public.attempts
-    WHERE created_at < (now() - interval '36 months')
-    RETURNING 1
-  )
-  SELECT count(*) INTO purged_count FROM deleted;
-  RETURN purged_count;
-END;
-$$;
-
-REVOKE ALL ON FUNCTION public.purge_expired_attempts() FROM anon, authenticated;
-
-DO $$
-BEGIN
-  IF EXISTS (SELECT 1 FROM pg_extension WHERE extname = 'pg_cron') THEN
-    PERFORM cron.unschedule('purge_expired_attempts_daily')
-    WHERE EXISTS (
-      SELECT 1 FROM cron.job WHERE jobname = 'purge_expired_attempts_daily'
-    );
-    PERFORM cron.schedule(
-      'purge_expired_attempts_daily',
-      '17 3 * * *',
-      'SELECT public.purge_expired_attempts();'
-    );
-  END IF;
-END $$;
-
--- ============================================================================
--- E10.2 — Sponsorship schema (sponsors, donations, subscriptions)
--- ============================================================================
-
-CREATE TABLE IF NOT EXISTS public.sponsors (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  stripe_customer_id TEXT UNIQUE NOT NULL,
-  display_name TEXT,
-  display_link TEXT,
-  display_message TEXT,
-  show_in_footer BOOLEAN NOT NULL DEFAULT false,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-  total_eur NUMERIC(10, 2) NOT NULL DEFAULT 0,
-  CONSTRAINT sponsors_display_link_https CHECK (
-    display_link IS NULL OR display_link LIKE 'https://%'
-  ),
-  CONSTRAINT sponsors_display_message_len CHECK (
-    display_message IS NULL OR length(display_message) <= 80
-  )
-);
-ALTER TABLE public.sponsors ENABLE ROW LEVEL SECURITY;
-CREATE INDEX IF NOT EXISTS sponsors_stripe_customer_id_idx
-  ON public.sponsors (stripe_customer_id);
-
-CREATE TABLE IF NOT EXISTS public.donations (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  sponsor_id UUID NOT NULL REFERENCES public.sponsors(id) ON DELETE RESTRICT,
-  stripe_payment_intent_id TEXT UNIQUE,
-  amount_eur NUMERIC(10, 2) NOT NULL,
-  currency TEXT NOT NULL DEFAULT 'EUR',
-  kind TEXT NOT NULL CHECK (kind IN ('oneoff', 'subscription_invoice', 'refund')),
-  refund_of_donation_id UUID REFERENCES public.donations(id) ON DELETE RESTRICT,
-  invoice_pdf_url TEXT,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-  CONSTRAINT donations_refund_consistency CHECK (
-    (kind = 'refund' AND refund_of_donation_id IS NOT NULL AND amount_eur < 0)
-    OR (kind <> 'refund' AND refund_of_donation_id IS NULL AND amount_eur > 0)
-  )
-);
-ALTER TABLE public.donations ENABLE ROW LEVEL SECURITY;
-CREATE INDEX IF NOT EXISTS donations_sponsor_id_idx ON public.donations (sponsor_id);
-CREATE INDEX IF NOT EXISTS donations_created_at_idx ON public.donations (created_at DESC);
-
-CREATE TABLE IF NOT EXISTS public.subscriptions (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  sponsor_id UUID NOT NULL REFERENCES public.sponsors(id) ON DELETE RESTRICT,
-  stripe_subscription_id TEXT UNIQUE,
-  status TEXT NOT NULL,
-  monthly_eur NUMERIC(10, 2) NOT NULL CHECK (monthly_eur > 0),
-  started_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-  cancelled_at TIMESTAMPTZ
-);
-ALTER TABLE public.subscriptions ENABLE ROW LEVEL SECURITY;
-CREATE INDEX IF NOT EXISTS subscriptions_sponsor_id_idx ON public.subscriptions (sponsor_id);
-CREATE INDEX IF NOT EXISTS subscriptions_active_idx
-  ON public.subscriptions (sponsor_id) WHERE cancelled_at IS NULL;
-
-CREATE OR REPLACE FUNCTION public.update_sponsor_total()
-RETURNS TRIGGER LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
-BEGIN
-  UPDATE public.sponsors SET total_eur = total_eur + NEW.amount_eur WHERE id = NEW.sponsor_id;
-  RETURN NEW;
-END;
-$$;
-DROP TRIGGER IF EXISTS donations_update_sponsor_total ON public.donations;
-CREATE TRIGGER donations_update_sponsor_total AFTER INSERT ON public.donations
-FOR EACH ROW EXECUTE FUNCTION public.update_sponsor_total();
-REVOKE ALL ON FUNCTION public.update_sponsor_total() FROM anon, authenticated;
-
-DROP VIEW IF EXISTS public.public_sponsors;
-CREATE VIEW public.public_sponsors AS
-SELECT
-  s.id,
-  s.display_name,
-  s.display_link,
-  s.display_message,
-  s.created_at,
-  s.total_eur AS net_amount_eur,
-  EXISTS (
-    SELECT 1 FROM public.donations d
-    WHERE d.sponsor_id = s.id AND d.kind = 'refund'
-  ) AS has_refund
-FROM public.sponsors s
-WHERE s.display_name IS NOT NULL;
-GRANT SELECT ON public.public_sponsors TO anon, authenticated;
-
-DROP VIEW IF EXISTS public.footer_sponsors;
-CREATE VIEW public.footer_sponsors AS
-SELECT DISTINCT s.id, s.display_name, s.display_link, s.created_at
-FROM public.sponsors s
-LEFT JOIN public.subscriptions sub ON sub.sponsor_id = s.id AND sub.cancelled_at IS NULL
-WHERE s.show_in_footer = true AND s.display_name IS NOT NULL
-  AND (s.total_eur >= 50 OR sub.monthly_eur >= 25);
-GRANT SELECT ON public.footer_sponsors TO anon, authenticated;
-
--- ============================================================================
--- E8.1 — test_sets table for the Composer (E8 epic).
--- Question CONTENT lives in src/lib/quiz/questions.ts (TS bundle); this
--- table only stores the SELECTION (question_ids[]) + threshold + max.
--- Forward-compat: author_password_hash + collects_responses NULL/false
--- so E12 (education mode) can land without another migration round.
--- ============================================================================
-
-CREATE TABLE IF NOT EXISTS public.test_sets (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  question_ids TEXT[] NOT NULL,
-  passing_threshold INT2 NOT NULL DEFAULT 70,
-  max_questions INT2 NOT NULL,
-  creator_label TEXT,
-  source_pack_slugs TEXT[],
-  author_password_hash TEXT,
-  collects_responses BOOLEAN NOT NULL DEFAULT false,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-  CONSTRAINT test_sets_size_chk CHECK (array_length(question_ids, 1) BETWEEN 5 AND 50),
-  CONSTRAINT test_sets_threshold_chk CHECK (passing_threshold BETWEEN 50 AND 90),
-  CONSTRAINT test_sets_max_consistent CHECK (max_questions = array_length(question_ids, 1)),
-  CONSTRAINT test_sets_label_len CHECK (creator_label IS NULL OR length(creator_label) <= 80),
-  CONSTRAINT test_sets_pwd_required_when_collecting CHECK (
-    collects_responses = false OR author_password_hash IS NOT NULL
-  )
-  -- Per-element question_id length cap (64 chars) is enforced via the
-  -- trigger below — CHECK constraints cannot contain subqueries.
-);
-
-CREATE OR REPLACE FUNCTION public.check_test_sets_question_id_len()
-RETURNS trigger LANGUAGE plpgsql AS $$
-BEGIN
-  IF EXISTS (SELECT 1 FROM unnest(NEW.question_ids) AS q WHERE length(q) > 64) THEN
-    RAISE EXCEPTION 'question_ids elements must be at most 64 characters';
-  END IF;
-  RETURN NEW;
-END;
-$$;
-
-DROP TRIGGER IF EXISTS test_sets_question_id_len_trg ON public.test_sets;
-CREATE TRIGGER test_sets_question_id_len_trg
-  BEFORE INSERT OR UPDATE ON public.test_sets
-  FOR EACH ROW EXECUTE FUNCTION public.check_test_sets_question_id_len();
-
-CREATE INDEX IF NOT EXISTS test_sets_created_at_idx ON public.test_sets (created_at DESC);
-
-ALTER TABLE public.test_sets ENABLE ROW LEVEL SECURITY;
-
-DROP POLICY IF EXISTS test_sets_anon_select ON public.test_sets;
-CREATE POLICY test_sets_anon_select ON public.test_sets FOR SELECT TO anon USING (true);
-
-DROP POLICY IF EXISTS test_sets_anon_insert ON public.test_sets;
-CREATE POLICY test_sets_anon_insert ON public.test_sets FOR INSERT TO anon WITH CHECK (true);
-
-ALTER TABLE public.attempts
-  ADD COLUMN IF NOT EXISTS test_set_id UUID REFERENCES public.test_sets(id) ON DELETE SET NULL;
-
-CREATE INDEX IF NOT EXISTS attempts_test_set_id_idx
-  ON public.attempts (test_set_id) WHERE test_set_id IS NOT NULL;
-
--- Extend immutability trigger so test_set_id is locked once an attempt is INSERTed.
-CREATE OR REPLACE FUNCTION public.forbid_attempt_score_changes()
-RETURNS trigger LANGUAGE plpgsql SET search_path = public AS $$
-BEGIN
-  IF NEW.final_score IS DISTINCT FROM OLD.final_score
-     OR NEW.base_score IS DISTINCT FROM OLD.base_score
-     OR NEW.total_penalty IS DISTINCT FROM OLD.total_penalty
-     OR NEW.percentile IS DISTINCT FROM OLD.percentile
-     OR NEW.personality IS DISTINCT FROM OLD.personality
-     OR NEW.breakdown::text IS DISTINCT FROM OLD.breakdown::text
-     OR NEW.insights::text IS DISTINCT FROM OLD.insights::text
-     OR NEW.stats::text IS DISTINCT FROM OLD.stats::text
-     OR NEW.flags::text IS DISTINCT FROM OLD.flags::text
-     OR NEW.answers::text IS DISTINCT FROM OLD.answers::text
-     OR NEW.total_time_ms IS DISTINCT FROM OLD.total_time_ms
-     OR NEW.share_id IS DISTINCT FROM OLD.share_id
-     OR NEW.test_set_id IS DISTINCT FROM OLD.test_set_id
-     OR NEW.created_at IS DISTINCT FROM OLD.created_at THEN
-    RAISE EXCEPTION 'Score / identity / set fields are immutable';
-  END IF;
-  RETURN NEW;
-END;
-$$;
-
-CREATE OR REPLACE FUNCTION public.purge_unused_test_sets()
-RETURNS integer LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
-DECLARE purged_count integer;
-BEGIN
-  UPDATE public.attempts SET test_set_id = NULL
-  WHERE test_set_id IN (
-    SELECT id FROM public.test_sets WHERE created_at < (now() - interval '12 months')
-  );
-  WITH deleted AS (
-    DELETE FROM public.test_sets WHERE created_at < (now() - interval '12 months')
-    RETURNING 1
-  )
-  SELECT count(*) INTO purged_count FROM deleted;
-  RETURN purged_count;
-END;
-$$;
-
-REVOKE ALL ON FUNCTION public.purge_unused_test_sets() FROM anon, authenticated;
-
-DO $$
-BEGIN
-  IF EXISTS (SELECT 1 FROM pg_extension WHERE extname = 'pg_cron') THEN
-    PERFORM cron.unschedule('purge_unused_test_sets_daily')
-    WHERE EXISTS (SELECT 1 FROM cron.job WHERE jobname = 'purge_unused_test_sets_daily');
-    PERFORM cron.schedule(
-      'purge_unused_test_sets_daily', '23 3 * * *',
-      'SELECT public.purge_unused_test_sets();'
-    );
-  END IF;
-END $$;
-
--- ============================================================================
--- E12.1 — Education mode (authors collect student responses, opt-in PII).
--- ============================================================================
-
-CREATE EXTENSION IF NOT EXISTS pgcrypto;
-
-ALTER TABLE public.attempts
-  ADD COLUMN IF NOT EXISTS respondent_name TEXT,
-  ADD COLUMN IF NOT EXISTS respondent_email TEXT;
-
-ALTER TABLE public.attempts DROP CONSTRAINT IF EXISTS attempts_respondent_email_format;
-ALTER TABLE public.attempts ADD CONSTRAINT attempts_respondent_email_format CHECK (
-  respondent_email IS NULL OR respondent_email ~* '^[^@\s]+@[^@\s]+\.[^@\s]+$'
-);
-ALTER TABLE public.attempts DROP CONSTRAINT IF EXISTS attempts_edu_pii_pair;
-ALTER TABLE public.attempts ADD CONSTRAINT attempts_edu_pii_pair CHECK (
-  (respondent_name IS NULL AND respondent_email IS NULL)
-  OR (respondent_name IS NOT NULL AND respondent_email IS NOT NULL)
-);
-ALTER TABLE public.attempts DROP CONSTRAINT IF EXISTS attempts_respondent_name_len;
-ALTER TABLE public.attempts ADD CONSTRAINT attempts_respondent_name_len CHECK (
-  respondent_name IS NULL OR length(respondent_name) BETWEEN 1 AND 120
-);
-
-CREATE INDEX IF NOT EXISTS attempts_test_set_id_created_at_idx
-  ON public.attempts (test_set_id, created_at DESC)
-  WHERE test_set_id IS NOT NULL;
-
-DROP POLICY IF EXISTS "Anyone can read attempts" ON public.attempts;
-CREATE POLICY "Anon read non-edu attempts"
-  ON public.attempts FOR SELECT TO anon, authenticated
-  USING (respondent_name IS NULL);
-
-CREATE OR REPLACE VIEW public.attempts_anon
-WITH (security_invoker = true) AS
-SELECT id, share_id, nickname, final_score, base_score, total_penalty, percentile,
-       personality, breakdown, insights, stats, flags, total_time_ms,
-       test_set_id, created_at
-FROM public.attempts
-WHERE respondent_name IS NULL;
-
-GRANT SELECT ON public.attempts_anon TO anon, authenticated;
-
-CREATE OR REPLACE FUNCTION public.forbid_attempt_score_changes()
-RETURNS trigger LANGUAGE plpgsql SET search_path = public AS $$
-BEGIN
-  IF NEW.final_score IS DISTINCT FROM OLD.final_score
-     OR NEW.base_score IS DISTINCT FROM OLD.base_score
-     OR NEW.total_penalty IS DISTINCT FROM OLD.total_penalty
-     OR NEW.percentile IS DISTINCT FROM OLD.percentile
-     OR NEW.personality IS DISTINCT FROM OLD.personality
-     OR NEW.breakdown::text IS DISTINCT FROM OLD.breakdown::text
-     OR NEW.insights::text IS DISTINCT FROM OLD.insights::text
-     OR NEW.stats::text IS DISTINCT FROM OLD.stats::text
-     OR NEW.flags::text IS DISTINCT FROM OLD.flags::text
-     OR NEW.answers::text IS DISTINCT FROM OLD.answers::text
-     OR NEW.total_time_ms IS DISTINCT FROM OLD.total_time_ms
-     OR NEW.share_id IS DISTINCT FROM OLD.share_id
-     OR NEW.test_set_id IS DISTINCT FROM OLD.test_set_id
-     OR NEW.created_at IS DISTINCT FROM OLD.created_at
-     OR (NEW.respondent_name IS DISTINCT FROM OLD.respondent_name
-         AND NOT (OLD.respondent_name IS NOT NULL AND NEW.respondent_name IS NULL))
-     OR (NEW.respondent_email IS DISTINCT FROM OLD.respondent_email
-         AND NOT (OLD.respondent_email IS NOT NULL AND NEW.respondent_email IS NULL))
-  THEN
-    RAISE EXCEPTION 'Score / identity / set / respondent fields are immutable';
-  END IF;
-  RETURN NEW;
-END;
-$$;
-
-CREATE OR REPLACE FUNCTION public.hash_test_set_password(password TEXT)
-RETURNS TEXT LANGUAGE plpgsql SECURITY DEFINER
-SET search_path = public, extensions
-AS $$
-BEGIN
-  IF password IS NULL OR length(password) < 8 THEN
-    RAISE EXCEPTION 'Password must be at least 8 characters';
-  END IF;
-  RETURN crypt(password, gen_salt('bf', 10));
-END;
-$$;
-REVOKE ALL ON FUNCTION public.hash_test_set_password(TEXT) FROM PUBLIC, anon, authenticated;
-
-CREATE OR REPLACE FUNCTION public.verify_test_set_password(set_id UUID, password TEXT)
-RETURNS BOOLEAN LANGUAGE plpgsql SECURITY DEFINER
-SET search_path = public, extensions
-AS $$
-DECLARE stored_hash TEXT;
-BEGIN
-  IF set_id IS NULL OR password IS NULL THEN RETURN false; END IF;
-  SELECT author_password_hash INTO stored_hash FROM public.test_sets WHERE id = set_id;
-  IF stored_hash IS NULL THEN RETURN false; END IF;
-  RETURN crypt(password, stored_hash) = stored_hash;
-END;
-$$;
-GRANT EXECUTE ON FUNCTION public.verify_test_set_password(UUID, TEXT) TO anon, authenticated;
-
-CREATE OR REPLACE FUNCTION public.purge_expired_respondent_pii()
-RETURNS integer LANGUAGE plpgsql SECURITY DEFINER SET search_path = public
-AS $$
-DECLARE affected integer;
-BEGIN
-  UPDATE public.attempts
-  SET respondent_name = NULL, respondent_email = NULL
-  WHERE respondent_name IS NOT NULL
-    AND created_at < (now() - interval '12 months');
-  GET DIAGNOSTICS affected = ROW_COUNT;
-  RETURN affected;
-END;
-$$;
-REVOKE ALL ON FUNCTION public.purge_expired_respondent_pii() FROM PUBLIC, anon, authenticated;
-
-DO $$
-BEGIN
-  IF EXISTS (SELECT 1 FROM pg_extension WHERE extname = 'pg_cron') THEN
-    PERFORM cron.unschedule('purge_expired_respondent_pii_daily')
-    WHERE EXISTS (SELECT 1 FROM cron.job WHERE jobname = 'purge_expired_respondent_pii_daily');
-    PERFORM cron.schedule(
-      'purge_expired_respondent_pii_daily', '35 3 * * *',
-      'SELECT public.purge_expired_respondent_pii();'
-    );
-  END IF;
-END $$;
-
--- ============================================================================
--- E12.3 + E12.7 — Lock down anon INSERT for edu attempts.
--- Anon may INSERT only non-edu rows (respondent_* NULL). Edu rows are
--- written exclusively by /api/finish-edu-attempt CF Function via the
--- service-role key.
--- ============================================================================
-
-DROP POLICY IF EXISTS "Anyone can insert attempts" ON public.attempts;
-
-CREATE POLICY "Anon insert non-edu attempts only"
-  ON public.attempts FOR INSERT TO anon, authenticated
-  WITH CHECK (respondent_name IS NULL AND respondent_email IS NULL);
-
--- ============================================================================
 -- AH-1 — admin-hub schema foundation
--- Mirror of supabase/migrations/20260517000000_admin_hub_schema.sql
+-- Source: admin-hub/docs/DATABASE.md §1–§5
+-- ============================================================================
+-- This migration is additive only. It MUST NOT alter or drop:
+--   tables: attempts, test_sets, sponsors, donations, subscriptions
+--   views: public_sponsors, footer_sponsors, attempts_anon
+--   functions: hash_test_set_password, verify_test_set_password,
+--              purge_expired_respondent_pii, purge_expired_attempts,
+--              purge_unused_test_sets, forbid_attempt_score_changes
+--
+-- Section order (function-before-policy is mandatory):
+--   AH-1.1 — Enums + has_role() SECURITY DEFINER
+--   AH-1.2 — Identity tables + handle_new_user trigger
+--   AH-1.3 — Content tables (categories, topics, answer_sets, answers,
+--            questions, templates, trainings)
+--   AH-1.4 — Test + session tables + forbid_session_score_changes trigger
+--   AH-1.5 — Governance tables + audit_log immutability trigger
+--   AH-1.6 — CMS + config tables with singleton seed rows
+--   AH-1.7 — RLS policies for all 29 new tables (cross-cutting)
+--   AH-1.8 — pg_cron stubs (commented out, manual activation post-merge)
 -- ============================================================================
 
 -- ============================================================================
 -- AH-1.1 — Enums (12) + has_role() helper
 -- ============================================================================
+-- has_role() must exist BEFORE any RLS policy that references it (AH-1.7).
+-- Roles NEVER live on public.profiles — only in public.user_roles. The
+-- SECURITY DEFINER function with a pinned search_path is the canonical
+-- privilege check used by every admin policy.
 
 CREATE TYPE public.app_role AS ENUM ('admin', 'moderator', 'user');
 
@@ -613,6 +63,14 @@ CREATE TYPE public.dsr_type AS ENUM ('access', 'erase', 'portability');
 
 CREATE TYPE public.dsr_status AS ENUM ('open', 'in_progress', 'completed', 'rejected');
 
+-- has_role: anti-recursion privilege check. Used by every admin RLS policy.
+-- SECURITY DEFINER bypasses the caller's RLS on user_roles. STABLE allows
+-- Postgres to memoize the result within a single query. search_path is
+-- pinned to defend against schema-injection from a malicious caller.
+-- plpgsql (not sql) is used so the body parses lazily — user_roles is
+-- created in AH-1.2, which lands in the same migration but after this
+-- function. A pure-SQL function would fail at CREATE time because its
+-- body is fully parsed (relation-resolved) before the table exists.
 CREATE OR REPLACE FUNCTION public.has_role(_user_id uuid, _role public.app_role)
 RETURNS boolean
 LANGUAGE plpgsql
@@ -637,6 +95,10 @@ GRANT EXECUTE ON FUNCTION public.has_role(uuid, public.app_role) TO anon, authen
 -- ============================================================================
 -- AH-1.2 — Identity tables + handle_new_user trigger
 -- ============================================================================
+-- Role NEVER stored on profiles — only in user_roles, gated by has_role().
+-- RLS is enabled on all four tables here; the actual POLICIES land in AH-1.7
+-- to keep policy code colocated and reviewable. Until then these tables are
+-- read-locked to authenticated users (RLS-default-deny).
 
 CREATE TABLE public.profiles (
   id uuid PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
@@ -677,6 +139,9 @@ ALTER TABLE public.team_members ENABLE ROW LEVEL SECURITY;
 CREATE INDEX team_members_user_id_idx ON public.team_members (user_id);
 CREATE INDEX team_members_team_id_idx ON public.team_members (team_id);
 
+-- handle_new_user: seeds a profiles row whenever auth.users gets an INSERT.
+-- SECURITY DEFINER + pinned search_path are required so the function can
+-- write to public.profiles regardless of the caller's RLS posture.
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS trigger
 LANGUAGE plpgsql
@@ -707,6 +172,10 @@ CREATE TRIGGER on_auth_user_created
 -- AH-1.3 — Content tables (categories, topics, answer_sets, answers,
 --                          questions, templates, trainings)
 -- ============================================================================
+-- categories + topics are reference tables. answer_sets and answers form
+-- the canonical answer key (answers CASCADE on set delete). questions FK
+-- to categories with SET NULL on delete to preserve historical questions
+-- even when a category is removed. RLS enabled; policies in AH-1.7.
 
 CREATE TABLE public.categories (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -798,6 +267,14 @@ ALTER TABLE public.trainings ENABLE ROW LEVEL SECURITY;
 -- ============================================================================
 -- AH-1.4 — Test + session tables + forbid_session_score_changes trigger
 -- ============================================================================
+-- This is the largest block. It backs AH-5 (test builder) and AH-8
+-- (respondent flow). password_hash is TEXT only — never store plaintext.
+-- sessions.respondent_id is NULLABLE so the AH-1.8 anonymization cron can
+-- null it out post-retention without violating the FK contract.
+-- forbid_session_score_changes mirrors the existing
+-- forbid_attempt_score_changes pattern: once a session is 'completed',
+-- the score becomes immutable. Demographic / intake fields stay editable
+-- so the AH-7 DSR flow can still scrub PII.
 
 CREATE TABLE public.tests (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -922,6 +399,9 @@ CREATE TABLE public.group_assignments (
 );
 ALTER TABLE public.group_assignments ENABLE ROW LEVEL SECURITY;
 
+-- forbid_session_score_changes: once a session is completed, the score is
+-- frozen. Demographic / intake fields (intake_data, segment) stay editable
+-- so AH-7 DSR scrubbing can still null them out.
 CREATE OR REPLACE FUNCTION public.forbid_session_score_changes()
 RETURNS trigger
 LANGUAGE plpgsql
@@ -944,6 +424,11 @@ CREATE TRIGGER forbid_session_score_changes_trg
 -- ============================================================================
 -- AH-1.5 — Governance tables (notifications, audit_log, dsr_requests, reports)
 -- ============================================================================
+-- audit_log is append-only by trigger. Inserts go through createServerFn
+-- handlers backed by supabaseAdmin (RLS bypass + service-role key); no
+-- direct client write path. dsr_requests.sla_due_at defaults to
+-- created_at + 72 hours, matching the subenai E12 SOP commitment (within
+-- the GDPR Art. 12 §3 one-month outer limit).
 
 CREATE TABLE public.notifications (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -976,6 +461,9 @@ ALTER TABLE public.audit_log ENABLE ROW LEVEL SECURITY;
 CREATE INDEX audit_log_actor_at_idx ON public.audit_log (actor_id, at DESC);
 CREATE INDEX audit_log_target_idx ON public.audit_log (target_type, target_id);
 
+-- audit_log immutability: no UPDATE or DELETE, ever. INSERT happens via
+-- supabaseAdmin in createServerFn handlers (RLS bypass). The trigger is
+-- a defense-in-depth layer against accidental row mutation.
 CREATE OR REPLACE FUNCTION public.forbid_audit_log_updates()
 RETURNS trigger
 LANGUAGE plpgsql
@@ -1019,8 +507,16 @@ CREATE TABLE public.reports (
 ALTER TABLE public.reports ENABLE ROW LEVEL SECURITY;
 
 -- ============================================================================
--- AH-1.6 — CMS + config tables
+-- AH-1.6 — CMS + config tables (cms_pages, cms_header, cms_footer,
+--                                cms_navigation, share_card_config,
+--                                quick_test_config, support_config,
+--                                app_settings)
 -- ============================================================================
+-- Singleton tables (cms_header, cms_footer, cms_navigation,
+-- share_card_config, quick_test_config, support_config) all use a
+-- CHECK (id = 1) constraint to guarantee a single row, and ship with a
+-- seeded id=1 row so AH-9 loaders can always read defaults. app_settings
+-- is a generic key/value bag (PK is `key text`, not a uuid).
 
 CREATE TABLE public.cms_pages (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -1106,7 +602,38 @@ ALTER TABLE public.app_settings ENABLE ROW LEVEL SECURITY;
 -- ============================================================================
 -- AH-1.7 — RLS policies for all 29 new tables
 -- ============================================================================
+-- Categories of policy:
+--   (A) Owner-owned: owner does CRUD via owner_id = auth.uid(); admin via
+--       has_role(auth.uid(), 'admin'). Tables: tests, answer_sets,
+--       templates, respondent_groups, notifications (user_id), trainings.
+--   (B) Identity: user reads own row (id = auth.uid() or user_id =
+--       auth.uid()); admin reads all. Tables: profiles, user_roles,
+--       teams, team_members. user_roles writes are admin-only.
+--   (C) Public read + admin write: anon SELECT on the published subset;
+--       admin-only INSERT/UPDATE/DELETE. Tables: categories, topics,
+--       trainings (status=published only via the (A) policy admin path),
+--       cms_pages (status=published only), all six singletons.
+--   (D) Server-fn-only: NO direct anon/auth read or write. Writes flow
+--       through createServerFn handlers using supabaseAdmin (RLS bypass).
+--       Authenticated test-owner SELECT is allowed via EXISTS join.
+--       Tables: respondents, sessions, session_answers,
+--       behavioral_events.
+--   (E) Admin-only: read via has_role('admin'); writes via supabaseAdmin
+--       only. Tables: audit_log, dsr_requests, reports.
+--   (F) Linking: test_questions, test_versions, group_assignments — read
+--       follows tests-owner read; write follows tests-owner write.
+--
+-- pg_policies post-migration cross-check — every name below must appear
+-- at least once in pg_policies.tablename:
+--   profiles, user_roles, teams, team_members,
+--   categories, topics, answer_sets, answers, questions, templates, trainings,
+--   tests, test_questions, test_versions, respondents, sessions,
+--   session_answers, behavioral_events, respondent_groups, group_assignments,
+--   notifications, audit_log, dsr_requests, reports,
+--   cms_pages, cms_header, cms_footer, cms_navigation, share_card_config,
+--   quick_test_config, support_config, app_settings.
 
+-- (B) profiles
 CREATE POLICY profiles_self_read ON public.profiles
   FOR SELECT TO authenticated
   USING (id = auth.uid() OR public.has_role(auth.uid(), 'admin'));
@@ -1115,6 +642,7 @@ CREATE POLICY profiles_self_update ON public.profiles
   USING (id = auth.uid() OR public.has_role(auth.uid(), 'admin'))
   WITH CHECK (id = auth.uid() OR public.has_role(auth.uid(), 'admin'));
 
+-- (B) user_roles — admin-only writes, self-read
 CREATE POLICY user_roles_self_read ON public.user_roles
   FOR SELECT TO authenticated
   USING (user_id = auth.uid() OR public.has_role(auth.uid(), 'admin'));
@@ -1123,6 +651,7 @@ CREATE POLICY user_roles_admin_write ON public.user_roles
   USING (public.has_role(auth.uid(), 'admin'))
   WITH CHECK (public.has_role(auth.uid(), 'admin'));
 
+-- (B) teams
 CREATE POLICY teams_member_read ON public.teams
   FOR SELECT TO authenticated
   USING (
@@ -1138,6 +667,7 @@ CREATE POLICY teams_owner_write ON public.teams
   USING (owner_id = auth.uid() OR public.has_role(auth.uid(), 'admin'))
   WITH CHECK (owner_id = auth.uid() OR public.has_role(auth.uid(), 'admin'));
 
+-- (B) team_members
 CREATE POLICY team_members_self_read ON public.team_members
   FOR SELECT TO authenticated
   USING (
@@ -1165,6 +695,7 @@ CREATE POLICY team_members_owner_write ON public.team_members
     OR public.has_role(auth.uid(), 'admin')
   );
 
+-- (C) categories — anon read, admin write
 CREATE POLICY categories_public_read ON public.categories
   FOR SELECT TO anon, authenticated USING (true);
 CREATE POLICY categories_admin_write ON public.categories
@@ -1172,6 +703,7 @@ CREATE POLICY categories_admin_write ON public.categories
   USING (public.has_role(auth.uid(), 'admin'))
   WITH CHECK (public.has_role(auth.uid(), 'admin'));
 
+-- (C) topics
 CREATE POLICY topics_public_read ON public.topics
   FOR SELECT TO anon, authenticated USING (true);
 CREATE POLICY topics_admin_write ON public.topics
@@ -1179,6 +711,7 @@ CREATE POLICY topics_admin_write ON public.topics
   USING (public.has_role(auth.uid(), 'admin'))
   WITH CHECK (public.has_role(auth.uid(), 'admin'));
 
+-- (A) answer_sets — owner CRUD + admin
 CREATE POLICY answer_sets_owner_read ON public.answer_sets
   FOR SELECT TO authenticated
   USING (author_id = auth.uid() OR public.has_role(auth.uid(), 'admin'));
@@ -1187,6 +720,7 @@ CREATE POLICY answer_sets_owner_write ON public.answer_sets
   USING (author_id = auth.uid() OR public.has_role(auth.uid(), 'admin'))
   WITH CHECK (author_id = auth.uid() OR public.has_role(auth.uid(), 'admin'));
 
+-- (F) answers — follow the parent answer_set
 CREATE POLICY answers_via_set_read ON public.answers
   FOR SELECT TO authenticated
   USING (
@@ -1213,6 +747,7 @@ CREATE POLICY answers_via_set_write ON public.answers
     )
   );
 
+-- (A) questions
 CREATE POLICY questions_owner_read ON public.questions
   FOR SELECT TO authenticated
   USING (author_id = auth.uid() OR public.has_role(auth.uid(), 'admin'));
@@ -1221,6 +756,7 @@ CREATE POLICY questions_owner_write ON public.questions
   USING (author_id = auth.uid() OR public.has_role(auth.uid(), 'admin'))
   WITH CHECK (author_id = auth.uid() OR public.has_role(auth.uid(), 'admin'));
 
+-- (E-A hybrid) templates — admin-only writes; authenticated read
 CREATE POLICY templates_auth_read ON public.templates
   FOR SELECT TO authenticated USING (true);
 CREATE POLICY templates_admin_write ON public.templates
@@ -1228,6 +764,7 @@ CREATE POLICY templates_admin_write ON public.templates
   USING (public.has_role(auth.uid(), 'admin'))
   WITH CHECK (public.has_role(auth.uid(), 'admin'));
 
+-- (C) trainings — anon read of published; admin write
 CREATE POLICY trainings_public_published_read ON public.trainings
   FOR SELECT TO anon, authenticated
   USING (status = 'published' OR public.has_role(auth.uid(), 'admin'));
@@ -1236,6 +773,7 @@ CREATE POLICY trainings_admin_write ON public.trainings
   USING (public.has_role(auth.uid(), 'admin'))
   WITH CHECK (public.has_role(auth.uid(), 'admin'));
 
+-- (A) tests
 CREATE POLICY tests_owner_read ON public.tests
   FOR SELECT TO authenticated
   USING (
@@ -1251,6 +789,7 @@ CREATE POLICY tests_owner_write ON public.tests
   USING (owner_id = auth.uid() OR public.has_role(auth.uid(), 'admin'))
   WITH CHECK (owner_id = auth.uid() OR public.has_role(auth.uid(), 'admin'));
 
+-- (F) test_questions
 CREATE POLICY test_questions_via_test_read ON public.test_questions
   FOR SELECT TO authenticated
   USING (
@@ -1277,6 +816,7 @@ CREATE POLICY test_questions_via_test_write ON public.test_questions
     )
   );
 
+-- (F) test_versions
 CREATE POLICY test_versions_via_test_read ON public.test_versions
   FOR SELECT TO authenticated
   USING (
@@ -1303,6 +843,8 @@ CREATE POLICY test_versions_admin_write ON public.test_versions
     )
   );
 
+-- (D) respondents — NO anon access. Test-owner SELECT via session join.
+--     Writes via supabaseAdmin only (RLS bypass).
 CREATE POLICY respondents_via_session_read ON public.respondents
   FOR SELECT TO authenticated
   USING (
@@ -1314,6 +856,7 @@ CREATE POLICY respondents_via_session_read ON public.respondents
     )
   );
 
+-- (D) sessions
 CREATE POLICY sessions_via_test_read ON public.sessions
   FOR SELECT TO authenticated
   USING (
@@ -1324,6 +867,7 @@ CREATE POLICY sessions_via_test_read ON public.sessions
     )
   );
 
+-- (D) session_answers
 CREATE POLICY session_answers_via_test_read ON public.session_answers
   FOR SELECT TO authenticated
   USING (
@@ -1335,6 +879,7 @@ CREATE POLICY session_answers_via_test_read ON public.session_answers
     )
   );
 
+-- (D) behavioral_events
 CREATE POLICY behavioral_events_via_test_read ON public.behavioral_events
   FOR SELECT TO authenticated
   USING (
@@ -1346,6 +891,7 @@ CREATE POLICY behavioral_events_via_test_read ON public.behavioral_events
     )
   );
 
+-- (A) respondent_groups
 CREATE POLICY respondent_groups_owner_read ON public.respondent_groups
   FOR SELECT TO authenticated
   USING (owner_id = auth.uid() OR public.has_role(auth.uid(), 'admin'));
@@ -1354,6 +900,7 @@ CREATE POLICY respondent_groups_owner_write ON public.respondent_groups
   USING (owner_id = auth.uid() OR public.has_role(auth.uid(), 'admin'))
   WITH CHECK (owner_id = auth.uid() OR public.has_role(auth.uid(), 'admin'));
 
+-- (F) group_assignments — follow the parent test
 CREATE POLICY group_assignments_via_test_read ON public.group_assignments
   FOR SELECT TO authenticated
   USING (
@@ -1380,6 +927,7 @@ CREATE POLICY group_assignments_via_test_write ON public.group_assignments
     )
   );
 
+-- (A) notifications — user reads own
 CREATE POLICY notifications_self_read ON public.notifications
   FOR SELECT TO authenticated
   USING (user_id = auth.uid() OR public.has_role(auth.uid(), 'admin'));
@@ -1388,18 +936,22 @@ CREATE POLICY notifications_self_update ON public.notifications
   USING (user_id = auth.uid())
   WITH CHECK (user_id = auth.uid());
 
+-- (E) audit_log — admin-only read; writes via supabaseAdmin
 CREATE POLICY audit_log_admin_read ON public.audit_log
   FOR SELECT TO authenticated
   USING (public.has_role(auth.uid(), 'admin'));
 
+-- (E) dsr_requests — admin-only read; writes via supabaseAdmin
 CREATE POLICY dsr_requests_admin_read ON public.dsr_requests
   FOR SELECT TO authenticated
   USING (public.has_role(auth.uid(), 'admin'));
 
+-- (E) reports — admin-only read; writes via supabaseAdmin
 CREATE POLICY reports_admin_read ON public.reports
   FOR SELECT TO authenticated
   USING (public.has_role(auth.uid(), 'admin'));
 
+-- (C) cms_pages — anon read of published, admin write
 CREATE POLICY cms_pages_public_published_read ON public.cms_pages
   FOR SELECT TO anon, authenticated
   USING (
@@ -1411,6 +963,7 @@ CREATE POLICY cms_pages_admin_write ON public.cms_pages
   USING (public.has_role(auth.uid(), 'admin'))
   WITH CHECK (public.has_role(auth.uid(), 'admin'));
 
+-- (C) cms_header / cms_footer / cms_navigation — anon read, admin write
 CREATE POLICY cms_header_public_read ON public.cms_header
   FOR SELECT TO anon, authenticated USING (true);
 CREATE POLICY cms_header_admin_write ON public.cms_header
@@ -1432,6 +985,7 @@ CREATE POLICY cms_navigation_admin_write ON public.cms_navigation
   USING (public.has_role(auth.uid(), 'admin'))
   WITH CHECK (public.has_role(auth.uid(), 'admin'));
 
+-- (C) share_card_config / quick_test_config / support_config
 CREATE POLICY share_card_config_public_read ON public.share_card_config
   FOR SELECT TO anon, authenticated USING (true);
 CREATE POLICY share_card_config_admin_write ON public.share_card_config
@@ -1453,6 +1007,7 @@ CREATE POLICY support_config_admin_write ON public.support_config
   USING (public.has_role(auth.uid(), 'admin'))
   WITH CHECK (public.has_role(auth.uid(), 'admin'));
 
+-- (E) app_settings — admin-only read + write (no public surface)
 CREATE POLICY app_settings_admin_read ON public.app_settings
   FOR SELECT TO authenticated
   USING (public.has_role(auth.uid(), 'admin'));
@@ -1465,9 +1020,16 @@ CREATE POLICY app_settings_admin_write ON public.app_settings
 -- AH-1.8 — pg_cron stubs (COMMENTED OUT — manual activation post-merge)
 -- ============================================================================
 -- The pg_cron extension is not enabled by default in Supabase projects.
--- After this migration runs in production, enable pg_cron in the
--- Supabase Dashboard -> Database -> Extensions, then uncomment and run
--- the two cron.schedule calls below.
+-- After this migration runs in production, the project owner must:
+--   1. Open the Supabase Dashboard -> Database -> Extensions.
+--   2. Enable pg_cron (CREATE EXTENSION IF NOT EXISTS pg_cron;).
+--   3. Uncomment the two cron.schedule calls below and re-run them.
+-- See tasks/PLAN-2026-05-17-admin-hub-integration.md decision #9.
+--
+-- anonymize-sessions — runs daily at 03:00, nulls respondent_id on
+-- sessions older than the parent test's anonymize_after_days window.
+-- The forbid_session_score_changes trigger from AH-1.4 still permits
+-- this (it only blocks score mutation).
 --
 -- select cron.schedule('anonymize-sessions', '0 3 * * *', $$
 --   update public.sessions s set respondent_id = null
@@ -1478,14 +1040,10 @@ CREATE POLICY app_settings_admin_write ON public.app_settings
 --      and s.respondent_id is not null;
 -- $$);
 --
+-- dsr-sla-check — runs hourly, surfaces dsr_requests whose sla_due_at
+-- has elapsed without being resolved. The function it calls (to be
+-- added in AH-7) writes a row to notifications for every admin.
+--
 -- select cron.schedule('dsr-sla-check', '0 * * * *', $$
 --   select 1; -- replaced in AH-7 by public.dsr_sla_check_notify()
 -- $$);
-
--- ============================================================================
--- DONE!
--- Now go to Settings -> API and copy:
---   - Project URL  (e.g. https://abcdef.supabase.co)
---   - anon public key
--- You will use these in Cloudflare Pages as environment variables.
--- ============================================================================
