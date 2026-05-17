@@ -342,3 +342,83 @@ grep -r "mock-store\|mock-data\|mock-user-data\|admin-mock-data\|platform/store\
 10. **Admin bootstrap:** After AH-1 runs in production, the first admin user is created
     via a manual `INSERT INTO public.user_roles (user_id, role) VALUES (<uuid>, 'admin')`
     in the Supabase SQL Editor. Is this acceptable, or do you need a bootstrap script?
+
+---
+
+## Decisions (locked 2026-05-17)
+
+All ten open questions were answered. Decisions below supersede the question
+section above. Stories affected by each decision are listed; agents implementing
+those stories MUST honor the decision.
+
+1. **AI generator** — Port the file to `src/components/admin/AiQuestionGenerator.tsx`,
+   gate the UI behind env flag `VITE_AI_GENERATOR_ENABLED` (default `false`).
+   _Affects: AH-4.1._
+2. **Login slug** — `/login` (English). Aligns with admin-hub source paths,
+   minimal rename churn.
+   _Affects: AH-3.1._
+3. **Header link visibility** — "Moje testy" link in `SiteHeader` only rendered
+   when the user is authenticated.
+   _Affects: AH-9.8._
+4. **Domain** — `/app/*` and `/admin/*` live on `subenai.sk` (same domain). Strategy
+   B confirmed final.
+   _Affects: the master plan; no story-level change._
+5. **Seed data** — Mock store in preview deploys uses `admin-hub/src/lib/admin-mock-data.ts`
+   arrays as TEST data ONLY. Production DB preserves all existing subenai data
+   (`attempts`, `test_sets`, `sponsors`, `donations`, `subscriptions`). Where an
+   admin-hub entity has a subenai equivalent that should be reused (not duplicated),
+   the mapping lives in `tasks/DATA-REUSE-MAP-admin-hub.md`. AH-1 stays purely
+   structural; data migrations live in their owning feature epic (e.g. AH-9.5
+   migrates the hardcoded IQ questions).
+   _Affects: AH-1.*, AH-9.5, AH-11.*; new doc `tasks/DATA-REUSE-MAP-admin-hub.md`._
+6. **`quick_test_config` — Extend** — `/admin/quick-test` is the ADMIN CONFIG for
+   the existing subenai public `/test` route. The page stays at `/test`. Its
+   content (questions, title, time limit, pass %, difficulty, visibility toggle)
+   is now driven by `quick_test_config` table joined with `questions` via a link
+   table. AH-9.5 grows to include: data migration of the 15 hardcoded questions
+   from `src/lib/quiz/questions.ts` to `questions` table, refactor of `/test`
+   route to read config from DB, "Zobrazovať na webe" toggle drives 404 when off,
+   e2e coverage of toggle on/off. Existing `attempts` table is preserved — new
+   schema reads but does not overwrite.
+   _Affects: AH-1.4 (extra link table), AH-9.5 (major scope grow), existing
+   `src/lib/quiz/questions.ts`, existing `src/routes/test*.tsx`._
+7. **`share_card_config` — Coexist** — admin-hub share-card config governs ONLY
+   the new `/app/tests/*` share flow (`/t/$shareId`). Existing subenai share
+   mechanisms (`/podakovanie`, `/test/zostav`) keep their current code path. No
+   merge attempted.
+   _Affects: AH-9.6._
+8. **CONSENT_VERSION 1.4.0 banner copy** — "Pridali sme platformu pre tvorbu
+   vlastných testov a zdieľanie cez odkaz."
+   _Affects: AH-7.1._
+9. **`pg_cron`** — Cron SQL in `supabase/migrations/20260517000000_admin_hub_schema.sql`
+   stays COMMENTED OUT. After AH-1 merges to `main` and the user runs the migration
+   against production, the user enables the `pg_cron` extension in Supabase
+   Dashboard and uncomments the cron rows manually. AH-1.8 documents this.
+   _Affects: AH-1.8._
+10. **Admin bootstrap** — Manual `INSERT INTO public.user_roles (user_id, role)
+    VALUES ('<uuid>', 'admin')` via Supabase SQL Editor after AH-1 merges. The
+    bootstrap comment block goes at the top of `DEPLOY_SETUP.sql` per AH-11.8.
+    Subsequent admins are promoted via `/admin/users` UI once the first admin is
+    in place.
+    _Affects: AH-11.8._
+
+---
+
+## Data Reuse Strategy (Q5 follow-up)
+
+The full mapping lives in `tasks/DATA-REUSE-MAP-admin-hub.md`. Three principles
+that govern every AH-* story:
+
+- **Real subenai data is preserved.** No `DROP TABLE` on `attempts`, `test_sets`,
+  `sponsors`, `donations`, `subscriptions`, or any view that reads from them.
+  AH-1 only adds new tables; it never alters existing ones.
+- **Reuse over duplicate.** Where an admin-hub entity overlaps semantically with a
+  subenai entity, the data-reuse map says which is canonical. Example: the 15
+  hardcoded IQ questions are MIGRATED (not duplicated) to the `questions` table,
+  and `quick_test_config` points at them. The hardcoded array in
+  `src/lib/quiz/questions.ts` is deleted in AH-9.5.
+- **Mock-only seed in preview, never in production.** `admin-hub/src/lib/admin-mock-data.ts`
+  arrays are ported as a mock store and feed UI in preview deploys (AH-3..AH-10).
+  AH-11.6 deletes the mock files. Production Supabase receives ONLY: the AH-1
+  schema, the AH-9.5 question migration, and rows the admin creates via the UI.
+  No fixture data is seeded into production.
