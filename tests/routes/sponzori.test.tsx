@@ -42,6 +42,7 @@ function makeSponsor(overrides: Partial<PublicSponsor> = {}): PublicSponsor {
     display_link: null,
     display_message: null,
     created_at: "2026-04-15T10:00:00Z",
+    has_refund: false,
     ...overrides,
   };
 }
@@ -106,6 +107,37 @@ describe("SponzoriView (/sponzori)", () => {
     });
     render(<SponzoriView fetchSponsors={fetchSponsors} />);
     await waitFor(() => expect(screen.getByRole("alert")).toBeInTheDocument());
+  });
+
+  it('shows "Vrátené" badge + refund explainer on accordion expand for refunded sponsors', async () => {
+    const fetchSponsors = vi.fn(async () => [
+      makeSponsor({ display_name: "Daniela", has_refund: true, display_message: "Hej!" }),
+    ]);
+    render(<SponzoriView fetchSponsors={fetchSponsors} />);
+
+    await waitFor(() => expect(screen.getByText("Daniela")).toBeInTheDocument());
+    expect(screen.getByTestId("sponzori-refund-badge")).toHaveTextContent(/Vrátené/);
+
+    // Strike-through is applied to the display_name span itself.
+    const danielaSpan = screen.getByText("Daniela");
+    expect(danielaSpan.className).toMatch(/line-through/);
+
+    // Expand the accordion to verify the refund explainer is rendered above
+    // the optional display message.
+    screen.getByRole("button", { name: /Daniela/i }).click();
+    expect(
+      await screen.findByText(/Príspevok bol vrátený na žiadosť prispievateľa/i),
+    ).toBeInTheDocument();
+    expect(screen.getByText(/Hej!/)).toBeInTheDocument();
+  });
+
+  it("does NOT show the refund badge for non-refunded sponsors", async () => {
+    const fetchSponsors = vi.fn(async () => [
+      makeSponsor({ display_name: "Eva", has_refund: false }),
+    ]);
+    render(<SponzoriView fetchSponsors={fetchSponsors} />);
+    await waitFor(() => expect(screen.getByText("Eva")).toBeInTheDocument());
+    expect(screen.queryByTestId("sponzori-refund-badge")).not.toBeInTheDocument();
   });
 
   it("includes the anonymity disclosure footnote with consent-revocation contact", async () => {

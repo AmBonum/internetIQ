@@ -40,6 +40,7 @@ function makeSponsor(overrides: Partial<PublicSponsor>): PublicSponsor {
     display_link: null,
     display_message: null,
     created_at: "2026-04-01T10:00:00Z",
+    has_refund: false,
     ...overrides,
   };
 }
@@ -75,14 +76,46 @@ describe("AllSponsorsView (/sponzori/vsetci)", () => {
     expect(screen.getByText("Bob")).toBeInTheDocument();
   });
 
-  it("filters by year", async () => {
+  it("filters by date range (inclusive bounds, local timezone)", async () => {
     render(<AllSponsorsView fetchSponsors={async () => SAMPLE} />);
     await waitFor(() => expect(screen.getByText("Anna")).toBeInTheDocument());
 
-    fireEvent.change(screen.getByLabelText(/Rok/i), { target: { value: "2025" } });
+    // From 2025-06-01 keeps Bob (Sep 2025) + Anna (Apr 2026), drops Cyril (Mar 2025).
+    fireEvent.change(screen.getByLabelText(/Od dátumu/i), { target: { value: "2025-06-01" } });
+    expect(screen.getByText("Anna")).toBeInTheDocument();
+    expect(screen.getByText("Bob")).toBeInTheDocument();
+    expect(screen.queryByText("Cyril")).not.toBeInTheDocument();
+
+    // Add To 2025-12-31 narrows further: only Bob.
+    fireEvent.change(screen.getByLabelText(/Do dátumu/i), { target: { value: "2025-12-31" } });
     expect(screen.queryByText("Anna")).not.toBeInTheDocument();
     expect(screen.getByText("Bob")).toBeInTheDocument();
-    expect(screen.getByText("Cyril")).toBeInTheDocument();
+    expect(screen.queryByText("Cyril")).not.toBeInTheDocument();
+  });
+
+  it('filters by status: "Vrátené" only refunded, "Prijaté" only non-refunded', async () => {
+    const mixed: PublicSponsor[] = [
+      makeSponsor({ display_name: "Anna", has_refund: false }),
+      makeSponsor({ display_name: "Daniela", has_refund: true }),
+      makeSponsor({ display_name: "Eva", has_refund: false }),
+    ];
+    render(<AllSponsorsView fetchSponsors={async () => mixed} />);
+    await waitFor(() => expect(screen.getByText("Anna")).toBeInTheDocument());
+
+    fireEvent.change(screen.getByLabelText(/Stav/i), { target: { value: "refunded" } });
+    expect(screen.queryByText("Anna")).not.toBeInTheDocument();
+    expect(screen.getByText("Daniela")).toBeInTheDocument();
+    expect(screen.queryByText("Eva")).not.toBeInTheDocument();
+
+    fireEvent.change(screen.getByLabelText(/Stav/i), { target: { value: "accepted" } });
+    expect(screen.getByText("Anna")).toBeInTheDocument();
+    expect(screen.queryByText("Daniela")).not.toBeInTheDocument();
+    expect(screen.getByText("Eva")).toBeInTheDocument();
+
+    fireEvent.change(screen.getByLabelText(/Stav/i), { target: { value: "all" } });
+    expect(screen.getByText("Anna")).toBeInTheDocument();
+    expect(screen.getByText("Daniela")).toBeInTheDocument();
+    expect(screen.getByText("Eva")).toBeInTheDocument();
   });
 
   it("shows the empty-filter state when nothing matches", async () => {
@@ -93,6 +126,24 @@ describe("AllSponsorsView (/sponzori/vsetci)", () => {
       target: { value: "nikto-takyto-tu-neni" },
     });
     expect(screen.getByText(/Nič nezodpovedá filtru/i)).toBeInTheDocument();
+  });
+
+  it('shows "Vrátené" badge + explainer for refunded sponsors, omits it for the rest', async () => {
+    const withRefund: PublicSponsor[] = [
+      makeSponsor({ display_name: "Anna", has_refund: false }),
+      makeSponsor({ display_name: "Daniela", has_refund: true }),
+    ];
+    render(<AllSponsorsView fetchSponsors={async () => withRefund} />);
+
+    await waitFor(() => expect(screen.getByText("Daniela")).toBeInTheDocument());
+    const badges = screen.getAllByTestId("sponzori-vsetci-refund-badge");
+    expect(badges).toHaveLength(1);
+    expect(badges[0]).toHaveTextContent(/Vrátené/);
+    expect(screen.getByText(/Príspevok bol vrátený na žiadosť prispievateľa/i)).toBeInTheDocument();
+
+    // Strike-through is applied to the refunded sponsor's heading.
+    const danielaHeading = screen.getByText("Daniela").closest("h2");
+    expect(danielaHeading?.className).toMatch(/line-through/);
   });
 
   it("renders the back link to /sponzori", async () => {

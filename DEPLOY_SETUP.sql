@@ -293,8 +293,19 @@ REVOKE ALL ON FUNCTION public.update_sponsor_total() FROM anon, authenticated;
 
 DROP VIEW IF EXISTS public.public_sponsors;
 CREATE VIEW public.public_sponsors AS
-SELECT id, display_name, display_link, display_message, created_at
-FROM public.sponsors WHERE display_name IS NOT NULL;
+SELECT
+  s.id,
+  s.display_name,
+  s.display_link,
+  s.display_message,
+  s.created_at,
+  s.total_eur AS net_amount_eur,
+  EXISTS (
+    SELECT 1 FROM public.donations d
+    WHERE d.sponsor_id = s.id AND d.kind = 'refund'
+  ) AS has_refund
+FROM public.sponsors s
+WHERE s.display_name IS NOT NULL;
 GRANT SELECT ON public.public_sponsors TO anon, authenticated;
 
 DROP VIEW IF EXISTS public.footer_sponsors;

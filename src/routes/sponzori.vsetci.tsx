@@ -33,11 +33,15 @@ interface AllSponsorsViewProps {
   fetchSponsors: () => Promise<PublicSponsor[]>;
 }
 
+type StatusFilter = "all" | "accepted" | "refunded";
+
 export function AllSponsorsView({ fetchSponsors }: AllSponsorsViewProps) {
   const [all, setAll] = useState<PublicSponsor[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [nameQuery, setNameQuery] = useState("");
-  const [yearFilter, setYearFilter] = useState<string>("all");
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
 
   useEffect(() => {
     let cancelled = false;
@@ -53,31 +57,30 @@ export function AllSponsorsView({ fetchSponsors }: AllSponsorsViewProps) {
     };
   }, [fetchSponsors]);
 
-  const availableYears = useMemo(() => {
-    if (!all) return [];
-    const years = new Set<string>();
-    for (const s of all) {
-      const y = new Date(s.created_at).getFullYear();
-      if (Number.isFinite(y)) years.add(String(y));
-    }
-    return Array.from(years).sort((a, b) => Number(b) - Number(a));
-  }, [all]);
-
   const filtered = useMemo(() => {
     if (!all) return [];
     const q = nameQuery.trim().toLowerCase();
+    // Inclusive bounds. dateFrom is 00:00 of the chosen day; dateTo is end-of-day.
+    // Parsing as ISO YYYY-MM-DD makes new Date() honor local timezone, which is
+    // what the user means when they type "1. mája 2026 — 31. mája 2026".
+    const fromTs = dateFrom ? new Date(`${dateFrom}T00:00:00`).getTime() : null;
+    const toTs = dateTo ? new Date(`${dateTo}T23:59:59.999`).getTime() : null;
+
     return all.filter((s) => {
-      if (yearFilter !== "all") {
-        const y = new Date(s.created_at).getFullYear();
-        if (String(y) !== yearFilter) return false;
-      }
       if (q) {
         const hay = `${s.display_name} ${s.display_message ?? ""}`.toLowerCase();
         if (!hay.includes(q)) return false;
       }
+      if (fromTs !== null || toTs !== null) {
+        const created = new Date(s.created_at).getTime();
+        if (fromTs !== null && created < fromTs) return false;
+        if (toTs !== null && created > toTs) return false;
+      }
+      if (statusFilter === "accepted" && s.has_refund) return false;
+      if (statusFilter === "refunded" && !s.has_refund) return false;
       return true;
     });
-  }, [all, nameQuery, yearFilter]);
+  }, [all, nameQuery, dateFrom, dateTo, statusFilter]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -99,7 +102,7 @@ export function AllSponsorsView({ fetchSponsors }: AllSponsorsViewProps) {
 
         <section
           aria-label="Filtre"
-          className="mb-6 grid gap-3 rounded-2xl border border-border/60 bg-card/40 p-4 sm:grid-cols-[1fr_auto] sm:p-5"
+          className="mb-6 grid gap-3 rounded-2xl border border-border/60 bg-card/40 p-4 sm:grid-cols-[minmax(0,1fr)_auto_auto_auto] sm:items-end sm:gap-4 sm:p-5"
         >
           <div>
             <label htmlFor="filter-name" className="text-xs font-medium text-muted-foreground">
@@ -107,6 +110,7 @@ export function AllSponsorsView({ fetchSponsors }: AllSponsorsViewProps) {
             </label>
             <input
               id="filter-name"
+              data-testid="sponzori-vsetci-filter-name"
               type="search"
               value={nameQuery}
               onChange={(e) => setNameQuery(e.target.value)}
@@ -115,21 +119,47 @@ export function AllSponsorsView({ fetchSponsors }: AllSponsorsViewProps) {
             />
           </div>
           <div>
-            <label htmlFor="filter-year" className="text-xs font-medium text-muted-foreground">
-              Rok
+            <label htmlFor="filter-date-from" className="text-xs font-medium text-muted-foreground">
+              Od dátumu
+            </label>
+            <input
+              id="filter-date-from"
+              data-testid="sponzori-vsetci-filter-date-from"
+              type="date"
+              value={dateFrom}
+              max={dateTo || undefined}
+              onChange={(e) => setDateFrom(e.target.value)}
+              className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground sm:w-40"
+            />
+          </div>
+          <div>
+            <label htmlFor="filter-date-to" className="text-xs font-medium text-muted-foreground">
+              Do dátumu
+            </label>
+            <input
+              id="filter-date-to"
+              data-testid="sponzori-vsetci-filter-date-to"
+              type="date"
+              value={dateTo}
+              min={dateFrom || undefined}
+              onChange={(e) => setDateTo(e.target.value)}
+              className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground sm:w-40"
+            />
+          </div>
+          <div>
+            <label htmlFor="filter-status" className="text-xs font-medium text-muted-foreground">
+              Stav
             </label>
             <select
-              id="filter-year"
-              value={yearFilter}
-              onChange={(e) => setYearFilter(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground sm:w-32"
+              id="filter-status"
+              data-testid="sponzori-vsetci-filter-status"
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value as StatusFilter)}
+              className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground sm:w-36"
             >
               <option value="all">Všetky</option>
-              {availableYears.map((y) => (
-                <option key={y} value={y}>
-                  {y}
-                </option>
-              ))}
+              <option value="accepted">Prijaté</option>
+              <option value="refunded">Vrátené</option>
             </select>
           </div>
         </section>
@@ -176,7 +206,11 @@ function SponsorsTable({
         {sponsors.map((s) => (
           <li key={s.id} className="space-y-2 rounded-2xl border border-border/60 bg-card p-5">
             <div className="flex flex-wrap items-baseline justify-between gap-2">
-              <h2 className="text-base font-semibold text-foreground">
+              <h2
+                className={`text-base font-semibold ${
+                  s.has_refund ? "text-muted-foreground line-through" : "text-foreground"
+                }`}
+              >
                 {s.display_link ? (
                   <a
                     href={s.display_link}
@@ -190,10 +224,25 @@ function SponsorsTable({
                   s.display_name
                 )}
               </h2>
-              <time dateTime={s.created_at} className="text-xs text-muted-foreground">
-                {formatMonthYear(s.created_at)}
-              </time>
+              <div className="flex items-baseline gap-2">
+                {s.has_refund ? (
+                  <span
+                    data-testid="sponzori-vsetci-refund-badge"
+                    className="rounded-full border border-border/70 bg-muted/60 px-2 py-0.5 text-[11px] font-normal text-muted-foreground"
+                  >
+                    Vrátené
+                  </span>
+                ) : null}
+                <time dateTime={s.created_at} className="text-xs text-muted-foreground">
+                  {formatMonthYear(s.created_at)}
+                </time>
+              </div>
             </div>
+            {s.has_refund ? (
+              <p className="text-xs italic text-muted-foreground/80">
+                Príspevok bol vrátený na žiadosť prispievateľa.
+              </p>
+            ) : null}
             {s.display_message ? (
               <p className="text-sm leading-relaxed text-muted-foreground">„{s.display_message}"</p>
             ) : null}
@@ -247,7 +296,7 @@ function EmptyFilterState({ hasAnyData }: { hasAnyData: boolean }) {
 async function fetchAllSponsors(): Promise<PublicSponsor[]> {
   const { data, error } = await supabase
     .from("public_sponsors")
-    .select("id, display_name, display_link, display_message, created_at")
+    .select("id, display_name, display_link, display_message, created_at, has_refund")
     .order("created_at", { ascending: false })
     .limit(FETCH_LIMIT);
 

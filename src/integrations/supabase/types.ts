@@ -1085,6 +1085,8 @@ export type Database = {
           display_link: string | null;
           display_message: string | null;
           created_at: string;
+          net_amount_eur: number;
+          has_refund: boolean;
         };
         Relationships: [];
       };

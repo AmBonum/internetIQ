@@ -21,6 +21,7 @@ import { Route as CookiesRouteImport } from './routes/cookies'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TestyIndexRouteImport } from './routes/testy.index'
 import { Route as TestIndexRouteImport } from './routes/test.index'
+import { Route as SponzoriIndexRouteImport } from './routes/sponzori.index'
 import { Route as SkoleniaIndexRouteImport } from './routes/skolenia.index'
 import { Route as TestySlugRouteImport } from './routes/testy.$slug'
 import { Route as TestZostavRouteImport } from './routes/test.zostav'
@@ -91,6 +92,11 @@ const TestIndexRoute = TestIndexRouteImport.update({
   path: '/test/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SponzoriIndexRoute = SponzoriIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => SponzoriRoute,
+} as any)
 const SkoleniaIndexRoute = SkoleniaIndexRouteImport.update({
   id: '/skolenia/',
   path: '/skolenia/',
@@ -155,6 +161,7 @@ export interface FileRoutesByFullPath {
   '/test/zostav': typeof TestZostavRoute
   '/testy/$slug': typeof TestySlugRoute
   '/skolenia/': typeof SkoleniaIndexRoute
+  '/sponzori/': typeof SponzoriIndexRoute
   '/test/': typeof TestIndexRoute
   '/testy/': typeof TestyIndexRoute
   '/test/zostava/$id': typeof TestZostavaIdRouteWithChildren
@@ -168,7 +175,6 @@ export interface FileRoutesByTo {
   '/podpora': typeof PodporaRoute
   '/privacy': typeof PrivacyRoute
   '/skoly': typeof SkolyRoute
-  '/sponzori': typeof SponzoriRouteWithChildren
   '/spravovat-podporu': typeof SpravovatPodporuRoute
   '/zmeny': typeof ZmenyRoute
   '/podakovanie/$sessionId': typeof PodakovanieSessionIdRoute
@@ -178,6 +184,7 @@ export interface FileRoutesByTo {
   '/test/zostav': typeof TestZostavRoute
   '/testy/$slug': typeof TestySlugRoute
   '/skolenia': typeof SkoleniaIndexRoute
+  '/sponzori': typeof SponzoriIndexRoute
   '/test': typeof TestIndexRoute
   '/testy': typeof TestyIndexRoute
   '/test/zostava/$id': typeof TestZostavaIdRouteWithChildren
@@ -202,6 +209,7 @@ export interface FileRoutesById {
   '/test/zostav': typeof TestZostavRoute
   '/testy/$slug': typeof TestySlugRoute
   '/skolenia/': typeof SkoleniaIndexRoute
+  '/sponzori/': typeof SponzoriIndexRoute
   '/test/': typeof TestIndexRoute
   '/testy/': typeof TestyIndexRoute
   '/test/zostava/$id': typeof TestZostavaIdRouteWithChildren
@@ -227,6 +235,7 @@ export interface FileRouteTypes {
     | '/test/zostav'
     | '/testy/$slug'
     | '/skolenia/'
+    | '/sponzori/'
     | '/test/'
     | '/testy/'
     | '/test/zostava/$id'
@@ -240,7 +249,6 @@ export interface FileRouteTypes {
     | '/podpora'
     | '/privacy'
     | '/skoly'
-    | '/sponzori'
     | '/spravovat-podporu'
     | '/zmeny'
     | '/podakovanie/$sessionId'
@@ -250,6 +258,7 @@ export interface FileRouteTypes {
     | '/test/zostav'
     | '/testy/$slug'
     | '/skolenia'
+    | '/sponzori'
     | '/test'
     | '/testy'
     | '/test/zostava/$id'
@@ -273,6 +282,7 @@ export interface FileRouteTypes {
     | '/test/zostav'
     | '/testy/$slug'
     | '/skolenia/'
+    | '/sponzori/'
     | '/test/'
     | '/testy/'
     | '/test/zostava/$id'
@@ -387,6 +397,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TestIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/sponzori/': {
+      id: '/sponzori/'
+      path: '/'
+      fullPath: '/sponzori/'
+      preLoaderRoute: typeof SponzoriIndexRouteImport
+      parentRoute: typeof SponzoriRoute
+    }
     '/skolenia/': {
       id: '/skolenia/'
       path: '/skolenia'
@@ -455,10 +472,12 @@ declare module '@tanstack/react-router' {
 
 interface SponzoriRouteChildren {
   SponzoriVsetciRoute: typeof SponzoriVsetciRoute
+  SponzoriIndexRoute: typeof SponzoriIndexRoute
 }
 
 const SponzoriRouteChildren: SponzoriRouteChildren = {
   SponzoriVsetciRoute: SponzoriVsetciRoute,
+  SponzoriIndexRoute: SponzoriIndexRoute,
 }
 
 const SponzoriRouteWithChildren = SponzoriRoute._addFileChildren(
