@@ -120,12 +120,12 @@ in `tasks/PLAN-2026-05-17-admin-hub-integration.md`. Status values:
 | enum `dsr_type` | `20260517000000_admin_hub_schema.sql` | AH-1.1 | Done | see `git log` |
 | enum `dsr_status` | `20260517000000_admin_hub_schema.sql` | AH-1.1 | Done | see `git log` |
 | function `has_role(uuid, app_role)` SECURITY DEFINER | `20260517000000_admin_hub_schema.sql` | AH-1.1 | Done | see `git log` |
-| function `handle_new_user()` + trigger `on_auth_user_created` | `20260517000000_admin_hub_schema.sql` | AH-1.2 | Backlog | |
+| function `handle_new_user()` + trigger `on_auth_user_created` | `20260517000000_admin_hub_schema.sql` | AH-1.2 | Done | see `git log` |
 | trigger `forbid_session_score_changes` on `sessions` | `20260517000000_admin_hub_schema.sql` | AH-1.4 | Backlog | |
-| table `profiles` | `20260517000000_admin_hub_schema.sql` | AH-1.2 | Backlog | |
-| table `user_roles` | `20260517000000_admin_hub_schema.sql` | AH-1.2 | Backlog | |
-| table `teams` | `20260517000000_admin_hub_schema.sql` | AH-1.2 | Backlog | |
-| table `team_members` | `20260517000000_admin_hub_schema.sql` | AH-1.2 | Backlog | |
+| table `profiles` | `20260517000000_admin_hub_schema.sql` | AH-1.2 | Done | see `git log` |
+| table `user_roles` | `20260517000000_admin_hub_schema.sql` | AH-1.2 | Done | see `git log` |
+| table `teams` | `20260517000000_admin_hub_schema.sql` | AH-1.2 | Done | see `git log` |
+| table `team_members` | `20260517000000_admin_hub_schema.sql` | AH-1.2 | Done | see `git log` |
 | table `categories` | `20260517000000_admin_hub_schema.sql` | AH-1.3 | Backlog | |
 | table `topics` | `20260517000000_admin_hub_schema.sql` | AH-1.3 | Backlog | |
 | table `answer_sets` | `20260517000000_admin_hub_schema.sql` | AH-1.3 | Backlog | |
