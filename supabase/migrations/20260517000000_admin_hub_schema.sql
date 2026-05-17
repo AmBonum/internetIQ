@@ -420,3 +420,88 @@ DROP TRIGGER IF EXISTS forbid_session_score_changes_trg ON public.sessions;
 CREATE TRIGGER forbid_session_score_changes_trg
   BEFORE UPDATE ON public.sessions
   FOR EACH ROW EXECUTE FUNCTION public.forbid_session_score_changes();
+
+-- ============================================================================
+-- AH-1.5 — Governance tables (notifications, audit_log, dsr_requests, reports)
+-- ============================================================================
+-- audit_log is append-only by trigger. Inserts go through createServerFn
+-- handlers backed by supabaseAdmin (RLS bypass + service-role key); no
+-- direct client write path. dsr_requests.sla_due_at defaults to
+-- created_at + 72 hours, matching the subenai E12 SOP commitment (within
+-- the GDPR Art. 12 §3 one-month outer limit).
+
+CREATE TABLE public.notifications (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  event_type text NOT NULL,
+  test_id uuid REFERENCES public.tests(id) ON DELETE SET NULL,
+  title text NOT NULL,
+  body text,
+  read_at timestamptz,
+  created_at timestamptz NOT NULL DEFAULT now()
+);
+ALTER TABLE public.notifications ENABLE ROW LEVEL SECURITY;
+
+CREATE INDEX notifications_user_read_idx
+  ON public.notifications (user_id, read_at);
+
+CREATE TABLE public.audit_log (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  actor_id uuid REFERENCES auth.users(id) ON DELETE SET NULL,
+  actor_name text,
+  action text NOT NULL,
+  target_type text,
+  target_id text,
+  pii_access boolean NOT NULL DEFAULT false,
+  details jsonb,
+  at timestamptz NOT NULL DEFAULT now()
+);
+ALTER TABLE public.audit_log ENABLE ROW LEVEL SECURITY;
+
+CREATE INDEX audit_log_actor_at_idx ON public.audit_log (actor_id, at DESC);
+CREATE INDEX audit_log_target_idx ON public.audit_log (target_type, target_id);
+
+-- audit_log immutability: no UPDATE or DELETE, ever. INSERT happens via
+-- supabaseAdmin in createServerFn handlers (RLS bypass). The trigger is
+-- a defense-in-depth layer against accidental row mutation.
+CREATE OR REPLACE FUNCTION public.forbid_audit_log_updates()
+RETURNS trigger
+LANGUAGE plpgsql
+SET search_path = public, pg_temp
+AS $$
+BEGIN
+  RAISE EXCEPTION 'audit_log rows are immutable';
+END;
+$$;
+
+DROP TRIGGER IF EXISTS forbid_audit_log_update_trg ON public.audit_log;
+CREATE TRIGGER forbid_audit_log_update_trg
+  BEFORE UPDATE OR DELETE ON public.audit_log
+  FOR EACH ROW EXECUTE FUNCTION public.forbid_audit_log_updates();
+
+CREATE TABLE public.dsr_requests (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  requester_email text NOT NULL,
+  type public.dsr_type NOT NULL,
+  status public.dsr_status NOT NULL DEFAULT 'open',
+  note text,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  sla_due_at timestamptz NOT NULL DEFAULT (now() + interval '72 hours'),
+  resolved_at timestamptz
+);
+ALTER TABLE public.dsr_requests ENABLE ROW LEVEL SECURITY;
+
+CREATE INDEX dsr_requests_status_sla_idx
+  ON public.dsr_requests (status, sla_due_at);
+
+CREATE TABLE public.reports (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  target_type text NOT NULL,
+  target_id text NOT NULL,
+  reason public.report_reason NOT NULL,
+  status public.report_status NOT NULL DEFAULT 'open',
+  note text,
+  reporter_id uuid REFERENCES auth.users(id) ON DELETE SET NULL,
+  created_at timestamptz NOT NULL DEFAULT now()
+);
+ALTER TABLE public.reports ENABLE ROW LEVEL SECURITY;

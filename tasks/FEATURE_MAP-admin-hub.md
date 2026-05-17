@@ -142,10 +142,10 @@ in `tasks/PLAN-2026-05-17-admin-hub-integration.md`. Status values:
 | table `behavioral_events` | `20260517000000_admin_hub_schema.sql` | AH-1.4 | Done | see `git log` |
 | table `respondent_groups` | `20260517000000_admin_hub_schema.sql` | AH-1.4 | Done | see `git log` |
 | table `group_assignments` | `20260517000000_admin_hub_schema.sql` | AH-1.4 | Done | see `git log` |
-| table `notifications` | `20260517000000_admin_hub_schema.sql` | AH-1.5 | Backlog | |
-| table `audit_log` | `20260517000000_admin_hub_schema.sql` | AH-1.5 | Backlog | |
-| table `dsr_requests` | `20260517000000_admin_hub_schema.sql` | AH-1.5 | Backlog | |
-| table `reports` | `20260517000000_admin_hub_schema.sql` | AH-1.5 | Backlog | |
+| table `notifications` | `20260517000000_admin_hub_schema.sql` | AH-1.5 | Done | see `git log` |
+| table `audit_log` | `20260517000000_admin_hub_schema.sql` | AH-1.5 | Done | see `git log` |
+| table `dsr_requests` | `20260517000000_admin_hub_schema.sql` | AH-1.5 | Done | see `git log` |
+| table `reports` | `20260517000000_admin_hub_schema.sql` | AH-1.5 | Done | see `git log` |
 | table `cms_pages` | `20260517000000_admin_hub_schema.sql` | AH-1.6 | Backlog | |
 | table `cms_header` | `20260517000000_admin_hub_schema.sql` | AH-1.6 | Backlog | |
 | table `cms_footer` | `20260517000000_admin_hub_schema.sql` | AH-1.6 | Backlog | |
