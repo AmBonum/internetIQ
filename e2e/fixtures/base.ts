@@ -4,6 +4,7 @@ import { SiteHeader } from "../poms/shared/SiteHeader";
 import { SiteFooter } from "../poms/shared/SiteFooter";
 import { NotFoundPage } from "../poms/shared/NotFoundPage";
 import { HomePage } from "../poms/quiz/HomePage";
+import { PodporaPage } from "../poms/sponsorship/PodporaPage";
 
 /**
  * Composed test fixture — the canonical way to access POMs and shared
@@ -31,6 +32,7 @@ type Fixtures = {
   header: SiteHeader;
   footer: SiteFooter;
   notFound: NotFoundPage;
+  podpora: PodporaPage;
 };
 
 export const test = base.extend<Fixtures>({
@@ -48,6 +50,9 @@ export const test = base.extend<Fixtures>({
   },
   notFound: async ({ page }, use) => {
     await use(new NotFoundPage(page));
+  },
+  podpora: async ({ page }, use) => {
+    await use(new PodporaPage(page));
   },
 });
 
