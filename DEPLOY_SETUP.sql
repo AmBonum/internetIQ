@@ -692,6 +692,13 @@ BEGIN
     upper(left(NEW.email, 2))
   )
   ON CONFLICT (id) DO NOTHING;
+
+  -- AH-1.9 fix: also seed the default 'user' role so has_role(uid,'user')
+  -- evaluates true for every signed-up account.
+  INSERT INTO public.user_roles (user_id, role)
+  VALUES (NEW.id, 'user'::public.app_role)
+  ON CONFLICT (user_id, role) DO NOTHING;
+
   RETURN NEW;
 END;
 $$;
