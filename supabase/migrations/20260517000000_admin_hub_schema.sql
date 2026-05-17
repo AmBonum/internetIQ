@@ -1015,3 +1015,35 @@ CREATE POLICY app_settings_admin_write ON public.app_settings
   FOR ALL TO authenticated
   USING (public.has_role(auth.uid(), 'admin'))
   WITH CHECK (public.has_role(auth.uid(), 'admin'));
+
+-- ============================================================================
+-- AH-1.8 — pg_cron stubs (COMMENTED OUT — manual activation post-merge)
+-- ============================================================================
+-- The pg_cron extension is not enabled by default in Supabase projects.
+-- After this migration runs in production, the project owner must:
+--   1. Open the Supabase Dashboard -> Database -> Extensions.
+--   2. Enable pg_cron (CREATE EXTENSION IF NOT EXISTS pg_cron;).
+--   3. Uncomment the two cron.schedule calls below and re-run them.
+-- See tasks/PLAN-2026-05-17-admin-hub-integration.md decision #9.
+--
+-- anonymize-sessions — runs daily at 03:00, nulls respondent_id on
+-- sessions older than the parent test's anonymize_after_days window.
+-- The forbid_session_score_changes trigger from AH-1.4 still permits
+-- this (it only blocks score mutation).
+--
+-- select cron.schedule('anonymize-sessions', '0 3 * * *', $$
+--   update public.sessions s set respondent_id = null
+--     from public.tests t
+--    where s.test_id = t.id
+--      and t.anonymize_after_days is not null
+--      and s.finished_at < now() - (t.anonymize_after_days || ' days')::interval
+--      and s.respondent_id is not null;
+-- $$);
+--
+-- dsr-sla-check — runs hourly, surfaces dsr_requests whose sla_due_at
+-- has elapsed without being resolved. The function it calls (to be
+-- added in AH-7) writes a row to notifications for every admin.
+--
+-- select cron.schedule('dsr-sla-check', '0 * * * *', $$
+--   select 1; -- replaced in AH-7 by public.dsr_sla_check_notify()
+-- $$);

@@ -6,6 +6,25 @@
 -- 2. In the Supabase dashboard open: SQL Editor -> New query.
 -- 3. Copy the full contents of this file and click RUN.
 -- ============================================================================
+-- ADMIN BOOTSTRAP — required AFTER running this file (admin-hub / AH-*)
+-- ============================================================================
+-- After this script completes successfully, no user has the admin role.
+-- The first admin must be promoted manually via the Supabase SQL Editor:
+--
+--   1. Sign up the future admin through the live login flow (this
+--      triggers the on_auth_user_created handler from AH-1.2 and creates
+--      a public.profiles row).
+--   2. Copy that user's UUID from public.profiles (filter by email).
+--   3. Run the following INSERT in the Supabase SQL Editor:
+--
+--        INSERT INTO public.user_roles (user_id, role)
+--        VALUES ('<copied-uuid>', 'admin')
+--        ON CONFLICT (user_id, role) DO NOTHING;
+--
+-- All subsequent admins are promoted via the /admin/users UI once the
+-- first admin is in place. See tasks/PLAN-2026-05-17-admin-hub-integration.md
+-- decision #10 and the AH-11.8 story for the production-ready checklist.
+-- ============================================================================
 
 -- 1) ATTEMPTS TABLE
 CREATE TABLE public.attempts (
@@ -1430,6 +1449,27 @@ CREATE POLICY app_settings_admin_write ON public.app_settings
   FOR ALL TO authenticated
   USING (public.has_role(auth.uid(), 'admin'))
   WITH CHECK (public.has_role(auth.uid(), 'admin'));
+
+-- ============================================================================
+-- AH-1.8 — pg_cron stubs (COMMENTED OUT — manual activation post-merge)
+-- ============================================================================
+-- The pg_cron extension is not enabled by default in Supabase projects.
+-- After this migration runs in production, enable pg_cron in the
+-- Supabase Dashboard -> Database -> Extensions, then uncomment and run
+-- the two cron.schedule calls below.
+--
+-- select cron.schedule('anonymize-sessions', '0 3 * * *', $$
+--   update public.sessions s set respondent_id = null
+--     from public.tests t
+--    where s.test_id = t.id
+--      and t.anonymize_after_days is not null
+--      and s.finished_at < now() - (t.anonymize_after_days || ' days')::interval
+--      and s.respondent_id is not null;
+-- $$);
+--
+-- select cron.schedule('dsr-sla-check', '0 * * * *', $$
+--   select 1; -- replaced in AH-7 by public.dsr_sla_check_notify()
+-- $$);
 
 -- ============================================================================
 -- DONE!

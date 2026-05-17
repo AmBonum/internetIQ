@@ -154,5 +154,5 @@ in `tasks/PLAN-2026-05-17-admin-hub-integration.md`. Status values:
 | table `quick_test_config` | `20260517000000_admin_hub_schema.sql` | AH-1.6 | Done | see `git log` |
 | table `support_config` | `20260517000000_admin_hub_schema.sql` | AH-1.6 | Done | see `git log` |
 | table `app_settings` | `20260517000000_admin_hub_schema.sql` | AH-1.6 | Done | see `git log` |
-| cron `anonymize-sessions` (pg_cron, commented stub) | `20260517000000_admin_hub_schema.sql` | AH-1.8 | Backlog | |
-| cron `dsr-sla-check` (pg_cron, commented stub) | `20260517000000_admin_hub_schema.sql` | AH-1.8 | Backlog | |
+| cron `anonymize-sessions` (pg_cron, commented stub) | `20260517000000_admin_hub_schema.sql` | AH-1.8 | Done | see `git log` |
+| cron `dsr-sla-check` (pg_cron, commented stub) | `20260517000000_admin_hub_schema.sql` | AH-1.8 | Done | see `git log` |

@@ -266,6 +266,816 @@ export type Database = {
           },
         ];
       };
+      // AH-1.8 — admin-hub tables (manual sync; mirror of
+      // supabase/migrations/20260517000000_admin_hub_schema.sql).
+      answer_sets: {
+        Row: {
+          id: string;
+          name: string;
+          description: string | null;
+          branch_slugs: string[];
+          author_id: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          name: string;
+          description?: string | null;
+          branch_slugs?: string[];
+          author_id?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          name?: string;
+          description?: string | null;
+          branch_slugs?: string[];
+          author_id?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      answers: {
+        Row: {
+          id: string;
+          set_id: string;
+          text: string;
+          is_correct: boolean;
+          explanation: string | null;
+          position: number;
+        };
+        Insert: {
+          id?: string;
+          set_id: string;
+          text: string;
+          is_correct?: boolean;
+          explanation?: string | null;
+          position?: number;
+        };
+        Update: {
+          id?: string;
+          set_id?: string;
+          text?: string;
+          is_correct?: boolean;
+          explanation?: string | null;
+          position?: number;
+        };
+        Relationships: [];
+      };
+      app_settings: {
+        Row: {
+          key: string;
+          value: Json;
+          updated_at: string;
+          updated_by: string | null;
+        };
+        Insert: { key: string; value?: Json; updated_at?: string; updated_by?: string | null };
+        Update: { key?: string; value?: Json; updated_at?: string; updated_by?: string | null };
+        Relationships: [];
+      };
+      audit_log: {
+        Row: {
+          id: string;
+          actor_id: string | null;
+          actor_name: string | null;
+          action: string;
+          target_type: string | null;
+          target_id: string | null;
+          pii_access: boolean;
+          details: Json | null;
+          at: string;
+        };
+        Insert: {
+          id?: string;
+          actor_id?: string | null;
+          actor_name?: string | null;
+          action: string;
+          target_type?: string | null;
+          target_id?: string | null;
+          pii_access?: boolean;
+          details?: Json | null;
+          at?: string;
+        };
+        Update: never;
+        Relationships: [];
+      };
+      behavioral_events: {
+        Row: { id: string; session_id: string; type: string; payload: Json; at: string };
+        Insert: { id?: string; session_id: string; type: string; payload?: Json; at?: string };
+        Update: { id?: string; session_id?: string; type?: string; payload?: Json; at?: string };
+        Relationships: [];
+      };
+      categories: {
+        Row: {
+          id: string;
+          name: string;
+          slug: string;
+          color: string | null;
+          description: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          name: string;
+          slug: string;
+          color?: string | null;
+          description?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          name?: string;
+          slug?: string;
+          color?: string | null;
+          description?: string | null;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      cms_footer: {
+        Row: { id: number; columns: Json; socials: Json; legal: Json; updated_at: string };
+        Insert: { id?: number; columns?: Json; socials?: Json; legal?: Json; updated_at?: string };
+        Update: { id?: number; columns?: Json; socials?: Json; legal?: Json; updated_at?: string };
+        Relationships: [];
+      };
+      cms_header: {
+        Row: { id: number; logo: string | null; nav: Json; updated_at: string };
+        Insert: { id?: number; logo?: string | null; nav?: Json; updated_at?: string };
+        Update: { id?: number; logo?: string | null; nav?: Json; updated_at?: string };
+        Relationships: [];
+      };
+      cms_navigation: {
+        Row: { id: number; items: Json; updated_at: string };
+        Insert: { id?: number; items?: Json; updated_at?: string };
+        Update: { id?: number; items?: Json; updated_at?: string };
+        Relationships: [];
+      };
+      cms_pages: {
+        Row: {
+          id: string;
+          slug: string;
+          title: string;
+          seo_title: string | null;
+          seo_description: string | null;
+          blocks: Json;
+          status: string;
+          published_at: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          slug: string;
+          title: string;
+          seo_title?: string | null;
+          seo_description?: string | null;
+          blocks?: Json;
+          status?: string;
+          published_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          slug?: string;
+          title?: string;
+          seo_title?: string | null;
+          seo_description?: string | null;
+          blocks?: Json;
+          status?: string;
+          published_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      dsr_requests: {
+        Row: {
+          id: string;
+          requester_email: string;
+          type: Database["public"]["Enums"]["dsr_type"];
+          status: Database["public"]["Enums"]["dsr_status"];
+          note: string | null;
+          created_at: string;
+          sla_due_at: string;
+          resolved_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          requester_email: string;
+          type: Database["public"]["Enums"]["dsr_type"];
+          status?: Database["public"]["Enums"]["dsr_status"];
+          note?: string | null;
+          created_at?: string;
+          sla_due_at?: string;
+          resolved_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          requester_email?: string;
+          type?: Database["public"]["Enums"]["dsr_type"];
+          status?: Database["public"]["Enums"]["dsr_status"];
+          note?: string | null;
+          created_at?: string;
+          sla_due_at?: string;
+          resolved_at?: string | null;
+        };
+        Relationships: [];
+      };
+      group_assignments: {
+        Row: {
+          id: string;
+          test_id: string;
+          group_id: string;
+          assigned_by: string | null;
+          assigned_at: string;
+          invited_count: number;
+        };
+        Insert: {
+          id?: string;
+          test_id: string;
+          group_id: string;
+          assigned_by?: string | null;
+          assigned_at?: string;
+          invited_count?: number;
+        };
+        Update: {
+          id?: string;
+          test_id?: string;
+          group_id?: string;
+          assigned_by?: string | null;
+          assigned_at?: string;
+          invited_count?: number;
+        };
+        Relationships: [];
+      };
+      notifications: {
+        Row: {
+          id: string;
+          user_id: string;
+          event_type: string;
+          test_id: string | null;
+          title: string;
+          body: string | null;
+          read_at: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          event_type: string;
+          test_id?: string | null;
+          title: string;
+          body?: string | null;
+          read_at?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          event_type?: string;
+          test_id?: string | null;
+          title?: string;
+          body?: string | null;
+          read_at?: string | null;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      profiles: {
+        Row: {
+          id: string;
+          email: string | null;
+          display_name: string | null;
+          avatar_initials: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id: string;
+          email?: string | null;
+          display_name?: string | null;
+          avatar_initials?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          email?: string | null;
+          display_name?: string | null;
+          avatar_initials?: string | null;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      questions: {
+        Row: {
+          id: string;
+          type: Database["public"]["Enums"]["question_type"];
+          prompt: string;
+          options: Json | null;
+          matrix_rows: Json | null;
+          matrix_cols: Json | null;
+          correct: Json | null;
+          category_id: string | null;
+          branch_slug: string | null;
+          difficulty: string | null;
+          author_id: string | null;
+          status: Database["public"]["Enums"]["question_status"];
+          answer_set_id: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          type: Database["public"]["Enums"]["question_type"];
+          prompt: string;
+          options?: Json | null;
+          matrix_rows?: Json | null;
+          matrix_cols?: Json | null;
+          correct?: Json | null;
+          category_id?: string | null;
+          branch_slug?: string | null;
+          difficulty?: string | null;
+          author_id?: string | null;
+          status?: Database["public"]["Enums"]["question_status"];
+          answer_set_id?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          type?: Database["public"]["Enums"]["question_type"];
+          prompt?: string;
+          options?: Json | null;
+          matrix_rows?: Json | null;
+          matrix_cols?: Json | null;
+          correct?: Json | null;
+          category_id?: string | null;
+          branch_slug?: string | null;
+          difficulty?: string | null;
+          author_id?: string | null;
+          status?: Database["public"]["Enums"]["question_status"];
+          answer_set_id?: string | null;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      quick_test_config: {
+        Row: { id: number; config: Json; updated_at: string };
+        Insert: { id?: number; config?: Json; updated_at?: string };
+        Update: { id?: number; config?: Json; updated_at?: string };
+        Relationships: [];
+      };
+      reports: {
+        Row: {
+          id: string;
+          target_type: string;
+          target_id: string;
+          reason: Database["public"]["Enums"]["report_reason"];
+          status: Database["public"]["Enums"]["report_status"];
+          note: string | null;
+          reporter_id: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          target_type: string;
+          target_id: string;
+          reason: Database["public"]["Enums"]["report_reason"];
+          status?: Database["public"]["Enums"]["report_status"];
+          note?: string | null;
+          reporter_id?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          target_type?: string;
+          target_id?: string;
+          reason?: Database["public"]["Enums"]["report_reason"];
+          status?: Database["public"]["Enums"]["report_status"];
+          note?: string | null;
+          reporter_id?: string | null;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      respondent_groups: {
+        Row: {
+          id: string;
+          name: string;
+          description: string | null;
+          owner_id: string;
+          member_emails: string[];
+          tags: string[];
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          name: string;
+          description?: string | null;
+          owner_id: string;
+          member_emails?: string[];
+          tags?: string[];
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          name?: string;
+          description?: string | null;
+          owner_id?: string;
+          member_emails?: string[];
+          tags?: string[];
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      respondents: {
+        Row: {
+          id: string;
+          email: string | null;
+          display_name: string | null;
+          anonymized_at: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          email?: string | null;
+          display_name?: string | null;
+          anonymized_at?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          email?: string | null;
+          display_name?: string | null;
+          anonymized_at?: string | null;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      session_answers: {
+        Row: {
+          session_id: string;
+          question_id: string;
+          value: string | null;
+          is_correct: boolean | null;
+          time_ms: number | null;
+        };
+        Insert: {
+          session_id: string;
+          question_id: string;
+          value?: string | null;
+          is_correct?: boolean | null;
+          time_ms?: number | null;
+        };
+        Update: {
+          session_id?: string;
+          question_id?: string;
+          value?: string | null;
+          is_correct?: boolean | null;
+          time_ms?: number | null;
+        };
+        Relationships: [];
+      };
+      sessions: {
+        Row: {
+          id: string;
+          test_id: string;
+          version: number;
+          respondent_id: string | null;
+          intake_data: Json;
+          consent_given: boolean;
+          started_at: string;
+          finished_at: string | null;
+          score: number | null;
+          status: Database["public"]["Enums"]["session_status"];
+          segment: string | null;
+          ip_hash: string | null;
+        };
+        Insert: {
+          id?: string;
+          test_id: string;
+          version?: number;
+          respondent_id?: string | null;
+          intake_data?: Json;
+          consent_given?: boolean;
+          started_at?: string;
+          finished_at?: string | null;
+          score?: number | null;
+          status?: Database["public"]["Enums"]["session_status"];
+          segment?: string | null;
+          ip_hash?: string | null;
+        };
+        Update: {
+          id?: string;
+          test_id?: string;
+          version?: number;
+          respondent_id?: string | null;
+          intake_data?: Json;
+          consent_given?: boolean;
+          started_at?: string;
+          finished_at?: string | null;
+          score?: number | null;
+          status?: Database["public"]["Enums"]["session_status"];
+          segment?: string | null;
+          ip_hash?: string | null;
+        };
+        Relationships: [];
+      };
+      share_card_config: {
+        Row: {
+          id: number;
+          tiers: Json;
+          gradient: string | null;
+          branding: Json;
+          updated_at: string;
+        };
+        Insert: {
+          id?: number;
+          tiers?: Json;
+          gradient?: string | null;
+          branding?: Json;
+          updated_at?: string;
+        };
+        Update: {
+          id?: number;
+          tiers?: Json;
+          gradient?: string | null;
+          branding?: Json;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      support_config: {
+        Row: {
+          id: number;
+          email: string | null;
+          hours: string | null;
+          enabled: boolean;
+          updated_at: string;
+        };
+        Insert: {
+          id?: number;
+          email?: string | null;
+          hours?: string | null;
+          enabled?: boolean;
+          updated_at?: string;
+        };
+        Update: {
+          id?: number;
+          email?: string | null;
+          hours?: string | null;
+          enabled?: boolean;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      team_members: {
+        Row: {
+          id: string;
+          team_id: string;
+          user_id: string;
+          role: Database["public"]["Enums"]["team_role"];
+          joined_at: string;
+        };
+        Insert: {
+          id?: string;
+          team_id: string;
+          user_id: string;
+          role?: Database["public"]["Enums"]["team_role"];
+          joined_at?: string;
+        };
+        Update: {
+          id?: string;
+          team_id?: string;
+          user_id?: string;
+          role?: Database["public"]["Enums"]["team_role"];
+          joined_at?: string;
+        };
+        Relationships: [];
+      };
+      teams: {
+        Row: { id: string; name: string; owner_id: string; created_at: string };
+        Insert: { id?: string; name: string; owner_id: string; created_at?: string };
+        Update: { id?: string; name?: string; owner_id?: string; created_at?: string };
+        Relationships: [];
+      };
+      templates: {
+        Row: {
+          id: string;
+          title: string;
+          description: string | null;
+          question_ids: string[];
+          gdpr_purpose: Database["public"]["Enums"]["gdpr_purpose"];
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          title: string;
+          description?: string | null;
+          question_ids?: string[];
+          gdpr_purpose?: Database["public"]["Enums"]["gdpr_purpose"];
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          title?: string;
+          description?: string | null;
+          question_ids?: string[];
+          gdpr_purpose?: Database["public"]["Enums"]["gdpr_purpose"];
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      test_questions: {
+        Row: { test_id: string; question_id: string; position: number };
+        Insert: { test_id: string; question_id: string; position?: number };
+        Update: { test_id?: string; question_id?: string; position?: number };
+        Relationships: [];
+      };
+      test_versions: {
+        Row: {
+          id: string;
+          test_id: string;
+          version: number;
+          snapshot: Json;
+          published_at: string;
+          published_by: string | null;
+          changelog: string | null;
+        };
+        Insert: {
+          id?: string;
+          test_id: string;
+          version: number;
+          snapshot: Json;
+          published_at?: string;
+          published_by?: string | null;
+          changelog?: string | null;
+        };
+        Update: {
+          id?: string;
+          test_id?: string;
+          version?: number;
+          snapshot?: Json;
+          published_at?: string;
+          published_by?: string | null;
+          changelog?: string | null;
+        };
+        Relationships: [];
+      };
+      tests: {
+        Row: {
+          id: string;
+          slug: string;
+          share_id: string;
+          owner_id: string;
+          team_id: string | null;
+          title: string;
+          description: string | null;
+          status: Database["public"]["Enums"]["test_status"];
+          version: number;
+          password_hash: string | null;
+          segmentation: string[];
+          gdpr_purpose: Database["public"]["Enums"]["gdpr_purpose"];
+          intake_fields: Json;
+          branches: Json;
+          notif_config: Json;
+          anonymize_after_days: number | null;
+          allow_behavioral_tracking: boolean;
+          expires_at: string | null;
+          published_at: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          slug: string;
+          share_id: string;
+          owner_id: string;
+          team_id?: string | null;
+          title: string;
+          description?: string | null;
+          status?: Database["public"]["Enums"]["test_status"];
+          version?: number;
+          password_hash?: string | null;
+          segmentation?: string[];
+          gdpr_purpose?: Database["public"]["Enums"]["gdpr_purpose"];
+          intake_fields?: Json;
+          branches?: Json;
+          notif_config?: Json;
+          anonymize_after_days?: number | null;
+          allow_behavioral_tracking?: boolean;
+          expires_at?: string | null;
+          published_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          slug?: string;
+          share_id?: string;
+          owner_id?: string;
+          team_id?: string | null;
+          title?: string;
+          description?: string | null;
+          status?: Database["public"]["Enums"]["test_status"];
+          version?: number;
+          password_hash?: string | null;
+          segmentation?: string[];
+          gdpr_purpose?: Database["public"]["Enums"]["gdpr_purpose"];
+          intake_fields?: Json;
+          branches?: Json;
+          notif_config?: Json;
+          anonymize_after_days?: number | null;
+          allow_behavioral_tracking?: boolean;
+          expires_at?: string | null;
+          published_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      topics: {
+        Row: {
+          id: string;
+          name: string;
+          slug: string;
+          color: string | null;
+          description: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          name: string;
+          slug: string;
+          color?: string | null;
+          description?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          name?: string;
+          slug?: string;
+          color?: string | null;
+          description?: string | null;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      trainings: {
+        Row: {
+          id: string;
+          title: string;
+          description: string | null;
+          topic_slug: string | null;
+          status: Database["public"]["Enums"]["training_status"];
+          content: Json | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          title: string;
+          description?: string | null;
+          topic_slug?: string | null;
+          status?: Database["public"]["Enums"]["training_status"];
+          content?: Json | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          title?: string;
+          description?: string | null;
+          topic_slug?: string | null;
+          status?: Database["public"]["Enums"]["training_status"];
+          content?: Json | null;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      user_roles: {
+        Row: {
+          id: string;
+          user_id: string;
+          role: Database["public"]["Enums"]["app_role"];
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          role: Database["public"]["Enums"]["app_role"];
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          role?: Database["public"]["Enums"]["app_role"];
+          created_at?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: {
       public_sponsors: {
@@ -321,9 +1131,46 @@ export type Database = {
         Args: Record<string, never>;
         Returns: number;
       };
+      has_role: {
+        Args: { _user_id: string; _role: Database["public"]["Enums"]["app_role"] };
+        Returns: boolean;
+      };
     };
     Enums: {
-      [_ in never]: never;
+      app_role: "admin" | "moderator" | "user";
+      test_status: "draft" | "published" | "archived";
+      question_type:
+        | "single"
+        | "multi"
+        | "scale_1_5"
+        | "scale_1_10"
+        | "nps"
+        | "matrix"
+        | "ranking"
+        | "slider"
+        | "short_text"
+        | "long_text"
+        | "date"
+        | "time"
+        | "file_upload"
+        | "image_choice"
+        | "yes_no";
+      question_status:
+        | "draft"
+        | "approved"
+        | "deprecated"
+        | "pending"
+        | "flagged"
+        | "published"
+        | "archived";
+      gdpr_purpose: "marketing" | "research" | "recruitment" | "education" | "internal_training";
+      session_status: "in_progress" | "completed" | "abandoned";
+      training_status: "published" | "draft" | "archived";
+      report_reason: "spam" | "inappropriate" | "harassment" | "misinformation" | "other";
+      report_status: "open" | "reviewing" | "resolved" | "dismissed";
+      team_role: "owner" | "editor" | "viewer";
+      dsr_type: "access" | "erase" | "portability";
+      dsr_status: "open" | "in_progress" | "completed" | "rejected";
     };
     CompositeTypes: {
       [_ in never]: never;
@@ -448,6 +1295,43 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "moderator", "user"],
+      test_status: ["draft", "published", "archived"],
+      question_type: [
+        "single",
+        "multi",
+        "scale_1_5",
+        "scale_1_10",
+        "nps",
+        "matrix",
+        "ranking",
+        "slider",
+        "short_text",
+        "long_text",
+        "date",
+        "time",
+        "file_upload",
+        "image_choice",
+        "yes_no",
+      ],
+      question_status: [
+        "draft",
+        "approved",
+        "deprecated",
+        "pending",
+        "flagged",
+        "published",
+        "archived",
+      ],
+      gdpr_purpose: ["marketing", "research", "recruitment", "education", "internal_training"],
+      session_status: ["in_progress", "completed", "abandoned"],
+      training_status: ["published", "draft", "archived"],
+      report_reason: ["spam", "inappropriate", "harassment", "misinformation", "other"],
+      report_status: ["open", "reviewing", "resolved", "dismissed"],
+      team_role: ["owner", "editor", "viewer"],
+      dsr_type: ["access", "erase", "portability"],
+      dsr_status: ["open", "in_progress", "completed", "rejected"],
+    },
   },
 } as const;
