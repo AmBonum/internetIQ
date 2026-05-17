@@ -18,10 +18,18 @@
 STRIPE_SECRET_KEY=sk_test_replace_me
 STRIPE_PUBLISHABLE_KEY=pk_test_replace_me
 
-# Webhook signing secret. Generate via:
+# Webhook signing secret. Easiest: run `npm run dev:stripe` — the launcher
+# fetches the current secret via `stripe listen --print-secret` and writes
+# it here for you. Manual fallback:
 #   stripe listen --forward-to http://localhost:8788/api/stripe-webhook
 # Or in Dashboard → Developers → Webhooks → endpoint → "Signing secret".
 STRIPE_WEBHOOK_SECRET=whsec_replace_me
+
+# Reject events whose Stripe `livemode` flag doesn't match this value.
+# "false" = accept only test-mode events (correct for local dev).
+# "true"  = accept only live-mode events (set in production CF Pages env).
+# Unset   = accept either (legacy permissive default).
+EXPECTED_LIVEMODE=false
 
 # --- Supabase (E10.3 webhook needs service role) ----------------------------
 # Service role key bypasses RLS — NEVER ship to the client bundle.

@@ -194,6 +194,7 @@ export function DonateForm({ cancelled = false }: DonateFormProps) {
         {cancelled ? (
           <div
             role="status"
+            data-testid="podpora-cancelled-banner"
             className="mb-6 rounded-2xl border border-border/60 bg-card p-4 text-sm text-muted-foreground"
           >
             Platbu si zrušil. Žiadne údaje neboli uložené. Ak si to len rozmyslel, môžeš formulár
@@ -203,6 +204,7 @@ export function DonateForm({ cancelled = false }: DonateFormProps) {
 
         <form
           onSubmit={handleSubmit}
+          data-testid="podpora-form"
           className="space-y-8 rounded-2xl border border-border/60 bg-card p-6 sm:p-8"
           aria-labelledby="podpora-h1"
         >
@@ -219,6 +221,7 @@ export function DonateForm({ cancelled = false }: DonateFormProps) {
                   type="button"
                   role="radio"
                   aria-checked={mode === m}
+                  data-testid={`podpora-mode-${m}`}
                   onClick={() => handleModeChange(m)}
                   className={`rounded-xl border px-4 py-3 text-sm font-semibold transition-colors ${
                     mode === m
@@ -243,6 +246,7 @@ export function DonateForm({ cancelled = false }: DonateFormProps) {
                   type="button"
                   role="radio"
                   aria-checked={presetAmount === value && customState === "preset"}
+                  data-testid={`podpora-amount-${value}`}
                   onClick={() => handlePresetClick(value)}
                   className={`rounded-xl border px-4 py-2 text-sm font-semibold transition-colors ${
                     presetAmount === value && customState === "preset"
@@ -258,6 +262,7 @@ export function DonateForm({ cancelled = false }: DonateFormProps) {
                   type="button"
                   role="radio"
                   aria-checked={customState === "custom"}
+                  data-testid="podpora-amount-custom"
                   onClick={handleCustomClick}
                   className={`rounded-xl border px-4 py-2 text-sm font-semibold transition-colors ${
                     customState === "custom"
@@ -276,6 +281,7 @@ export function DonateForm({ cancelled = false }: DonateFormProps) {
                 </label>
                 <input
                   id="custom-amount"
+                  data-testid="podpora-amount-custom-input"
                   type="number"
                   inputMode="decimal"
                   min={MIN_ONEOFF}
@@ -358,6 +364,7 @@ export function DonateForm({ cancelled = false }: DonateFormProps) {
                   </label>
                   <textarea
                     id="display-message"
+                    data-testid="podpora-field-display-message"
                     value={displayMessage}
                     onChange={(e) =>
                       setDisplayMessage(e.target.value.slice(0, DISPLAY_MESSAGE_MAX))
@@ -419,6 +426,7 @@ export function DonateForm({ cancelled = false }: DonateFormProps) {
           {error ? (
             <div
               role="alert"
+              data-testid="podpora-error-banner"
               className="rounded-xl border border-destructive/60 bg-destructive/10 p-3 text-sm text-foreground"
             >
               Niečo sa pokazilo: <code>{error}</code>. Skús to prosím znova alebo nás kontaktuj na{" "}
@@ -432,6 +440,7 @@ export function DonateForm({ cancelled = false }: DonateFormProps) {
           <div className="space-y-3 pt-2">
             <button
               type="submit"
+              data-testid="podpora-submit-button"
               disabled={!canSubmit}
               className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-accent-gradient px-6 py-4 text-base font-bold text-primary-foreground shadow-glow transition-transform hover:scale-[1.01] active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:scale-100"
             >
@@ -484,6 +493,7 @@ function Field({
       </label>
       <input
         id={id}
+        data-testid={`podpora-field-${id}`}
         type={type}
         value={value}
         onChange={(e) => onChange(e.target.value)}
@@ -515,6 +525,7 @@ function CheckboxRow({ id, checked, onChange, label, disabled, required }: Check
     >
       <input
         id={id}
+        data-testid={`podpora-checkbox-${id}`}
         type="checkbox"
         checked={checked}
         onChange={(e) => onChange(e.target.checked)}

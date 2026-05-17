@@ -9,6 +9,11 @@ export interface Env {
   STRIPE_WEBHOOK_SECRET: string;
   SUPABASE_URL: string;
   SUPABASE_SERVICE_ROLE_KEY: string;
+  // "true" → only accept live-mode events. "false" → only test-mode.
+  // Anything else (incl. undefined) → no enforcement, log mismatch only.
+  // Set to "true" in production CF Pages env to prevent test events from
+  // mutating the prod database — see tasks/E10-webhook-runbook.md.
+  EXPECTED_LIVEMODE?: string;
   RESEND_API_KEY?: string;
   EMAIL_FROM?: string;
   EMAIL_REPLY_TO?: string;
@@ -52,6 +57,16 @@ export async function onRequestPost(ctx: RequestContext): Promise<Response> {
     );
   } catch {
     return jsonResponse(400, { error: "signature_verification_failed" });
+  }
+
+  if (!livemodeAllowed(env.EXPECTED_LIVEMODE, event.livemode)) {
+    console.warn("stripe-webhook livemode_mismatch", {
+      eventId: event.id,
+      type: event.type,
+      eventLivemode: event.livemode,
+      expected: env.EXPECTED_LIVEMODE,
+    });
+    return jsonResponse(400, { error: "livemode_mismatch" });
   }
 
   const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY, {
@@ -391,6 +406,12 @@ function centsToEur(cents: number): number {
 
 function isUniqueViolation(code: string | null | undefined): boolean {
   return code === "23505";
+}
+
+export function livemodeAllowed(expected: string | undefined, eventLivemode: boolean): boolean {
+  if (expected === "true") return eventLivemode === true;
+  if (expected === "false") return eventLivemode === false;
+  return true;
 }
 
 function logEvent(event: Stripe.Event, status: number): void {
