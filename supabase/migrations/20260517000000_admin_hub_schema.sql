@@ -167,3 +167,99 @@ DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+
+-- ============================================================================
+-- AH-1.3 — Content tables (categories, topics, answer_sets, answers,
+--                          questions, templates, trainings)
+-- ============================================================================
+-- categories + topics are reference tables. answer_sets and answers form
+-- the canonical answer key (answers CASCADE on set delete). questions FK
+-- to categories with SET NULL on delete to preserve historical questions
+-- even when a category is removed. RLS enabled; policies in AH-1.7.
+
+CREATE TABLE public.categories (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  name text NOT NULL,
+  slug text NOT NULL UNIQUE,
+  color text,
+  description text,
+  created_at timestamptz NOT NULL DEFAULT now()
+);
+ALTER TABLE public.categories ENABLE ROW LEVEL SECURITY;
+
+CREATE TABLE public.topics (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  name text NOT NULL,
+  slug text NOT NULL UNIQUE,
+  color text,
+  description text,
+  created_at timestamptz NOT NULL DEFAULT now()
+);
+ALTER TABLE public.topics ENABLE ROW LEVEL SECURITY;
+
+CREATE TABLE public.answer_sets (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  name text NOT NULL,
+  description text,
+  branch_slugs text[] NOT NULL DEFAULT '{}',
+  author_id uuid REFERENCES auth.users(id) ON DELETE SET NULL,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now()
+);
+ALTER TABLE public.answer_sets ENABLE ROW LEVEL SECURITY;
+
+CREATE TABLE public.answers (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  set_id uuid NOT NULL REFERENCES public.answer_sets(id) ON DELETE CASCADE,
+  text text NOT NULL,
+  is_correct boolean NOT NULL DEFAULT false,
+  explanation text,
+  position int NOT NULL DEFAULT 0
+);
+ALTER TABLE public.answers ENABLE ROW LEVEL SECURITY;
+
+CREATE INDEX answers_set_position_idx ON public.answers (set_id, position);
+
+CREATE TABLE public.questions (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  type public.question_type NOT NULL,
+  prompt text NOT NULL,
+  options jsonb,
+  matrix_rows jsonb,
+  matrix_cols jsonb,
+  correct jsonb,
+  category_id uuid REFERENCES public.categories(id) ON DELETE SET NULL,
+  branch_slug text,
+  difficulty text,
+  author_id uuid REFERENCES auth.users(id) ON DELETE SET NULL,
+  status public.question_status NOT NULL DEFAULT 'draft',
+  answer_set_id uuid REFERENCES public.answer_sets(id) ON DELETE SET NULL,
+  created_at timestamptz NOT NULL DEFAULT now()
+);
+ALTER TABLE public.questions ENABLE ROW LEVEL SECURITY;
+
+CREATE INDEX questions_category_branch_idx
+  ON public.questions (category_id, branch_slug);
+
+CREATE TABLE public.templates (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  title text NOT NULL,
+  description text,
+  question_ids uuid[] NOT NULL DEFAULT '{}',
+  gdpr_purpose public.gdpr_purpose NOT NULL DEFAULT 'research',
+  created_at timestamptz NOT NULL DEFAULT now()
+);
+ALTER TABLE public.templates ENABLE ROW LEVEL SECURITY;
+
+CREATE INDEX templates_gdpr_purpose_idx ON public.templates (gdpr_purpose);
+
+CREATE TABLE public.trainings (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  title text NOT NULL,
+  description text,
+  topic_slug text,
+  status public.training_status NOT NULL DEFAULT 'draft',
+  content jsonb,
+  created_at timestamptz NOT NULL DEFAULT now()
+);
+ALTER TABLE public.trainings ENABLE ROW LEVEL SECURITY;

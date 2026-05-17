@@ -126,13 +126,13 @@ in `tasks/PLAN-2026-05-17-admin-hub-integration.md`. Status values:
 | table `user_roles` | `20260517000000_admin_hub_schema.sql` | AH-1.2 | Done | see `git log` |
 | table `teams` | `20260517000000_admin_hub_schema.sql` | AH-1.2 | Done | see `git log` |
 | table `team_members` | `20260517000000_admin_hub_schema.sql` | AH-1.2 | Done | see `git log` |
-| table `categories` | `20260517000000_admin_hub_schema.sql` | AH-1.3 | Backlog | |
-| table `topics` | `20260517000000_admin_hub_schema.sql` | AH-1.3 | Backlog | |
-| table `answer_sets` | `20260517000000_admin_hub_schema.sql` | AH-1.3 | Backlog | |
-| table `answers` | `20260517000000_admin_hub_schema.sql` | AH-1.3 | Backlog | |
-| table `questions` | `20260517000000_admin_hub_schema.sql` | AH-1.3 | Backlog | |
-| table `templates` | `20260517000000_admin_hub_schema.sql` | AH-1.3 | Backlog | |
-| table `trainings` | `20260517000000_admin_hub_schema.sql` | AH-1.3 | Backlog | |
+| table `categories` | `20260517000000_admin_hub_schema.sql` | AH-1.3 | Done | see `git log` |
+| table `topics` | `20260517000000_admin_hub_schema.sql` | AH-1.3 | Done | see `git log` |
+| table `answer_sets` | `20260517000000_admin_hub_schema.sql` | AH-1.3 | Done | see `git log` |
+| table `answers` | `20260517000000_admin_hub_schema.sql` | AH-1.3 | Done | see `git log` |
+| table `questions` | `20260517000000_admin_hub_schema.sql` | AH-1.3 | Done | see `git log` |
+| table `templates` | `20260517000000_admin_hub_schema.sql` | AH-1.3 | Done | see `git log` |
+| table `trainings` | `20260517000000_admin_hub_schema.sql` | AH-1.3 | Done | see `git log` |
 | table `tests` | `20260517000000_admin_hub_schema.sql` | AH-1.4 | Backlog | |
 | table `test_questions` | `20260517000000_admin_hub_schema.sql` | AH-1.4 | Backlog | |
 | table `test_versions` | `20260517000000_admin_hub_schema.sql` | AH-1.4 | Backlog | |
