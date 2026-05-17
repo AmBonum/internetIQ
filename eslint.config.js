@@ -25,6 +25,47 @@ export default tseslint.config(
     },
   },
   {
+    // AH-1.7 — supabaseAdmin / service-role import lockdown.
+    // The admin Supabase client (added in AH-11) MUST only be imported
+    // from server-only modules (*.server.ts, CF Pages Functions, or
+    // server routes). Importing it from a client component leaks the
+    // service-role key into the browser bundle. This rule is the
+    // lint-time guard against that mistake.
+    files: ["src/**/*.{ts,tsx}"],
+    ignores: [
+      "src/**/*.server.ts",
+      "src/**/*.functions.ts",
+      "src/integrations/supabase/admin.ts",
+      "src/integrations/supabase/client.server.ts",
+    ],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          paths: [
+            {
+              name: "@/integrations/supabase/admin",
+              message:
+                "supabaseAdmin must only be imported from *.server.ts, *.functions.ts, or functions/** — never from client code (AH-1.7).",
+            },
+            {
+              name: "@/integrations/supabase/client.server",
+              message:
+                "client.server must only be imported from *.server.ts, *.functions.ts, or functions/** — never from client code (AH-1.7).",
+            },
+          ],
+          patterns: [
+            {
+              group: ["**/integrations/supabase/admin", "**/integrations/supabase/client.server"],
+              message:
+                "Service-role Supabase client is server-only. See AH-1.7 in /tasks/PLAN-2026-05-17-admin-hub-integration.md.",
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
     // shadcn UI primitives, the consent provider/hook pair, and the router
     // entry point intentionally co-locate non-component exports (variants,
     // hooks, factories) with components. Fast-refresh granularity is not a

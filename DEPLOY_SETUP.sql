@@ -1074,6 +1074,364 @@ CREATE TABLE public.app_settings (
 ALTER TABLE public.app_settings ENABLE ROW LEVEL SECURITY;
 
 -- ============================================================================
+-- AH-1.7 — RLS policies for all 29 new tables
+-- ============================================================================
+
+CREATE POLICY profiles_self_read ON public.profiles
+  FOR SELECT TO authenticated
+  USING (id = auth.uid() OR public.has_role(auth.uid(), 'admin'));
+CREATE POLICY profiles_self_update ON public.profiles
+  FOR UPDATE TO authenticated
+  USING (id = auth.uid() OR public.has_role(auth.uid(), 'admin'))
+  WITH CHECK (id = auth.uid() OR public.has_role(auth.uid(), 'admin'));
+
+CREATE POLICY user_roles_self_read ON public.user_roles
+  FOR SELECT TO authenticated
+  USING (user_id = auth.uid() OR public.has_role(auth.uid(), 'admin'));
+CREATE POLICY user_roles_admin_write ON public.user_roles
+  FOR ALL TO authenticated
+  USING (public.has_role(auth.uid(), 'admin'))
+  WITH CHECK (public.has_role(auth.uid(), 'admin'));
+
+CREATE POLICY teams_member_read ON public.teams
+  FOR SELECT TO authenticated
+  USING (
+    owner_id = auth.uid()
+    OR EXISTS (
+      SELECT 1 FROM public.team_members tm
+      WHERE tm.team_id = teams.id AND tm.user_id = auth.uid()
+    )
+    OR public.has_role(auth.uid(), 'admin')
+  );
+CREATE POLICY teams_owner_write ON public.teams
+  FOR ALL TO authenticated
+  USING (owner_id = auth.uid() OR public.has_role(auth.uid(), 'admin'))
+  WITH CHECK (owner_id = auth.uid() OR public.has_role(auth.uid(), 'admin'));
+
+CREATE POLICY team_members_self_read ON public.team_members
+  FOR SELECT TO authenticated
+  USING (
+    user_id = auth.uid()
+    OR EXISTS (
+      SELECT 1 FROM public.teams t
+      WHERE t.id = team_members.team_id AND t.owner_id = auth.uid()
+    )
+    OR public.has_role(auth.uid(), 'admin')
+  );
+CREATE POLICY team_members_owner_write ON public.team_members
+  FOR ALL TO authenticated
+  USING (
+    EXISTS (
+      SELECT 1 FROM public.teams t
+      WHERE t.id = team_members.team_id AND t.owner_id = auth.uid()
+    )
+    OR public.has_role(auth.uid(), 'admin')
+  )
+  WITH CHECK (
+    EXISTS (
+      SELECT 1 FROM public.teams t
+      WHERE t.id = team_members.team_id AND t.owner_id = auth.uid()
+    )
+    OR public.has_role(auth.uid(), 'admin')
+  );
+
+CREATE POLICY categories_public_read ON public.categories
+  FOR SELECT TO anon, authenticated USING (true);
+CREATE POLICY categories_admin_write ON public.categories
+  FOR ALL TO authenticated
+  USING (public.has_role(auth.uid(), 'admin'))
+  WITH CHECK (public.has_role(auth.uid(), 'admin'));
+
+CREATE POLICY topics_public_read ON public.topics
+  FOR SELECT TO anon, authenticated USING (true);
+CREATE POLICY topics_admin_write ON public.topics
+  FOR ALL TO authenticated
+  USING (public.has_role(auth.uid(), 'admin'))
+  WITH CHECK (public.has_role(auth.uid(), 'admin'));
+
+CREATE POLICY answer_sets_owner_read ON public.answer_sets
+  FOR SELECT TO authenticated
+  USING (author_id = auth.uid() OR public.has_role(auth.uid(), 'admin'));
+CREATE POLICY answer_sets_owner_write ON public.answer_sets
+  FOR ALL TO authenticated
+  USING (author_id = auth.uid() OR public.has_role(auth.uid(), 'admin'))
+  WITH CHECK (author_id = auth.uid() OR public.has_role(auth.uid(), 'admin'));
+
+CREATE POLICY answers_via_set_read ON public.answers
+  FOR SELECT TO authenticated
+  USING (
+    EXISTS (
+      SELECT 1 FROM public.answer_sets s
+      WHERE s.id = answers.set_id
+        AND (s.author_id = auth.uid() OR public.has_role(auth.uid(), 'admin'))
+    )
+  );
+CREATE POLICY answers_via_set_write ON public.answers
+  FOR ALL TO authenticated
+  USING (
+    EXISTS (
+      SELECT 1 FROM public.answer_sets s
+      WHERE s.id = answers.set_id
+        AND (s.author_id = auth.uid() OR public.has_role(auth.uid(), 'admin'))
+    )
+  )
+  WITH CHECK (
+    EXISTS (
+      SELECT 1 FROM public.answer_sets s
+      WHERE s.id = answers.set_id
+        AND (s.author_id = auth.uid() OR public.has_role(auth.uid(), 'admin'))
+    )
+  );
+
+CREATE POLICY questions_owner_read ON public.questions
+  FOR SELECT TO authenticated
+  USING (author_id = auth.uid() OR public.has_role(auth.uid(), 'admin'));
+CREATE POLICY questions_owner_write ON public.questions
+  FOR ALL TO authenticated
+  USING (author_id = auth.uid() OR public.has_role(auth.uid(), 'admin'))
+  WITH CHECK (author_id = auth.uid() OR public.has_role(auth.uid(), 'admin'));
+
+CREATE POLICY templates_auth_read ON public.templates
+  FOR SELECT TO authenticated USING (true);
+CREATE POLICY templates_admin_write ON public.templates
+  FOR ALL TO authenticated
+  USING (public.has_role(auth.uid(), 'admin'))
+  WITH CHECK (public.has_role(auth.uid(), 'admin'));
+
+CREATE POLICY trainings_public_published_read ON public.trainings
+  FOR SELECT TO anon, authenticated
+  USING (status = 'published' OR public.has_role(auth.uid(), 'admin'));
+CREATE POLICY trainings_admin_write ON public.trainings
+  FOR ALL TO authenticated
+  USING (public.has_role(auth.uid(), 'admin'))
+  WITH CHECK (public.has_role(auth.uid(), 'admin'));
+
+CREATE POLICY tests_owner_read ON public.tests
+  FOR SELECT TO authenticated
+  USING (
+    owner_id = auth.uid()
+    OR EXISTS (
+      SELECT 1 FROM public.team_members tm
+      WHERE tm.team_id = tests.team_id AND tm.user_id = auth.uid()
+    )
+    OR public.has_role(auth.uid(), 'admin')
+  );
+CREATE POLICY tests_owner_write ON public.tests
+  FOR ALL TO authenticated
+  USING (owner_id = auth.uid() OR public.has_role(auth.uid(), 'admin'))
+  WITH CHECK (owner_id = auth.uid() OR public.has_role(auth.uid(), 'admin'));
+
+CREATE POLICY test_questions_via_test_read ON public.test_questions
+  FOR SELECT TO authenticated
+  USING (
+    EXISTS (
+      SELECT 1 FROM public.tests t
+      WHERE t.id = test_questions.test_id
+        AND (t.owner_id = auth.uid() OR public.has_role(auth.uid(), 'admin'))
+    )
+  );
+CREATE POLICY test_questions_via_test_write ON public.test_questions
+  FOR ALL TO authenticated
+  USING (
+    EXISTS (
+      SELECT 1 FROM public.tests t
+      WHERE t.id = test_questions.test_id
+        AND (t.owner_id = auth.uid() OR public.has_role(auth.uid(), 'admin'))
+    )
+  )
+  WITH CHECK (
+    EXISTS (
+      SELECT 1 FROM public.tests t
+      WHERE t.id = test_questions.test_id
+        AND (t.owner_id = auth.uid() OR public.has_role(auth.uid(), 'admin'))
+    )
+  );
+
+CREATE POLICY test_versions_via_test_read ON public.test_versions
+  FOR SELECT TO authenticated
+  USING (
+    EXISTS (
+      SELECT 1 FROM public.tests t
+      WHERE t.id = test_versions.test_id
+        AND (t.owner_id = auth.uid() OR public.has_role(auth.uid(), 'admin'))
+    )
+  );
+CREATE POLICY test_versions_admin_write ON public.test_versions
+  FOR ALL TO authenticated
+  USING (
+    EXISTS (
+      SELECT 1 FROM public.tests t
+      WHERE t.id = test_versions.test_id
+        AND (t.owner_id = auth.uid() OR public.has_role(auth.uid(), 'admin'))
+    )
+  )
+  WITH CHECK (
+    EXISTS (
+      SELECT 1 FROM public.tests t
+      WHERE t.id = test_versions.test_id
+        AND (t.owner_id = auth.uid() OR public.has_role(auth.uid(), 'admin'))
+    )
+  );
+
+CREATE POLICY respondents_via_session_read ON public.respondents
+  FOR SELECT TO authenticated
+  USING (
+    EXISTS (
+      SELECT 1 FROM public.sessions s
+      JOIN public.tests t ON t.id = s.test_id
+      WHERE s.respondent_id = respondents.id
+        AND (t.owner_id = auth.uid() OR public.has_role(auth.uid(), 'admin'))
+    )
+  );
+
+CREATE POLICY sessions_via_test_read ON public.sessions
+  FOR SELECT TO authenticated
+  USING (
+    EXISTS (
+      SELECT 1 FROM public.tests t
+      WHERE t.id = sessions.test_id
+        AND (t.owner_id = auth.uid() OR public.has_role(auth.uid(), 'admin'))
+    )
+  );
+
+CREATE POLICY session_answers_via_test_read ON public.session_answers
+  FOR SELECT TO authenticated
+  USING (
+    EXISTS (
+      SELECT 1 FROM public.sessions s
+      JOIN public.tests t ON t.id = s.test_id
+      WHERE s.id = session_answers.session_id
+        AND (t.owner_id = auth.uid() OR public.has_role(auth.uid(), 'admin'))
+    )
+  );
+
+CREATE POLICY behavioral_events_via_test_read ON public.behavioral_events
+  FOR SELECT TO authenticated
+  USING (
+    EXISTS (
+      SELECT 1 FROM public.sessions s
+      JOIN public.tests t ON t.id = s.test_id
+      WHERE s.id = behavioral_events.session_id
+        AND (t.owner_id = auth.uid() OR public.has_role(auth.uid(), 'admin'))
+    )
+  );
+
+CREATE POLICY respondent_groups_owner_read ON public.respondent_groups
+  FOR SELECT TO authenticated
+  USING (owner_id = auth.uid() OR public.has_role(auth.uid(), 'admin'));
+CREATE POLICY respondent_groups_owner_write ON public.respondent_groups
+  FOR ALL TO authenticated
+  USING (owner_id = auth.uid() OR public.has_role(auth.uid(), 'admin'))
+  WITH CHECK (owner_id = auth.uid() OR public.has_role(auth.uid(), 'admin'));
+
+CREATE POLICY group_assignments_via_test_read ON public.group_assignments
+  FOR SELECT TO authenticated
+  USING (
+    EXISTS (
+      SELECT 1 FROM public.tests t
+      WHERE t.id = group_assignments.test_id
+        AND (t.owner_id = auth.uid() OR public.has_role(auth.uid(), 'admin'))
+    )
+  );
+CREATE POLICY group_assignments_via_test_write ON public.group_assignments
+  FOR ALL TO authenticated
+  USING (
+    EXISTS (
+      SELECT 1 FROM public.tests t
+      WHERE t.id = group_assignments.test_id
+        AND (t.owner_id = auth.uid() OR public.has_role(auth.uid(), 'admin'))
+    )
+  )
+  WITH CHECK (
+    EXISTS (
+      SELECT 1 FROM public.tests t
+      WHERE t.id = group_assignments.test_id
+        AND (t.owner_id = auth.uid() OR public.has_role(auth.uid(), 'admin'))
+    )
+  );
+
+CREATE POLICY notifications_self_read ON public.notifications
+  FOR SELECT TO authenticated
+  USING (user_id = auth.uid() OR public.has_role(auth.uid(), 'admin'));
+CREATE POLICY notifications_self_update ON public.notifications
+  FOR UPDATE TO authenticated
+  USING (user_id = auth.uid())
+  WITH CHECK (user_id = auth.uid());
+
+CREATE POLICY audit_log_admin_read ON public.audit_log
+  FOR SELECT TO authenticated
+  USING (public.has_role(auth.uid(), 'admin'));
+
+CREATE POLICY dsr_requests_admin_read ON public.dsr_requests
+  FOR SELECT TO authenticated
+  USING (public.has_role(auth.uid(), 'admin'));
+
+CREATE POLICY reports_admin_read ON public.reports
+  FOR SELECT TO authenticated
+  USING (public.has_role(auth.uid(), 'admin'));
+
+CREATE POLICY cms_pages_public_published_read ON public.cms_pages
+  FOR SELECT TO anon, authenticated
+  USING (
+    (status = 'published' AND published_at IS NOT NULL)
+    OR public.has_role(auth.uid(), 'admin')
+  );
+CREATE POLICY cms_pages_admin_write ON public.cms_pages
+  FOR ALL TO authenticated
+  USING (public.has_role(auth.uid(), 'admin'))
+  WITH CHECK (public.has_role(auth.uid(), 'admin'));
+
+CREATE POLICY cms_header_public_read ON public.cms_header
+  FOR SELECT TO anon, authenticated USING (true);
+CREATE POLICY cms_header_admin_write ON public.cms_header
+  FOR ALL TO authenticated
+  USING (public.has_role(auth.uid(), 'admin'))
+  WITH CHECK (public.has_role(auth.uid(), 'admin'));
+
+CREATE POLICY cms_footer_public_read ON public.cms_footer
+  FOR SELECT TO anon, authenticated USING (true);
+CREATE POLICY cms_footer_admin_write ON public.cms_footer
+  FOR ALL TO authenticated
+  USING (public.has_role(auth.uid(), 'admin'))
+  WITH CHECK (public.has_role(auth.uid(), 'admin'));
+
+CREATE POLICY cms_navigation_public_read ON public.cms_navigation
+  FOR SELECT TO anon, authenticated USING (true);
+CREATE POLICY cms_navigation_admin_write ON public.cms_navigation
+  FOR ALL TO authenticated
+  USING (public.has_role(auth.uid(), 'admin'))
+  WITH CHECK (public.has_role(auth.uid(), 'admin'));
+
+CREATE POLICY share_card_config_public_read ON public.share_card_config
+  FOR SELECT TO anon, authenticated USING (true);
+CREATE POLICY share_card_config_admin_write ON public.share_card_config
+  FOR ALL TO authenticated
+  USING (public.has_role(auth.uid(), 'admin'))
+  WITH CHECK (public.has_role(auth.uid(), 'admin'));
+
+CREATE POLICY quick_test_config_public_read ON public.quick_test_config
+  FOR SELECT TO anon, authenticated USING (true);
+CREATE POLICY quick_test_config_admin_write ON public.quick_test_config
+  FOR ALL TO authenticated
+  USING (public.has_role(auth.uid(), 'admin'))
+  WITH CHECK (public.has_role(auth.uid(), 'admin'));
+
+CREATE POLICY support_config_public_read ON public.support_config
+  FOR SELECT TO anon, authenticated USING (true);
+CREATE POLICY support_config_admin_write ON public.support_config
+  FOR ALL TO authenticated
+  USING (public.has_role(auth.uid(), 'admin'))
+  WITH CHECK (public.has_role(auth.uid(), 'admin'));
+
+CREATE POLICY app_settings_admin_read ON public.app_settings
+  FOR SELECT TO authenticated
+  USING (public.has_role(auth.uid(), 'admin'));
+CREATE POLICY app_settings_admin_write ON public.app_settings
+  FOR ALL TO authenticated
+  USING (public.has_role(auth.uid(), 'admin'))
+  WITH CHECK (public.has_role(auth.uid(), 'admin'));
+
+-- ============================================================================
 -- DONE!
 -- Now go to Settings -> API and copy:
 --   - Project URL  (e.g. https://abcdef.supabase.co)
