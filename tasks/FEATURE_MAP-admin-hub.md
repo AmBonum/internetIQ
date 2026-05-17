@@ -146,13 +146,13 @@ in `tasks/PLAN-2026-05-17-admin-hub-integration.md`. Status values:
 | table `audit_log` | `20260517000000_admin_hub_schema.sql` | AH-1.5 | Done | see `git log` |
 | table `dsr_requests` | `20260517000000_admin_hub_schema.sql` | AH-1.5 | Done | see `git log` |
 | table `reports` | `20260517000000_admin_hub_schema.sql` | AH-1.5 | Done | see `git log` |
-| table `cms_pages` | `20260517000000_admin_hub_schema.sql` | AH-1.6 | Backlog | |
-| table `cms_header` | `20260517000000_admin_hub_schema.sql` | AH-1.6 | Backlog | |
-| table `cms_footer` | `20260517000000_admin_hub_schema.sql` | AH-1.6 | Backlog | |
-| table `cms_navigation` | `20260517000000_admin_hub_schema.sql` | AH-1.6 | Backlog | |
-| table `share_card_config` | `20260517000000_admin_hub_schema.sql` | AH-1.6 | Backlog | |
-| table `quick_test_config` | `20260517000000_admin_hub_schema.sql` | AH-1.6 | Backlog | |
-| table `support_config` | `20260517000000_admin_hub_schema.sql` | AH-1.6 | Backlog | |
-| table `app_settings` | `20260517000000_admin_hub_schema.sql` | AH-1.6 | Backlog | |
+| table `cms_pages` | `20260517000000_admin_hub_schema.sql` | AH-1.6 | Done | see `git log` |
+| table `cms_header` | `20260517000000_admin_hub_schema.sql` | AH-1.6 | Done | see `git log` |
+| table `cms_footer` | `20260517000000_admin_hub_schema.sql` | AH-1.6 | Done | see `git log` |
+| table `cms_navigation` | `20260517000000_admin_hub_schema.sql` | AH-1.6 | Done | see `git log` |
+| table `share_card_config` | `20260517000000_admin_hub_schema.sql` | AH-1.6 | Done | see `git log` |
+| table `quick_test_config` | `20260517000000_admin_hub_schema.sql` | AH-1.6 | Done | see `git log` |
+| table `support_config` | `20260517000000_admin_hub_schema.sql` | AH-1.6 | Done | see `git log` |
+| table `app_settings` | `20260517000000_admin_hub_schema.sql` | AH-1.6 | Done | see `git log` |
 | cron `anonymize-sessions` (pg_cron, commented stub) | `20260517000000_admin_hub_schema.sql` | AH-1.8 | Backlog | |
 | cron `dsr-sla-check` (pg_cron, commented stub) | `20260517000000_admin_hub_schema.sql` | AH-1.8 | Backlog | |

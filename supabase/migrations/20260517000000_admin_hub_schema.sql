@@ -505,3 +505,96 @@ CREATE TABLE public.reports (
   created_at timestamptz NOT NULL DEFAULT now()
 );
 ALTER TABLE public.reports ENABLE ROW LEVEL SECURITY;
+
+-- ============================================================================
+-- AH-1.6 — CMS + config tables (cms_pages, cms_header, cms_footer,
+--                                cms_navigation, share_card_config,
+--                                quick_test_config, support_config,
+--                                app_settings)
+-- ============================================================================
+-- Singleton tables (cms_header, cms_footer, cms_navigation,
+-- share_card_config, quick_test_config, support_config) all use a
+-- CHECK (id = 1) constraint to guarantee a single row, and ship with a
+-- seeded id=1 row so AH-9 loaders can always read defaults. app_settings
+-- is a generic key/value bag (PK is `key text`, not a uuid).
+
+CREATE TABLE public.cms_pages (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  slug text NOT NULL UNIQUE,
+  title text NOT NULL,
+  seo_title text,
+  seo_description text,
+  blocks jsonb NOT NULL DEFAULT '[]'::jsonb,
+  status text NOT NULL DEFAULT 'draft',
+  published_at timestamptz,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now()
+);
+ALTER TABLE public.cms_pages ENABLE ROW LEVEL SECURITY;
+
+CREATE INDEX cms_pages_slug_idx ON public.cms_pages (slug);
+CREATE INDEX cms_pages_status_published_idx
+  ON public.cms_pages (status, published_at DESC);
+
+CREATE TABLE public.cms_header (
+  id int PRIMARY KEY DEFAULT 1 CHECK (id = 1),
+  logo text,
+  nav jsonb NOT NULL DEFAULT '[]'::jsonb,
+  updated_at timestamptz NOT NULL DEFAULT now()
+);
+ALTER TABLE public.cms_header ENABLE ROW LEVEL SECURITY;
+INSERT INTO public.cms_header (id) VALUES (1) ON CONFLICT DO NOTHING;
+
+CREATE TABLE public.cms_footer (
+  id int PRIMARY KEY DEFAULT 1 CHECK (id = 1),
+  columns jsonb NOT NULL DEFAULT '[]'::jsonb,
+  socials jsonb NOT NULL DEFAULT '[]'::jsonb,
+  legal jsonb NOT NULL DEFAULT '[]'::jsonb,
+  updated_at timestamptz NOT NULL DEFAULT now()
+);
+ALTER TABLE public.cms_footer ENABLE ROW LEVEL SECURITY;
+INSERT INTO public.cms_footer (id) VALUES (1) ON CONFLICT DO NOTHING;
+
+CREATE TABLE public.cms_navigation (
+  id int PRIMARY KEY DEFAULT 1 CHECK (id = 1),
+  items jsonb NOT NULL DEFAULT '[]'::jsonb,
+  updated_at timestamptz NOT NULL DEFAULT now()
+);
+ALTER TABLE public.cms_navigation ENABLE ROW LEVEL SECURITY;
+INSERT INTO public.cms_navigation (id) VALUES (1) ON CONFLICT DO NOTHING;
+
+CREATE TABLE public.share_card_config (
+  id int PRIMARY KEY DEFAULT 1 CHECK (id = 1),
+  tiers jsonb NOT NULL DEFAULT '[]'::jsonb,
+  gradient text,
+  branding jsonb NOT NULL DEFAULT '{}'::jsonb,
+  updated_at timestamptz NOT NULL DEFAULT now()
+);
+ALTER TABLE public.share_card_config ENABLE ROW LEVEL SECURITY;
+INSERT INTO public.share_card_config (id) VALUES (1) ON CONFLICT DO NOTHING;
+
+CREATE TABLE public.quick_test_config (
+  id int PRIMARY KEY DEFAULT 1 CHECK (id = 1),
+  config jsonb NOT NULL DEFAULT '{}'::jsonb,
+  updated_at timestamptz NOT NULL DEFAULT now()
+);
+ALTER TABLE public.quick_test_config ENABLE ROW LEVEL SECURITY;
+INSERT INTO public.quick_test_config (id) VALUES (1) ON CONFLICT DO NOTHING;
+
+CREATE TABLE public.support_config (
+  id int PRIMARY KEY DEFAULT 1 CHECK (id = 1),
+  email text,
+  hours text,
+  enabled boolean NOT NULL DEFAULT false,
+  updated_at timestamptz NOT NULL DEFAULT now()
+);
+ALTER TABLE public.support_config ENABLE ROW LEVEL SECURITY;
+INSERT INTO public.support_config (id) VALUES (1) ON CONFLICT DO NOTHING;
+
+CREATE TABLE public.app_settings (
+  key text PRIMARY KEY,
+  value jsonb NOT NULL DEFAULT '{}'::jsonb,
+  updated_at timestamptz NOT NULL DEFAULT now(),
+  updated_by uuid REFERENCES auth.users(id) ON DELETE SET NULL
+);
+ALTER TABLE public.app_settings ENABLE ROW LEVEL SECURITY;
