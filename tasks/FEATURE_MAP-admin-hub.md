@@ -99,7 +99,7 @@ in `tasks/PLAN-2026-05-17-admin-hub-integration.md`. Status values:
 | `lib/platform/exports.ts` | `src/lib/platform/exports.ts` (deferred — not wired) | AH-11 | Backlog | |
 | `lib/admin/support-config.ts` | `src/lib/admin/support-config.ts` | AH-10.4 | Backlog | |
 | `lib/ai-generate.functions.ts` | `src/lib/admin/ai-generate.functions.ts` (feature-flagged off) | AH-4.1 | Backlog | |
-| `lib/utils.ts` | merged into existing `src/lib/utils.ts` | AH-2.1 | Backlog | |
+| `lib/utils.ts` | identical to existing `src/lib/utils.ts` (no merge needed) | AH-2.1 | Done | see `git log` |
 
 ---
 

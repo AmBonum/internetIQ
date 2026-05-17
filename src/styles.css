@@ -8,6 +8,10 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+  /* AH-2 — extra radius scales for admin-hub panels (cards, dialogs, hero blocks). */
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -32,6 +36,28 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
   --color-ring-offset-background: var(--background);
+
+  /* AH-2 — admin-hub-side tokens: charts (recharts dashboards), sidebar
+     (admin/app shells), primary-glow (gradient-end accents). All values
+     mirror admin-hub/src/styles.css to keep the lime->emerald aesthetic
+     consistent across /, /app, /admin. Subenai-specific shared tokens
+     (--accent, --background, --card, --border) keep their existing
+     subenai values; cosmetic divergences from admin-hub are accepted
+     and addressed per-component in AH-3..AH-10 ports. */
+  --color-primary-glow: var(--primary-glow);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
 
   --gradient-hero: var(--hero-gradient);
   --gradient-accent: var(--accent-gradient);
@@ -79,6 +105,28 @@
   --border: oklch(0.3 0.03 265);
   --input: oklch(0.3 0.03 265);
   --ring: oklch(0.88 0.22 130);
+
+  /* AH-2 — Primary-glow + chart palette. Values copied verbatim from
+     admin-hub/src/styles.css. The palette is lime-led, matching subenai's
+     existing --primary so admin-hub recharts blend with subenai branding. */
+  --primary-glow: oklch(0.78 0.20 152);
+  --chart-1: oklch(0.92 0.22 128);
+  --chart-2: oklch(0.78 0.20 152);
+  --chart-3: oklch(0.68 0.18 200);
+  --chart-4: oklch(0.78 0.16 75);
+  --chart-5: oklch(0.65 0.22 15);
+
+  /* AH-2 — Sidebar (used by AdminSidebar in AH-10 and app shell in AH-3).
+     Tones picked relative to subenai's --background (0.16) so the sidebar
+     sits one notch lighter (panel-style). */
+  --sidebar: oklch(0.18 0.03 265);
+  --sidebar-foreground: oklch(0.85 0.015 260);
+  --sidebar-primary: oklch(0.88 0.22 130);
+  --sidebar-primary-foreground: oklch(0.18 0.05 265);
+  --sidebar-accent: oklch(0.22 0.035 265);
+  --sidebar-accent-foreground: oklch(0.98 0.005 250);
+  --sidebar-border: oklch(1 0 0 / 8%);
+  --sidebar-ring: oklch(0.88 0.22 130 / 60%);
 
   --hero-gradient: radial-gradient(
       ellipse 80% 60% at 50% 0%,
