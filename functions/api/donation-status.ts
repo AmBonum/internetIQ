@@ -98,10 +98,17 @@ export async function onRequestGet(ctx: RequestContext): Promise<Response> {
       .eq("stripe_payment_intent_id", paymentIntentId)
       .maybeSingle();
     if (error) {
-      console.error("donation-status lookup", { sessionId, message: error.message });
-      return jsonResponse(500, { error: "lookup_failed" });
-    }
-    if (data) {
+      // Don't 500 here: the frontend polls every 3s for up to 30s, and a
+      // transient Supabase blip (cold start, conn pool warmup) right after
+      // Stripe redirects to /podakovanie shouldn't abort the success page
+      // permanently. Log loudly so persistent breakage is visible in CF
+      // Pages function logs; donation stays undefined and the response is
+      // "pending" so the poller retries.
+      console.error("donation-status donations lookup", {
+        sessionId,
+        message: error.message,
+      });
+    } else if (data) {
       donation = {
         amount_eur: Number(data.amount_eur),
         currency: data.currency as string,
@@ -114,12 +121,23 @@ export async function onRequestGet(ctx: RequestContext): Promise<Response> {
 
   let sponsorDisplayName: string | null = null;
   if (customerId) {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from("sponsors")
       .select("display_name")
       .eq("stripe_customer_id", customerId)
       .maybeSingle();
-    sponsorDisplayName = (data?.display_name as string | null | undefined) ?? null;
+    if (error) {
+      // Sponsor display name is decorative — never block the success page
+      // on a sponsors-table read failure. Without this guard the unhandled
+      // error would bubble up and the CF runtime would return 500, which
+      // the frontend treats as terminal "error" state (no retry).
+      console.error("donation-status sponsors lookup", {
+        sessionId,
+        message: error.message,
+      });
+    } else {
+      sponsorDisplayName = (data?.display_name as string | null | undefined) ?? null;
+    }
   }
 
   if (!donation) {
