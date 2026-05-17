@@ -121,7 +121,7 @@ in `tasks/PLAN-2026-05-17-admin-hub-integration.md`. Status values:
 | enum `dsr_status` | `20260517000000_admin_hub_schema.sql` | AH-1.1 | Done | see `git log` |
 | function `has_role(uuid, app_role)` SECURITY DEFINER | `20260517000000_admin_hub_schema.sql` | AH-1.1 | Done | see `git log` |
 | function `handle_new_user()` + trigger `on_auth_user_created` | `20260517000000_admin_hub_schema.sql` | AH-1.2 | Done | see `git log` |
-| trigger `forbid_session_score_changes` on `sessions` | `20260517000000_admin_hub_schema.sql` | AH-1.4 | Backlog | |
+| trigger `forbid_session_score_changes` on `sessions` | `20260517000000_admin_hub_schema.sql` | AH-1.4 | Done | see `git log` |
 | table `profiles` | `20260517000000_admin_hub_schema.sql` | AH-1.2 | Done | see `git log` |
 | table `user_roles` | `20260517000000_admin_hub_schema.sql` | AH-1.2 | Done | see `git log` |
 | table `teams` | `20260517000000_admin_hub_schema.sql` | AH-1.2 | Done | see `git log` |
@@ -133,15 +133,15 @@ in `tasks/PLAN-2026-05-17-admin-hub-integration.md`. Status values:
 | table `questions` | `20260517000000_admin_hub_schema.sql` | AH-1.3 | Done | see `git log` |
 | table `templates` | `20260517000000_admin_hub_schema.sql` | AH-1.3 | Done | see `git log` |
 | table `trainings` | `20260517000000_admin_hub_schema.sql` | AH-1.3 | Done | see `git log` |
-| table `tests` | `20260517000000_admin_hub_schema.sql` | AH-1.4 | Backlog | |
-| table `test_questions` | `20260517000000_admin_hub_schema.sql` | AH-1.4 | Backlog | |
-| table `test_versions` | `20260517000000_admin_hub_schema.sql` | AH-1.4 | Backlog | |
-| table `respondents` | `20260517000000_admin_hub_schema.sql` | AH-1.4 | Backlog | |
-| table `sessions` | `20260517000000_admin_hub_schema.sql` | AH-1.4 | Backlog | |
-| table `session_answers` | `20260517000000_admin_hub_schema.sql` | AH-1.4 | Backlog | |
-| table `behavioral_events` | `20260517000000_admin_hub_schema.sql` | AH-1.4 | Backlog | |
-| table `respondent_groups` | `20260517000000_admin_hub_schema.sql` | AH-1.4 | Backlog | |
-| table `group_assignments` | `20260517000000_admin_hub_schema.sql` | AH-1.4 | Backlog | |
+| table `tests` | `20260517000000_admin_hub_schema.sql` | AH-1.4 | Done | see `git log` |
+| table `test_questions` | `20260517000000_admin_hub_schema.sql` | AH-1.4 | Done | see `git log` |
+| table `test_versions` | `20260517000000_admin_hub_schema.sql` | AH-1.4 | Done | see `git log` |
+| table `respondents` | `20260517000000_admin_hub_schema.sql` | AH-1.4 | Done | see `git log` |
+| table `sessions` | `20260517000000_admin_hub_schema.sql` | AH-1.4 | Done | see `git log` |
+| table `session_answers` | `20260517000000_admin_hub_schema.sql` | AH-1.4 | Done | see `git log` |
+| table `behavioral_events` | `20260517000000_admin_hub_schema.sql` | AH-1.4 | Done | see `git log` |
+| table `respondent_groups` | `20260517000000_admin_hub_schema.sql` | AH-1.4 | Done | see `git log` |
+| table `group_assignments` | `20260517000000_admin_hub_schema.sql` | AH-1.4 | Done | see `git log` |
 | table `notifications` | `20260517000000_admin_hub_schema.sql` | AH-1.5 | Backlog | |
 | table `audit_log` | `20260517000000_admin_hub_schema.sql` | AH-1.5 | Backlog | |
 | table `dsr_requests` | `20260517000000_admin_hub_schema.sql` | AH-1.5 | Backlog | |

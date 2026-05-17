@@ -263,3 +263,160 @@ CREATE TABLE public.trainings (
   created_at timestamptz NOT NULL DEFAULT now()
 );
 ALTER TABLE public.trainings ENABLE ROW LEVEL SECURITY;
+
+-- ============================================================================
+-- AH-1.4 — Test + session tables + forbid_session_score_changes trigger
+-- ============================================================================
+-- This is the largest block. It backs AH-5 (test builder) and AH-8
+-- (respondent flow). password_hash is TEXT only — never store plaintext.
+-- sessions.respondent_id is NULLABLE so the AH-1.8 anonymization cron can
+-- null it out post-retention without violating the FK contract.
+-- forbid_session_score_changes mirrors the existing
+-- forbid_attempt_score_changes pattern: once a session is 'completed',
+-- the score becomes immutable. Demographic / intake fields stay editable
+-- so the AH-7 DSR flow can still scrub PII.
+
+CREATE TABLE public.tests (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  slug text NOT NULL UNIQUE,
+  share_id text NOT NULL UNIQUE,
+  owner_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  team_id uuid REFERENCES public.teams(id) ON DELETE SET NULL,
+  title text NOT NULL,
+  description text,
+  status public.test_status NOT NULL DEFAULT 'draft',
+  version int NOT NULL DEFAULT 1,
+  password_hash text,
+  segmentation text[] NOT NULL DEFAULT '{}',
+  gdpr_purpose public.gdpr_purpose NOT NULL DEFAULT 'research',
+  intake_fields jsonb NOT NULL DEFAULT '{}'::jsonb,
+  branches jsonb NOT NULL DEFAULT '[]'::jsonb,
+  notif_config jsonb NOT NULL DEFAULT '{}'::jsonb,
+  anonymize_after_days int,
+  allow_behavioral_tracking boolean NOT NULL DEFAULT false,
+  expires_at timestamptz,
+  published_at timestamptz,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now()
+);
+ALTER TABLE public.tests ENABLE ROW LEVEL SECURITY;
+
+CREATE INDEX tests_owner_id_idx ON public.tests (owner_id);
+CREATE INDEX tests_share_id_idx ON public.tests (share_id);
+CREATE INDEX tests_slug_idx ON public.tests (slug);
+
+CREATE TABLE public.test_questions (
+  test_id uuid NOT NULL REFERENCES public.tests(id) ON DELETE CASCADE,
+  question_id uuid NOT NULL REFERENCES public.questions(id) ON DELETE RESTRICT,
+  position int NOT NULL DEFAULT 0,
+  PRIMARY KEY (test_id, question_id)
+);
+ALTER TABLE public.test_questions ENABLE ROW LEVEL SECURITY;
+
+CREATE TABLE public.test_versions (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  test_id uuid NOT NULL REFERENCES public.tests(id) ON DELETE CASCADE,
+  version int NOT NULL,
+  snapshot jsonb NOT NULL,
+  published_at timestamptz NOT NULL DEFAULT now(),
+  published_by uuid REFERENCES auth.users(id) ON DELETE SET NULL,
+  changelog text,
+  UNIQUE (test_id, version)
+);
+ALTER TABLE public.test_versions ENABLE ROW LEVEL SECURITY;
+
+CREATE TABLE public.respondents (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  email text,
+  display_name text,
+  anonymized_at timestamptz,
+  created_at timestamptz NOT NULL DEFAULT now()
+);
+ALTER TABLE public.respondents ENABLE ROW LEVEL SECURITY;
+
+CREATE TABLE public.sessions (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  test_id uuid NOT NULL REFERENCES public.tests(id) ON DELETE CASCADE,
+  version int NOT NULL DEFAULT 1,
+  respondent_id uuid REFERENCES public.respondents(id) ON DELETE SET NULL,
+  intake_data jsonb NOT NULL DEFAULT '{}'::jsonb,
+  consent_given boolean NOT NULL DEFAULT false,
+  started_at timestamptz NOT NULL DEFAULT now(),
+  finished_at timestamptz,
+  score numeric(5, 2),
+  status public.session_status NOT NULL DEFAULT 'in_progress',
+  segment text,
+  ip_hash text
+);
+ALTER TABLE public.sessions ENABLE ROW LEVEL SECURITY;
+
+CREATE INDEX sessions_test_status_idx ON public.sessions (test_id, status);
+CREATE INDEX sessions_respondent_idx ON public.sessions (respondent_id);
+
+CREATE TABLE public.session_answers (
+  session_id uuid NOT NULL REFERENCES public.sessions(id) ON DELETE CASCADE,
+  question_id uuid NOT NULL REFERENCES public.questions(id) ON DELETE RESTRICT,
+  value text,
+  is_correct boolean,
+  time_ms int,
+  PRIMARY KEY (session_id, question_id)
+);
+ALTER TABLE public.session_answers ENABLE ROW LEVEL SECURITY;
+
+CREATE INDEX session_answers_session_idx ON public.session_answers (session_id);
+
+CREATE TABLE public.behavioral_events (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  session_id uuid NOT NULL REFERENCES public.sessions(id) ON DELETE CASCADE,
+  type text NOT NULL,
+  payload jsonb NOT NULL DEFAULT '{}'::jsonb,
+  at timestamptz NOT NULL DEFAULT now()
+);
+ALTER TABLE public.behavioral_events ENABLE ROW LEVEL SECURITY;
+
+CREATE INDEX behavioral_events_session_idx ON public.behavioral_events (session_id);
+
+CREATE TABLE public.respondent_groups (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  name text NOT NULL,
+  description text,
+  owner_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  member_emails text[] NOT NULL DEFAULT '{}',
+  tags text[] NOT NULL DEFAULT '{}',
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now()
+);
+ALTER TABLE public.respondent_groups ENABLE ROW LEVEL SECURITY;
+
+CREATE TABLE public.group_assignments (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  test_id uuid NOT NULL REFERENCES public.tests(id) ON DELETE CASCADE,
+  group_id uuid NOT NULL REFERENCES public.respondent_groups(id) ON DELETE CASCADE,
+  assigned_by uuid REFERENCES auth.users(id) ON DELETE SET NULL,
+  assigned_at timestamptz NOT NULL DEFAULT now(),
+  invited_count int NOT NULL DEFAULT 0,
+  UNIQUE (test_id, group_id)
+);
+ALTER TABLE public.group_assignments ENABLE ROW LEVEL SECURITY;
+
+-- forbid_session_score_changes: once a session is completed, the score is
+-- frozen. Demographic / intake fields (intake_data, segment) stay editable
+-- so AH-7 DSR scrubbing can still null them out.
+CREATE OR REPLACE FUNCTION public.forbid_session_score_changes()
+RETURNS trigger
+LANGUAGE plpgsql
+SET search_path = public, pg_temp
+AS $$
+BEGIN
+  IF OLD.status = 'completed'
+     AND NEW.score IS DISTINCT FROM OLD.score THEN
+    RAISE EXCEPTION 'Session score is immutable once status = completed';
+  END IF;
+  RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS forbid_session_score_changes_trg ON public.sessions;
+CREATE TRIGGER forbid_session_score_changes_trg
+  BEFORE UPDATE ON public.sessions
+  FOR EACH ROW EXECUTE FUNCTION public.forbid_session_score_changes();
