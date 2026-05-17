@@ -4,6 +4,7 @@ import Stripe from "stripe";
 import {
   onRequestPost,
   processEvent,
+  livemodeAllowed,
   MAX_AML_AMOUNT_EUR,
   STRIPE_API_VERSION,
   type Env,
@@ -476,6 +477,62 @@ describe("processEvent — checkout.session.completed metadata pass-through", ()
     });
     await processEvent(event, supabase as never);
     expect(state.updatedSponsors).toHaveLength(0);
+  });
+});
+
+describe("livemodeAllowed guard", () => {
+  it('expected="true" accepts live-mode events and rejects test-mode', () => {
+    expect(livemodeAllowed("true", true)).toBe(true);
+    expect(livemodeAllowed("true", false)).toBe(false);
+  });
+
+  it('expected="false" accepts test-mode events and rejects live-mode', () => {
+    expect(livemodeAllowed("false", false)).toBe(true);
+    expect(livemodeAllowed("false", true)).toBe(false);
+  });
+
+  it("unset env permits both modes (backwards compatible)", () => {
+    expect(livemodeAllowed(undefined, true)).toBe(true);
+    expect(livemodeAllowed(undefined, false)).toBe(true);
+    expect(livemodeAllowed("", true)).toBe(true);
+    expect(livemodeAllowed("yes", false)).toBe(true);
+  });
+});
+
+describe("stripe-webhook livemode enforcement (end-to-end via onRequestPost)", () => {
+  it('returns 400 livemode_mismatch when EXPECTED_LIVEMODE="true" and event is test-mode', async () => {
+    const event = makeEvent(
+      "checkout.session.completed",
+      { mode: "payment", customer: "cus_x", payment_intent: "pi_x", amount_total: 500 },
+      { livemode: false },
+    );
+    const { body, signature } = await signed(event);
+    const req = new Request("https://example.com/api/stripe-webhook", {
+      method: "POST",
+      headers: { "stripe-signature": signature },
+      body,
+    });
+    const res = await onRequestPost({
+      request: req,
+      env: { ...env, EXPECTED_LIVEMODE: "true" },
+    });
+    expect(res.status).toBe(400);
+    expect(await res.json()).toEqual({ error: "livemode_mismatch" });
+  });
+
+  it('accepts a test-mode event when EXPECTED_LIVEMODE="false"', async () => {
+    const event = makeEvent("payment_intent.created", { id: "pi_y" }, { livemode: false });
+    const { body, signature } = await signed(event);
+    const req = new Request("https://example.com/api/stripe-webhook", {
+      method: "POST",
+      headers: { "stripe-signature": signature },
+      body,
+    });
+    const res = await onRequestPost({
+      request: req,
+      env: { ...env, EXPECTED_LIVEMODE: "false" },
+    });
+    expect(res.status).toBe(200);
   });
 });
 
