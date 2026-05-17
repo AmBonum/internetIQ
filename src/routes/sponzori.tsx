@@ -20,6 +20,7 @@ export interface PublicSponsor {
   display_link: string | null;
   display_message: string | null;
   created_at: string;
+  has_refund: boolean;
 }
 
 export const Route = createFileRoute("/sponzori")({
@@ -144,16 +145,38 @@ function LatestList({ sponsors }: { sponsors: PublicSponsor[] }) {
           >
             <AccordionTrigger className="flex-wrap text-left">
               <div className="flex flex-1 items-baseline justify-between gap-4 pr-3">
-                <span className="text-base font-semibold text-foreground">{s.display_name}</span>
-                <time
-                  dateTime={s.created_at}
-                  className="shrink-0 text-xs font-normal text-muted-foreground"
+                <span
+                  className={`text-base font-semibold ${
+                    s.has_refund ? "text-muted-foreground line-through" : "text-foreground"
+                  }`}
                 >
-                  {formatMonthYear(s.created_at)}
-                </time>
+                  {s.display_name}
+                </span>
+                <div className="flex shrink-0 items-baseline gap-2">
+                  {s.has_refund ? (
+                    <span
+                      data-testid="sponzori-refund-badge"
+                      className="rounded-full border border-border/70 bg-muted/60 px-2 py-0.5 text-[11px] font-normal text-muted-foreground"
+                    >
+                      Vrátené
+                    </span>
+                  ) : null}
+                  <time
+                    dateTime={s.created_at}
+                    className="text-xs font-normal text-muted-foreground"
+                  >
+                    {formatMonthYear(s.created_at)}
+                  </time>
+                </div>
               </div>
             </AccordionTrigger>
             <AccordionContent className="pb-4 text-sm leading-relaxed text-muted-foreground">
+              {s.has_refund ? (
+                <p className="mb-2 italic text-muted-foreground/80">
+                  Príspevok bol vrátený na žiadosť prispievateľa. Ďakujeme za pôvodný úmysel
+                  podporiť projekt.
+                </p>
+              ) : null}
               {s.display_message ? (
                 <p className="mb-2">„{s.display_message}"</p>
               ) : (
@@ -229,7 +252,7 @@ function SponsorsEmpty() {
 async function fetchLatestSponsors(): Promise<PublicSponsor[]> {
   const { data, error } = await supabase
     .from("public_sponsors")
-    .select("id, display_name, display_link, display_message, created_at")
+    .select("id, display_name, display_link, display_message, created_at, has_refund")
     .order("created_at", { ascending: false })
     .limit(HOMEPAGE_LIMIT);
 

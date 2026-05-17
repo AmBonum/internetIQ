@@ -176,7 +176,11 @@ function SponsorsTable({
         {sponsors.map((s) => (
           <li key={s.id} className="space-y-2 rounded-2xl border border-border/60 bg-card p-5">
             <div className="flex flex-wrap items-baseline justify-between gap-2">
-              <h2 className="text-base font-semibold text-foreground">
+              <h2
+                className={`text-base font-semibold ${
+                  s.has_refund ? "text-muted-foreground line-through" : "text-foreground"
+                }`}
+              >
                 {s.display_link ? (
                   <a
                     href={s.display_link}
@@ -190,10 +194,25 @@ function SponsorsTable({
                   s.display_name
                 )}
               </h2>
-              <time dateTime={s.created_at} className="text-xs text-muted-foreground">
-                {formatMonthYear(s.created_at)}
-              </time>
+              <div className="flex items-baseline gap-2">
+                {s.has_refund ? (
+                  <span
+                    data-testid="sponzori-vsetci-refund-badge"
+                    className="rounded-full border border-border/70 bg-muted/60 px-2 py-0.5 text-[11px] font-normal text-muted-foreground"
+                  >
+                    Vrátené
+                  </span>
+                ) : null}
+                <time dateTime={s.created_at} className="text-xs text-muted-foreground">
+                  {formatMonthYear(s.created_at)}
+                </time>
+              </div>
             </div>
+            {s.has_refund ? (
+              <p className="text-xs italic text-muted-foreground/80">
+                Príspevok bol vrátený na žiadosť prispievateľa.
+              </p>
+            ) : null}
             {s.display_message ? (
               <p className="text-sm leading-relaxed text-muted-foreground">„{s.display_message}"</p>
             ) : null}
@@ -247,7 +266,7 @@ function EmptyFilterState({ hasAnyData }: { hasAnyData: boolean }) {
 async function fetchAllSponsors(): Promise<PublicSponsor[]> {
   const { data, error } = await supabase
     .from("public_sponsors")
-    .select("id, display_name, display_link, display_message, created_at")
+    .select("id, display_name, display_link, display_message, created_at, has_refund")
     .order("created_at", { ascending: false })
     .limit(FETCH_LIMIT);
 
