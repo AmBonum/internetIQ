@@ -40,6 +40,7 @@ function makeSponsor(overrides: Partial<PublicSponsor>): PublicSponsor {
     display_link: null,
     display_message: null,
     created_at: "2026-04-01T10:00:00Z",
+    has_refund: false,
     ...overrides,
   };
 }
@@ -93,6 +94,24 @@ describe("AllSponsorsView (/sponzori/vsetci)", () => {
       target: { value: "nikto-takyto-tu-neni" },
     });
     expect(screen.getByText(/Nič nezodpovedá filtru/i)).toBeInTheDocument();
+  });
+
+  it('shows "Vrátené" badge + explainer for refunded sponsors, omits it for the rest', async () => {
+    const withRefund: PublicSponsor[] = [
+      makeSponsor({ display_name: "Anna", has_refund: false }),
+      makeSponsor({ display_name: "Daniela", has_refund: true }),
+    ];
+    render(<AllSponsorsView fetchSponsors={async () => withRefund} />);
+
+    await waitFor(() => expect(screen.getByText("Daniela")).toBeInTheDocument());
+    const badges = screen.getAllByTestId("sponzori-vsetci-refund-badge");
+    expect(badges).toHaveLength(1);
+    expect(badges[0]).toHaveTextContent(/Vrátené/);
+    expect(screen.getByText(/Príspevok bol vrátený na žiadosť prispievateľa/i)).toBeInTheDocument();
+
+    // Strike-through is applied to the refunded sponsor's heading.
+    const danielaHeading = screen.getByText("Daniela").closest("h2");
+    expect(danielaHeading?.className).toMatch(/line-through/);
   });
 
   it("renders the back link to /sponzori", async () => {
