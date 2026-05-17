@@ -49,9 +49,3 @@ supabase/.temp/
 
 # Playwright MCP server runtime logs
 .playwright-mcp/
-
-# admin-hub is a separate repo (github.com/AmBonum/subenai-admin-hub)
-# — was a submodule until 2026-05-17, removed to unblock CF Pages deploy.
-# Clone it as a sibling dir if you need it locally:
-#   git clone https://github.com/AmBonum/subenai-admin-hub admin-hub
-admin-hub/
